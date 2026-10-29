@@ -1,36 +1,38 @@
-# SickShift face à SickGear
+# SickShift compared with SickGear
 
-Comparaison préparée le 29 octobre 2026 avec `SickGear/SickGear`, branche `main`, commit `60b9dec46e9ffae97a87cad0905a654acc726167`. Les affirmations portent sur les sources comparées, pas sur toutes les versions futures.
+This comparison was prepared on October 29, 2026 against `SickGear/SickGear`, branch `main`, commit `60b9dec46e9ffae97a87cad0905a654acc726167`. The statements describe the compared sources, not every future release.
 
-| Domaine | Socle SickGear | Différences SickShift |
+| Area | SickGear foundation | SickShift changes |
 |---|---|---|
-| Gestion des séries | Suivi, recherche, métadonnées, fournisseurs, intégrations | Moteur conservé, modules renommés `sickshift` |
-| Présentation | Interface Slick et ses modes | Habillage cinéma, identité SickShift et nouveau logo transparent |
-| Vue d’ensemble | Pages natives de gestion | Paquet FastAPI `sickshift_dashboard` et tableau de bord intégré |
-| Aperçus locaux | Aucun composant équivalent dans la base comparée | Popup sur épisodes locaux, cache FFmpeg, sortie 8 bits et conversions HDR |
-| Épisodes manquants | Gestion native des statuts | Groupes repliables, copie avec confirmation et typographie harmonisée |
-| Sections du tableau de bord | Pas de composant équivalent | Chevrons accessibles, déplié par défaut, préférence navigateur |
-| Renommage | Mécanismes natifs de déplacement et mise à jour en base | Bilan avant/après vérifié ; échec du déplacement vidéo bloquant avant les fichiers associés |
-| Mise à jour du code | Mise à jour intégrée de l’amont | Intégration sur branche et revue ; remplacement direct bloqué |
-| Données privées | Créées par chaque installation | Export propre, exclusions et contrôle des fichiers indexés |
+| Show management | Tracking, search, metadata, providers, and integrations | Engine retained; modules renamed to `sickshift` |
+| Appearance | Slick interface and its display modes | Cinema-inspired styling, SickShift identity, and a transparent logo |
+| Overview | Native management pages | Integrated dashboard and the `sickshift_dashboard` FastAPI package |
+| Local previews | No equivalent component in the compared base | Local-episode popup, FFmpeg cache, 8-bit output, and HDR conversion |
+| Missing episodes | Native episode-status management | Collapsible groups, copy confirmation, and consistent typography |
+| Dashboard sections | No equivalent component | Accessible chevrons, expanded by default, with browser-local preferences |
+| Renaming | Native file moves and database updates | Verified before/after results; a failed video move stops processing before associated files |
+| Code updates | Built-in upstream updater | Separate integration branches and review; direct replacement blocked |
+| Private data | Created by each installation | Clean source export, exclusions, and indexed-file checks |
 
-## Méthode et historique
+## Method and history
 
-Le dépôt de publication part directement de l’historique **public** de SickGear. Les sources SickShift sont importées dans un nouveau commit ; l’historique de développement privé, les sauvegardes et les bases de l’installation d’origine ne sont pas repris. Les 31 commits du développement local sont ainsi consolidés au lieu d’être publiés sans audit.
+The publication repository starts directly from SickGear's **public** history. SickShift sources are introduced in new commits; private development history, backups, and the original installation's databases are not imported. The 31 local development commits are consolidated rather than published without review.
 
-La comparaison locale avant renommage recensait 66 fichiers modifiés et environ 7 452 lignes ajoutées sur les commits locaux. Ce chiffre n’inclut pas l’ensemble des modifications non commitées ni le renommage global ; ce n’est pas le nombre final de fichiers du fork. Pour la comparaison exacte de l’export :
+Before the global rename, the local committed changes affected 66 files and added approximately 7,452 lines. Those figures do not include all uncommitted changes or the global rename and are not the final size of the fork. For the exact current source comparison:
 
 ```sh
 git diff --stat 60b9dec46e9ffae97a87cad0905a654acc726167 HEAD
 git diff --find-renames 60b9dec46e9ffae97a87cad0905a654acc726167 HEAD
 ```
 
-## Limites à connaître
+## Known limitations
 
-Le renommage global augmente le travail de fusion amont. Un merge Git réussi ne suffit pas : il faut aussi vérifier les nouveaux imports, les noms de modules, les migrations SQL et les parcours utilisateur. Les anciens scripts et intégrations tiers peuvent encore exiger une adaptation. Les URL publiques réelles et les noms de protocoles externes ne doivent pas être renommés arbitrairement.
+The global rename increases upstream integration work. A successful Git merge is not sufficient: new imports, module names, SQL migrations, and user flows also need review. Older scripts and third-party integrations may still need adaptation. Real public URLs and external protocol identifiers must not be renamed arbitrarily.
 
-La page de découverte personnalisée « quoi regarder » reste une évolution future ; le tableau de bord actuel n’est pas présenté comme un moteur de recommandation nouveau.
+A personalized "what to watch" discovery page remains a future enhancement. The current dashboard is not presented as a new recommendation engine.
 
-## Vérifications de l’export préparé
+## Release verification
 
-Les contrôles de confidentialité sur 4 170 fichiers indexés, les imports des deux paquets, la compilation Python et les tests de conversion/filtrage ont été exécutés localement. Un démarrage avec un nouveau dossier de données vide sur un port distinct a servi le tableau de bord avec HTTP 200, sans utiliser la bibliothèque personnelle. La matrice GitHub Actions et la protection distante restent à vérifier après publication.
+Local validation covered privacy checks across 4,170 indexed files, imports of both packages, Python compilation, and video-conversion and publication-filtering tests. A fresh startup with an empty data directory on a separate port served the dashboard with HTTP 200 without accessing the personal library.
+
+The first publication exposed CI setup issues, which were corrected in pull request #1: full upstream history is now available to privacy checks, async database dependencies are declared, and current GitHub actions run on Ubuntu 24.04. The required Python 3.11, 3.12, and 3.13 checks passed before that pull request was merged. Branch protection was verified on GitHub. See the Actions tab for the latest results rather than treating these historical checks as a guarantee for future commits.

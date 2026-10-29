@@ -1,17 +1,17 @@
-# Publication sans données personnelles
+# Publishing without personal data
 
-L’export contient les sources, les ressources statiques du produit, les tests et leurs fixtures publiques. Il exclut les bases SQLite, configurations d’installation, caches de médias, affiches de bibliothèque, journaux, sauvegardes, environnements Python et fichiers propres à une machine.
+The export contains source code, static product assets, tests, and their public fixtures. It excludes SQLite databases, installation configuration, media caches, library posters, logs, backups, Python environments, and machine-specific files.
 
-La clé TMDB ajoutée durant le développement n’est pas incluse dans l’export. Les URL de miroir contenant des identifiants sont retirées des sources de publication au profit de PyPI. Si un identifiant précédemment utilisé est personnel, son propriétaire doit le révoquer : retirer une chaîne d’un fichier ne révoque pas une clé.
+The TMDB key added during development is not included in the export. Credential-bearing mirror URLs were removed from the published source in favor of PyPI. If a previously used credential is personal, its owner must revoke it: deleting a string from a file does not revoke a key.
 
-Avant tout commit ou envoi :
+Before committing or pushing:
 
 ```sh
-git add <fichiers-explicitement-voulus>
+git add <explicitly-selected-files>
 python scripts/check_release.py
 git diff --cached --stat
 ```
 
-Le contrôle examine les fichiers indexés : extensions de données privées, chemins de machine, certaines familles de jetons et clés intégrées. Il ne remplace pas une revue humaine, ne scanne pas le contenu binaire des images et ne prouve pas l’absence de tout secret imaginable. Ne jamais ajouter de capture d’une bibliothèque personnelle au produit.
+The checker examines indexed files for private-data extensions, machine paths, selected token formats, and embedded keys. Public examples inherited from the pinned upstream revision are distinguished from newly introduced values. This is not a substitute for human review: it does not inspect binary image contents or prove that every possible secret is absent. Never include screenshots of a personal library in the product.
 
-L’historique conservé est celui du dépôt public amont ; aucun commit de l’historique privé de développement n’est importé.
+The retained history comes from the public upstream repository. No commits from the private development history are imported.
