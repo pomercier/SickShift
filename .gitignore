@@ -1,3 +1,27 @@
+# Root allowlist: unknown installation folders/files stay private by default.
+/*
+!/.github/
+!/autoProcessTV/
+!/gui/
+!/init-scripts/
+!/lib/
+!/sickshift/
+!/sickshift_dashboard/
+!/scripts/
+!/tests/
+!/docs/
+!/packaging/
+!/snap/
+!/*.py
+!/*.md
+!/*.MD
+!/*.txt
+!/.gitignore
+!/.env.example
+!/.codeclimate.yml
+!/.gitlab-ci.yml
+!/tox.ini
+
 ######################
 #  SG User Related   #
 cache/*
