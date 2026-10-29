@@ -1,11 +1,11 @@
-#import sickgear
+#import sickshift
 #import lib.adba as adba
-#from sickgear import (anime, common, helpers, scene_exceptions)
-#from sickgear.helpers import anon_url, generate_word_str
+#from sickshift import (anime, common, helpers, scene_exceptions)
+#from sickshift.helpers import anon_url, generate_word_str
 #from lib import exceptions_helper as exceptions
-#from sickgear.tv import TVidProdid
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#from sickshift.tv import TVidProdid
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Edit ' + getattr($show_obj, 'unique_name', $show_obj.name)
 #set global $header = $show_obj.name
@@ -13,7 +13,7 @@
 #set global $topmenu = 'home'
 #set $css = $getVar('css', 'reg')
 #set $has_art = $getVar('has_art', None)
-#set $restart = 'Restart SickGear for new features on this page'
+#set $restart = 'Restart SickShift for new features on this page'
 #set $show_message = ($show_message, $restart)[None is $has_art]
 #set global $page_body_attr = 'edit-show" class="' + $css
 ##
@@ -149,14 +149,14 @@
 						<label for="rls_ignore_words">
 							<span class="component-title">Ignore result with any word</span>
 							<span class="component-desc">
-								<input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$generate_word_str($show_obj.rls_ignore_words - $sickgear.IGNORE_WORDS, $show_obj.rls_ignore_words_regex)" class="form-control form-control-inline input-sm input350">
+								<input type="text" name="rls_ignore_words" id="rls_ignore_words" value="$generate_word_str($show_obj.rls_ignore_words - $sickshift.IGNORE_WORDS, $show_obj.rls_ignore_words_regex)" class="form-control form-control-inline input-sm input350">
 								<p>e.g. [[regex:]word1, word2, ..., word_n, regex_n]</p>
 								<p class="note">ignore search result <em class="grey-text">if its title contains any</em> of these comma separated words or regular expressions</p>
 							</span>
 						</label>
 					</div>
 
-#if $sickgear.IGNORE_WORDS:
+#if $sickshift.IGNORE_WORDS:
 					<div class="field-pair">
 						<label for="rls_global_exclude_ignore">
 							<span class="component-title">Exclude global ignore word (multi select list)</span>
@@ -165,7 +165,7 @@
     #set $options = ''
     #set $selected = ' selected=\"selected\"'
     #set $num_selected = 0
-    #for $gw in sorted($sickgear.IGNORE_WORDS, key=$str.lower):
+    #for $gw in sorted($sickshift.IGNORE_WORDS, key=$str.lower):
         #set $sel_html = ''
         #if $gw in $show_obj.rls_global_exclude_ignore
             #set $sel_html = $selected
@@ -185,14 +185,14 @@
 						<label for="rls_require_words">
 							<span class="component-title">Require at least one word</span>
 							<span class="component-desc">
-								<input type="text" name="rls_require_words" id="rls_require_words" value="$generate_word_str($show_obj.rls_require_words - $sickgear.REQUIRE_WORDS, $show_obj.rls_require_words_regex)" class="form-control form-control-inline input-sm input350">
+								<input type="text" name="rls_require_words" id="rls_require_words" value="$generate_word_str($show_obj.rls_require_words - $sickshift.REQUIRE_WORDS, $show_obj.rls_require_words_regex)" class="form-control form-control-inline input-sm input350">
 								<p>e.g. [[regex:]word1, word2, ..., word_n, regex_n]</p>
 								<p class="note">ignore search result <em class="grey-text">unless its title contains one</em> of these comma separated words or regular expressions</p>
 							</span>
 						</label>
 					</div>
 
-#if $sickgear.REQUIRE_WORDS:
+#if $sickshift.REQUIRE_WORDS:
 					<div class="field-pair">
 						<label for="rls_global_exclude_require">
 							<span class="component-title">Exclude global require word (multi select list)</span>
@@ -201,7 +201,7 @@
     #set $options = ''
     #set $selected = ' selected=\"selected\"'
     #set $num_selected = 0
-    #for $gw in sorted($sickgear.REQUIRE_WORDS, key=$str.lower):
+    #for $gw in sorted($sickshift.REQUIRE_WORDS, key=$str.lower):
         #set $sel_html = ''
         #if $gw in $show_obj.rls_global_exclude_require
             #set $sel_html = $selected
@@ -292,7 +292,7 @@
 					</div>
 
 #if $show_obj.is_anime
-    #import sickgear.anime
+    #import sickshift.anime
     #include $os.path.join($sg_str('PROG_DIR'), 'gui/slick/interfaces/default/inc_anigrouplists.tmpl')
 					<script src="$sbRoot/js/anigrouplists.js?v=$sbPID"></script>
 #end if
@@ -374,33 +374,33 @@
 #set $dev = None
 					<div id="idmapping-options" style="display:#if $dev#--#end if#none">
 #set $is_main_settable = False | $unlock_main_id
-#for $tvid, $src_name in $sickgear.TVInfoAPI().all_sources.items()
+#for $tvid, $src_name in $sickshift.TVInfoAPI().all_sources.items()
     #set $is_main_settable |= ($dev or
         ($tvid != $show_obj.tvid and $show_obj.ids[$tvid].get('id', 0) > 0 and
-         $tvid in $sickgear.TVInfoAPI().sources and not $sickgear.TVInfoAPI($tvid).config.get('defunct') and
-         $sickgear.TVInfoAPI($tvid).config.get('active')))
+         $tvid in $sickshift.TVInfoAPI().sources and not $sickshift.TVInfoAPI($tvid).config.get('defunct') and
+         $sickshift.TVInfoAPI($tvid).config.get('active')))
     #if $is_main_settable
         #break
     #end if
 #end for
-#set $search_name = quote_plus($sickgear.indexermapper.clean_show_name($show_obj.name))
-#for $tvid, $src_name in $sickgear.TVInfoAPI().all_sources.items()
+#set $search_name = quote_plus($sickshift.indexermapper.clean_show_name($show_obj.name))
+#for $tvid, $src_name in $sickshift.TVInfoAPI().all_sources.items()
     #set $ok_tvid = $show_obj.ids[$tvid].get('id', 0) > 0
     #set $maybe_main = ($tvid != $show_obj.tvid and
-         $tvid in $sickgear.TVInfoAPI().sources and not $sickgear.TVInfoAPI($tvid).config.get('defunct') and
-         $sickgear.TVInfoAPI($tvid).config.get('active'))
+         $tvid in $sickshift.TVInfoAPI().sources and not $sickshift.TVInfoAPI($tvid).config.get('defunct') and
+         $sickshift.TVInfoAPI($tvid).config.get('active'))
     #set $settable_main = ($dev or ($ok_tvid and $maybe_main))
 						<div class="field-pair">
 								<span class="component-title">
     #if $tvid in $show_obj.ids
-        #set $src_search_url = sickgear.TVInfoAPI($tvid).config.get('finder')
+        #set $src_search_url = sickshift.TVInfoAPI($tvid).config.get('finder')
         #set $use_search_url = $src_search_url
         #set $data_link = 'data-'
-        #if $ok_tvid and $sickgear.indexermapper.MapStatus.NOT_FOUND != $show_obj.ids[$tvid]['status']
+        #if $ok_tvid and $sickshift.indexermapper.MapStatus.NOT_FOUND != $show_obj.ids[$tvid]['status']
             #set $data_link = ''
             #set $use_search_url = False
         #end if
-									<a id="src-mid-$tvid" class="service" style="margin-right:6px" data-search="#if $use_search_url#y#else#n#end if#" #if $src_search_url#data-search-href="$anon_url($src_search_url % $search_name)" data-search-onclick="window.open(this.href, '_blank'); return !1;" data-search-title="Search for show at $src_name" #end if##if $use_search_url#href="$anon_url($src_search_url % $search_name)" onclick="window.open(this.href, '_blank'); return !1;" title="Search for show at $src_name" #end if#$(data_link)href="$anon_url(sickgear.TVInfoAPI($tvid).config['show_url'] % ($show_obj.ids[$tvid]['id'], $srcid)[$expand_ids and ($tvid == $tvsrc)])" $(data_link)onclick="window.open(this.href, '_blank'); return !1;" $(data_link)title="View $src_name info in new tab"><img alt="$src_name" height="16" width="16" src="$sbRoot/images/$sickgear.TVInfoAPI($tvid).config['icon']"></a>
+									<a id="src-mid-$tvid" class="service" style="margin-right:6px" data-search="#if $use_search_url#y#else#n#end if#" #if $src_search_url#data-search-href="$anon_url($src_search_url % $search_name)" data-search-onclick="window.open(this.href, '_blank'); return !1;" data-search-title="Search for show at $src_name" #end if##if $use_search_url#href="$anon_url($src_search_url % $search_name)" onclick="window.open(this.href, '_blank'); return !1;" title="Search for show at $src_name" #end if#$(data_link)href="$anon_url(sickshift.TVInfoAPI($tvid).config['show_url'] % ($show_obj.ids[$tvid]['id'], $srcid)[$expand_ids and ($tvid == $tvsrc)])" $(data_link)onclick="window.open(this.href, '_blank'); return !1;" $(data_link)title="View $src_name info in new tab"><img alt="$src_name" height="16" width="16" src="$sbRoot/images/$sickshift.TVInfoAPI($tvid).config['icon']"></a>
     #end if
 									$src_name
 								</span>
@@ -418,7 +418,7 @@
 									</label>
     #else
 									<label for="lockid-$tvid">
-										<input type="checkbox" name="lockid-$tvid" id="lockid-$tvid"#echo ('', $html_checked)[$show_obj.ids.get($tvid, {'status': $sickgear.indexermapper.MapStatus.NONE}).get('status') == $sickgear.indexermapper.MapStatus.NO_AUTOMATIC_CHANGE]#>
+										<input type="checkbox" name="lockid-$tvid" id="lockid-$tvid"#echo ('', $html_checked)[$show_obj.ids.get($tvid, {'status': $sickshift.indexermapper.MapStatus.NONE}).get('status') == $sickshift.indexermapper.MapStatus.NO_AUTOMATIC_CHANGE]#>
 										<p>lock this ID</p>
 									</label>
         #if $settable_main

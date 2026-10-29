@@ -1,7 +1,7 @@
 import certifi
 import logging
 import requests
-import sickgear
+import sickshift
 import time
 from exceptions_helper import ex, ConnectionSkipException
 from json_helper import json_dumps
@@ -22,13 +22,13 @@ class TraktAPI(object):
 
     def __init__(self, timeout=None):
 
-        self.api_url = sickgear.TRAKT_BASE_URL
+        self.api_url = sickshift.TRAKT_BASE_URL
         self.headers = {'Content-Type': 'application/json',
                         'trakt-api-version': '2',
-                        'trakt-api-key': sickgear.TRAKT_CLIENT_ID}
+                        'trakt-api-key': sickshift.TRAKT_CLIENT_ID}
         self.session = requests.Session()
-        self.timeout = timeout or sickgear.TRAKT_TIMEOUT
-        self.verify = sickgear.TRAKT_VERIFY and certifi.where()
+        self.timeout = timeout or sickshift.TRAKT_TIMEOUT
+        self.verify = sickshift.TRAKT_VERIFY and certifi.where()
 
     def trakt_request(self, path, data=None, headers=None, url=None, count=0, sleep_retry=60,
                       send_oauth=None, method=None, raise_skip_exception=True, failure_monitor=True, **kwargs):
@@ -122,11 +122,11 @@ class TraktAPI(object):
                                           send_oauth=send_oauth, method=method)
             elif 423 == code:
                 # locked account
-                log.error('An application that is NOT SickGear has flooded the Trakt API and they have locked access'
+                log.error('An application that is NOT SickShift has flooded the Trakt API and they have locked access'
                           ' to your account. They request you contact their support at https://support.trakt.tv/'
-                          ' This is not a fault of SickGear because it does *not* sync data or send the type of data'
+                          ' This is not a fault of SickShift because it does *not* sync data or send the type of data'
                           ' that triggers a Trakt access lock.'
-                          ' SickGear may only send a notification on a media process completion if set up for it.')
+                          ' SickShift may only send a notification on a media process completion if set up for it.')
                 raise TraktLockedUserAccount()
             elif 400 == code and 'invalid_grant' in getattr(e, 'text', ''):
                 raise TraktInvalidGrant('Error: invalid_grant. The provided authorization grant is invalid, expired, '

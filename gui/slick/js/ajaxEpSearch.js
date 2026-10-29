@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 /** @namespace data.episodes */
 /** @namespace ep.showindexer */
 /** @namespace ep.showindexid */
@@ -23,7 +23,7 @@ $(function () {
 });
 
 var baseUrl = function() {
-	return $.SickGear.Root;
+	return $.SickShift.Root;
 };
 
 var ajaxConsumer = function () {

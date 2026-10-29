@@ -1150,7 +1150,7 @@
 ### 0.25.37 (2022-06-23 13:40:00 UTC)
 
 * Change try to auto add repo path to git `safe.directory` setting
-* Change if auto adding git setting fails, post message to update section that SickGear path must be marked safe in git
+* Change if auto adding git setting fails, post message to update section that SickShift path must be marked safe in git
 * Change force English output for git runner
 * Change about page, add more credits and a support link for TheTVDb
 
@@ -1631,7 +1631,7 @@
 * Fix refresh_show, prevent another refresh of show if already in queue and not forced
 * Fix webapi set scene season
 * Fix set path in all_tests for py2
-* Fix webapi exception if no backlog was done before (CMD_SickGearCheckScheduler)
+* Fix webapi exception if no backlog was done before (CMD_SickShiftCheckScheduler)
 * Change webapi don't allow setting of scene numbers when show hasn't activated scene numbering
 * Add webapi unit tests
 
@@ -1770,7 +1770,7 @@
 * Change add has_season_exceptions to control newznab id search
 * Change add season exceptions to torrent providers
 * Change give remove_file functions time to process
-* Add ignore folders that contain ".sickgearignore" flag file
+* Add ignore folders that contain ".sickshiftignore" flag file
 * Change add 3 days cache for tmdb base info only
 * Change `Discordapp` to `Discord` in line with company change
 * Change remove `app` from URL when calling webhook
@@ -1865,12 +1865,12 @@
 ### 0.22.8 (2020-10-19 13:45:00 UTC)
 
 * Fix rare timing case on first-time startup with a network timezone update failure and an endless loop
-* Change ensure `autoProcessTV/sabToSickGear.py` is set executable
+* Change ensure `autoProcessTV/sabToSickShift.py` is set executable
 
 
 ### 0.22.7 (2020-10-19 10:15:00 UTC)
 
-* Add `autoProcessTV/sabToSickGear.py` that works with SABnzbd under both py2 and py3
+* Add `autoProcessTV/sabToSickShift.py` that works with SABnzbd under both py2 and py3
 
 
 ### 0.22.6 (2020-10-19 01:05:00 UTC)
@@ -2018,8 +2018,8 @@
 * Fix sg.show.ratefanart
 * Fix `sg.logs` command wrongly mapped to legacy logs command
 * Change return API data depending on old/new method call used for require words
-* Change add missing parameter docs for CMD_SickGearSetDefaults
-* Fix API CMD_SickGearSetDefaults save to config
+* Change add missing parameter docs for CMD_SickShiftSetDefaults
+* Fix API CMD_SickShiftSetDefaults save to config
 * Change increase API version to 12
 * Change remove whitespaces from parameter docu
 
@@ -2244,7 +2244,7 @@
 
 ### 0.21.6 (2020-01-21 22:30:00 UTC)
 
-* Fix Kodi service addon + bump to 1.0.7 (select "Check for updates" on menu of "SickGear Add-on repository")
+* Fix Kodi service addon + bump to 1.0.7 (select "Check for updates" on menu of "SickShift Add-on repository")
 * Change Kodi Add-on/"What's new" list order to be the latest version info at top
 * Add output to SG log when a new Kodi Add-on version is available for upgrade
 * Fix a rare media processing issue that created `dictionary changed size` error
@@ -2294,7 +2294,7 @@
 * Add OpenSubtitles authentication support to config/Subtitles/Subtitles Plugin
 * Add "Enforce media hash match" to config/Subtitles Plugin/Opensubtitles for accurate subs if enabled, but if disabled,
   search failures will fall back to use less reliable subtitle results
-* Update NZBGet Process Media extension, SickGear-NG 1.7 to 2.4
+* Update NZBGet Process Media extension, SickShift-NG 1.7 to 2.4
 * Update Kodi addon to 1.0.3 to 1.0.4
 * Change requirements.txt for Cheetah3 to minimum 3.2.4
 * Change update SABnzbd sabToSickBeard
@@ -2380,7 +2380,7 @@
 * Change delete diskcache db in imdbpie when value error (due to change in Python version)
 * Change during startup, cleanup any cleaner.pyc/o to prevent issues when switching python versions
 * Add .pyc cleaner if python version is switched
-* Change rebrand "SickGear PostProcessing script" to "SickGear Process Media extension"
+* Change rebrand "SickShift PostProcessing script" to "SickShift Process Media extension"
 * Change improve setup guide to use the NZBGet version to minimise displayed text based on version
 * Change NZBGet versions prior to v17 now told to upgrade as those version are no longer supported - code has actually
   exit on start up for some time but docs were outdated
@@ -2391,7 +2391,7 @@
 * Fix search result priority for nzbget
 * Change move priority property to SearchResult base class
 * Add new test for wanted whole first season (add show)
-* Change SickGear-NG version
+* Change SickShift-NG version
 * Add persistent meta language selection to first step of add show + flag images to the drop-down
 * Change Kodi show nfo tag 'episodeguide' to use v2.0 format
 * Change Kodi show nfo add tag show/premiered and use a full date
@@ -2560,7 +2560,7 @@
 * Update urllib3 release 1.24.3 (324e47a) to 1.25.2 (49eea80)
 * Update win_inet_pton 1.0.1 (934a852) to 1.1.0 (57e3558)
 * Update xmltodict library 0.11.0 (79ac9a4) to 0.12.0 (f3ab7e1)
-* Change sickgear.py can now be run as start up instead of SickBeard.py
+* Change sickshift.py can now be run as start up instead of SickBeard.py
 * Change refactor startup functions to prevent possible latency issues with systemd
 * Add startup loading page
 * Change restart to use loading page
@@ -2732,7 +2732,7 @@
 * Add hd/sd quality detection for x265 hevc (to use; remove x265 and hevc from global ignore list)
 * Add prefer x265/hevc releases over x264 at equal qualities
 * Fix EpisodeView Webcal link for proxy use
-* Fix UI issue with /api/builder -> SickGear.Episode.SetStatus
+* Fix UI issue with /api/builder -> SickShift.Episode.SetStatus
 * Change provider Rarbg
 
 
@@ -2870,7 +2870,7 @@
 
 ### 0.17.14 (2018-11-15 08:00:00 UTC)
 
-* Change remove required restart of SickGear after changing label or path settings for rTorrent and qBittorrent
+* Change remove required restart of SickShift after changing label or path settings for rTorrent and qBittorrent
 
 
 ### 0.17.13 (2018-11-08 21:12:00 UTC)
@@ -3056,13 +3056,13 @@
 
 ### 0.16.11 (2018-05-22 00:00:00 UTC)
 
-* Fix SickGear-NG.py media processing script
+* Fix SickShift-NG.py media processing script
 
 
 ### 0.16.10 (2018-05-21 23:30:00 UTC)
 
 * Fix importing TV shows with utf8 characters in parent folders on Windows
-* Fix utf8 in folders for SickGear-NG.py media processing script, script version bumped 1.5 to 1.6
+* Fix utf8 in folders for SickShift-NG.py media processing script, script version bumped 1.5 to 1.6
 * Fix incorrect logic mixing seasons
 * Remove NMA notifier
 
@@ -3243,7 +3243,7 @@
 * Add showRSS torrent provider
 * Add choice to delete watched episodes from a list of played media at Kodi, Emby, and/or Plex,
   instructions at Shows/History/Layout/"Watched"
-* Add installable SickGear Kodi repository containing addon "SickGear Watched State Updater"
+* Add installable SickShift Kodi repository containing addon "SickShift Watched State Updater"
 * Change add Emby setting for watched state scheduler at Config/Notifications/Emby/"Update watched interval"
 * Change add Plex setting for watched state scheduler at Config/Notifications/Plex/"Update watched interval"
 * Change add map parent folder setting at Notifications for Emby, Kodi, and Plex
@@ -3254,14 +3254,14 @@
 * Add provider activity stats to Shows/History/Layout/ drop down
 * Change move provider failures table from Manage/Media Search to Shows/History/Layout/Provider fails
 * Change sort provider failures by most recent failure, and with paused providers at the top
-* Add SickGear-NZBGet dedicated media processing script, see.. \autoProcessTV\SickGear-NG\INSTALL.txt
+* Add SickShift-NZBGet dedicated media processing script, see.. \autoProcessTV\SickShift-NG\INSTALL.txt
 * Add non-standard multi episode name parsing e.g. S01E02and03 and 1x02and03and04
 * Change overhaul and add API functions
 * Change API version... start with 10
-* Change set application response header to 'SickGear' + add API version
+* Change set application response header to 'SickShift' + add API version
 * Change return timezone (of network) in API
 * Add indexer to calls
-* Add SickGear Command tip for old SickBeard commands
+* Add SickShift Command tip for old SickBeard commands
 * Add warning old sickbeard API calls only support tvdb shows
 * Add "tvdbid" fallback only for sickbeard calls
 * Add listcommands
@@ -3330,7 +3330,7 @@
 * Add sg.shows.forceupdate
 * Add sg.shows.queue
 * Add sg.shows.stats
-* Change sickbeard to sickgear
+* Change sickbeard to sickshift
 * Change sickbeard_call to property
 * Change sg.episode.setstatus allow setting of quality
 * Change sg.history, history command output
@@ -3939,7 +3939,7 @@
 * Add IMDb Watchlists to 'View' drop down on the 'Add from IMDb' page
 * Add 5 decades of 'IMDb Popular' selections to 'View' drop down on 'Add from... Browse Shows'
 * Add 'Other Services' to 'View' drop down on 'Add from... Browse Shows'
-* Add enable, disable and delete public IMDb watchlists to Config/General/Interface with a default 'SickGear' list
+* Add enable, disable and delete public IMDb watchlists to Config/General/Interface with a default 'SickShift' list
 * Change ensure English data from IMDb
 * Change prevent duplicate show ids from presenting items on 'Add from... Browse Shows'
 * Change add 'nocache' kwarg to helpers.getURL to facilitate non-cached requests
@@ -4315,7 +4315,7 @@
 * Add version to anime renaming pattern
 * Add Code Climate configuration files
 * Change move init-scripts to single folder
-* Change sickbeard variables to sickgear variables in init-scripts
+* Change sickbeard variables to sickshift variables in init-scripts
 * Change improve the use of multiple plex servers
 * Change move JS code out of home template and into dedicated file
 * Change remove branch from window title
@@ -4857,7 +4857,7 @@
 * Remove unsupported t411 search provider
 * Remove obsolete Animezb search provider
 * Add option to treat anime releases that lack a quality tag as HDTV instead of "unknown"
-* Remove old version checking code that no longer applies to SickGear's release system
+* Remove old version checking code that no longer applies to SickShift's release system
 * Fix pnotify notifications going full page
 * Change overhaul Config Post Processing to be in line with General Configuration
 * Change rearrange Config Post Processing items into sections for easier use
@@ -4900,7 +4900,7 @@
 
 ### 0.3.0 (2014-11-12 14:30:00 UTC)
 
-* Change logos, text etc. branding to SickGear
+* Change logos, text etc. branding to SickShift
 * Add Bootstrap for UI features
 * Change UI to resize fluidly on different display sizes, fixes the issue where top menu items would disappear on smaller screens
 * Add date formats "dd/mm/yy", "dd/mm/yyyy", "day, dd/mm/yy" and "day, dd/mm/yyyy"
@@ -4927,7 +4927,7 @@
 * Change move Providers Priorities qtip options to a new Search Providers/Provider Options tab
 * Remove superfish-1.4.8.js and supersubs-0.2b.js as they are no longer required with new UI
 * Change overhaul Config Search Settings in line with General Configuration
-* Fix error when a show folder is deleted outside SickGear
+* Fix error when a show folder is deleted outside SickShift
 * Change combine the delete button function into the remove button on the display show page
 * Change other small UI tweaks
 * Fix keyerrors on backlog overview preventing the page to load
@@ -4948,7 +4948,7 @@
 * Add handler for when Trakt returns no results for Add Show/Add Trending Show page
 * Fix image links when anchor child images are not found at Trakt on Add Show/Add Trending Show page
 * Add image to be used when Trakt posters are void on Add Show/Add Trending Show page
-* Fix growl registration not sending SickGear an update notification registration
+* Fix growl registration not sending SickShift an update notification registration
 * Add an anonymous redirect builder for external links
 * Update xbmc link to Kodi at Config Notifications
 * Fix missing url for kickasstorrents in config_providers

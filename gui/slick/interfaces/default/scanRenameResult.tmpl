@@ -1,0 +1,323 @@
+#import sickshift
+#from sickshift import common
+#from lib import exceptions_helper as exceptions
+##
+#set global $title = 'Scan & Renommage ' + ($show_obj.name if $show_obj else 'des médias')
+#set global $header = $show_obj.name if $show_obj else 'Scan & Renommage'
+#set global $sbPath = '..'
+#set global $topmenu = 'home'
+#set $css = $getVar('css', 'reg')
+#set $has_art = $getVar('has_art', None)
+#set global $page_body_attr = 'display-show" class="' + $css + ('', ' back-art')[bool($has_art)]
+##
+#import os.path
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+
+	<div id="background-container">
+#if $has_art and $varExists('fanart') and $fanart and $show_obj
+		<ul>
+    #for $k, ($image, $rating) in enumerate($fanart)
+			<li class="#echo ' '.join((x for x in ({10:'group', 20:'fave', 30:'avoid'}.get($rating, ''), ('', 'background')[$start_image == $k]) if x)) #" style="background-image:url($sbRoot/show-poster/?tvid_prodid=$show_obj.tvid_prodid&which=fanart_$image)"></li>
+    #end for
+		</ul>
+#end if
+	</div>
+
+	<style>
+		/* Aura Cinema Hero & Table Styling for Scan & Rename */
+		.scan-hero-card {
+			display: flex;
+			align-items: flex-start;
+			gap: 24px;
+			background: rgba(18, 24, 38, 0.85);
+			backdrop-filter: blur(20px);
+			-webkit-backdrop-filter: blur(20px);
+			border: 1px solid rgba(255, 255, 255, 0.08);
+			border-radius: 12px;
+			padding: 24px;
+			margin-top: 15px;
+			margin-bottom: 28px;
+			box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+		}
+		.scan-hero-poster {
+			flex-shrink: 0;
+			width: 140px;
+			border-radius: 8px;
+			overflow: hidden;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+			border: 1px solid rgba(255, 255, 255, 0.12);
+		}
+		.scan-hero-poster img {
+			width: 100%;
+			height: auto;
+			display: block;
+		}
+		.scan-hero-info {
+			flex-grow: 1;
+		}
+		.scan-hero-title {
+			font-size: 1.75rem;
+			font-weight: 800;
+			color: #ffffff;
+			margin: 0 0 10px 0;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			letter-spacing: -0.02em;
+		}
+		.scan-hero-badges {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+			margin-bottom: 14px;
+		}
+		.scan-pill {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 5px 12px;
+			border-radius: 20px;
+			font-size: 12px;
+			font-weight: 600;
+		}
+		.scan-pill-info {
+			background: rgba(56, 189, 248, 0.12);
+			border: 1px solid rgba(56, 189, 248, 0.35);
+			color: #38bdf8;
+		}
+		.scan-pill-success {
+			background: rgba(16, 185, 129, 0.15);
+			border: 1px solid rgba(16, 185, 129, 0.4);
+			color: #34d399;
+		}
+		.scan-pill-path {
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			color: #94a3b8;
+			font-family: ui-monospace, SFMono-Regular, monospace;
+			font-size: 11.5px;
+		}
+		.scan-hero-actions {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			flex-wrap: wrap;
+			margin-top: 14px;
+		}
+
+		/* SickBeard Table Aura Cinema Overrides */
+		.scan-season-table {
+			width: 100% !important;
+			border-collapse: separate !important;
+			border-spacing: 0 !important;
+			border-radius: 10px !important;
+			overflow: hidden !important;
+			margin-bottom: 24px !important;
+			background: rgba(14, 19, 30, 0.8) !important;
+			backdrop-filter: blur(16px) !important;
+			-webkit-backdrop-filter: blur(16px) !important;
+			border: 1px solid rgba(255, 255, 255, 0.08) !important;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+		}
+		.scan-season-table th.row-seasonheader {
+			background: linear-gradient(135deg, rgba(22, 30, 48, 0.95) 0%, rgba(14, 19, 30, 0.98) 100%) !important;
+			border-bottom: 2px solid rgba(61, 217, 235, 0.4) !important;
+			padding: 12px 18px !important;
+		}
+		.scan-season-table tr.seasoncols th {
+			background: rgba(22, 30, 48, 0.85) !important;
+			color: #94a3b8 !important;
+			font-size: 11px !important;
+			text-transform: uppercase !important;
+			letter-spacing: 0.05em !important;
+			font-weight: 700 !important;
+			padding: 9px 14px !important;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+		}
+		.scan-season-table tr.row-avant td,
+		.scan-season-table tr.row-apres td {
+			background-color: rgba(18, 24, 38, 0.6) !important;
+			transition: background-color 150ms ease !important;
+		}
+		.scan-season-table tr.row-apres td {
+			background-color: rgba(13, 17, 28, 0.7) !important;
+		}
+		.scan-season-table tr.row-avant:hover td,
+		.scan-season-table tr.row-apres:hover td {
+			background-color: rgba(61, 217, 235, 0.07) !important;
+		}
+		.badge-conforme-aura {
+			background: rgba(255, 255, 255, 0.05) !important;
+			color: #94a3b8 !important;
+			border: 1px solid rgba(255, 255, 255, 0.12) !important;
+			font-weight: 600 !important;
+			padding: 4px 9px !important;
+			border-radius: 5px !important;
+			font-size: 11px !important;
+			letter-spacing: 0.03em !important;
+			display: inline-block !important;
+		}
+		.badge-renamed-aura {
+			background: rgba(16, 185, 129, 0.18) !important;
+			color: #34d399 !important;
+			border: 1px solid rgba(16, 185, 129, 0.5) !important;
+			font-weight: 800 !important;
+			padding: 4px 9px !important;
+			border-radius: 5px !important;
+			font-size: 11px !important;
+			letter-spacing: 0.03em !important;
+			display: inline-block !important;
+			box-shadow: 0 0 10px rgba(16, 185, 129, 0.25) !important;
+		}
+	</style>
+
+	<div class="display-show-container" style="max-width:1380px; margin:0 auto; padding:0 20px;">
+#if $show_obj
+		<input type="hidden" id="tvid-prodid" value="$show_obj.tvid_prodid">
+#end if
+
+		<!-- Hero Banner -->
+		<div class="scan-hero-card">
+#if $show_obj
+			<div class="scan-hero-poster hidden-xs">
+				<a href="$sbRoot/show-poster/?tvid_prodid=$show_obj.tvid_prodid&amp;which=poster" rel="dialog">
+					<img src="$sbRoot/show-poster/?tvid_prodid=$show_obj.tvid_prodid&amp;which=poster_thumb" alt="$show_obj.name" class="tvshowImg">
+				</a>
+			</div>
+#end if
+			<div class="scan-hero-info">
+				<h1 class="scan-hero-title">
+					<span style="color:#38bdf8;">Scan &amp; Renommage</span>
+#if $show_obj
+					<span style="color:#ffffff;">&mdash; $show_obj.name</span>
+#else
+					<span style="color:#ffffff;">&mdash; Global</span>
+#end if
+				</h1>
+
+				<div class="scan-hero-badges">
+					<span class="scan-pill scan-pill-info">
+						<strong>$total_scanned</strong> fichier(s) analysés
+					</span>
+#if $renamed_count > 0
+					<span class="scan-pill scan-pill-success">
+						<strong>$renamed_count</strong> fichier(s) renommés
+					</span>
+#else
+					<span class="scan-pill scan-pill-success">
+						✓ Tous les fichiers sont déjà conformes
+					</span>
+#end if
+#if $show_obj and $show_obj.location
+					<span class="scan-pill scan-pill-path">
+						<i class="sgicon-folder"></i> $show_obj.location
+					</span>
+#end if
+				</div>
+
+				<p style="margin:0; font-size:0.92rem; color:#94a3b8; line-height:1.45;">
+#if $renamed_count > 0
+					L'analyse sur le disque a détecté des fichiers qui ne respectaient pas le patron de renommage. Ils ont été renommés avec succès selon les règles SickShift.
+#else
+					L'ensemble des fichiers média présents sur le disque a été analysé. Leurs noms correspondent exactement au schéma de nommage configuré.
+#end if
+				</p>
+
+				<div class="scan-hero-actions">
+#if $show_obj
+					<a href="$sbRoot/home/view-show?tvid_prodid=$show_obj.tvid_prodid" class="btn btn-default" style="display:inline-flex; align-items:center; gap:6px;">
+						<i class="sgicon-arrowleft"></i> Retour à la série
+					</a>
+					<a href="$sbRoot/home/edit-show?tvid_prodid=$show_obj.tvid_prodid" class="btn btn-default">
+						Modifier la série
+					</a>
+#end if
+					<a href="$sbRoot/view-shows/" class="btn btn-default">
+						Liste des séries
+					</a>
+					<a href="$sbRoot/dashboard/" class="btn btn-default" style="color:#3dd9eb !important; border-color:rgba(61,217,235,0.4) !important;">
+						Dashboard
+					</a>
+				</div>
+			</div>
+		</div>
+
+#if not $grouped_results
+		<div style="background:rgba(18, 24, 38, 0.85); backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:36px; text-align:center; color:#94a3b8; margin:20px 0;">
+			<p style="font-size:16px; margin-bottom:8px; color:#ffffff; font-weight:700;">Aucun fichier média trouvé sur le disque.</p>
+			<p style="font-size:13px; margin:0;">Le scan a été effectué, mais aucun épisode avec fichier physique n'a été détecté pour cette sélection.</p>
+		</div>
+#else
+#for $group in $grouped_results
+		<table class="sickbeardTable scan-season-table" border="0">
+			<thead>
+				<tr class="seasonheader" id="season-$group['season']">
+					<th class="row-seasonheader" colspan="3">
+						<h3 style="margin:0; font-size:1.15rem; font-weight:700; color:#ffffff; display:flex; align-items:center; justify-content:space-between;">
+							<span>
+#if not $show_obj
+								<span style="color:#38bdf8;">$group['show_name']</span> &mdash;
+#end if
+								$group['season_title']
+							</span>
+							<span class="season-status" style="font-size:0.82rem; font-weight:normal; color:#94a3b8;">
+								<span style="color:#3dd9eb; font-weight:700;">$len($group['items'])</span> fichier(s)
+							</span>
+						</h3>
+					</th>
+				</tr>
+				<tr class="seasoncols tablesorter-headerRow">
+					<th style="width:110px; text-align:center;">Statut</th>
+					<th style="width:90px; text-align:center;">Épisode</th>
+					<th style="text-align:left; padding-left:16px;">Fichiers (Avant / Après)</th>
+				</tr>
+			</thead>
+			<tbody>
+#for $item in $group['items']
+				<tr class="season-$group['season'] row-avant">
+					<td rowspan="2" style="text-align:center; vertical-align:middle; width:110px; padding:10px 8px; border-bottom:1px solid rgba(255,255,255,0.06);">
+#if $item['rename_error']
+						<span style="color:#f87171;" title="$item['rename_error']">ERREUR</span>
+#elif $item['was_renamed']
+						<span class="badge-renamed-aura">RENOMMÉ</span>
+#else
+						<span class="badge-conforme-aura">CONFORME</span>
+#end if
+					</td>
+					<td rowspan="2" style="text-align:center; vertical-align:middle; width:90px; font-weight:700; color:#ffffff; font-size:13px; padding:10px 8px; border-bottom:1px solid rgba(255,255,255,0.06);">
+						$item['ep_str']
+					</td>
+					<td style="text-align:left; padding:9px 16px; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:12px; line-height:1.45; border-top:none;">
+						<span style="display:inline-block; width:65px; font-weight:800; color:#f87171; letter-spacing:0.03em; user-select:none;">AVANT :</span>
+						<span style="color:#cbd5e1; word-break:break-all;">$item['old_path']</span>
+					</td>
+				</tr>
+				<tr class="season-$group['season'] row-apres">
+					<td style="text-align:left; padding:7px 16px 11px 16px; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:12px; line-height:1.45; border-top:1px dashed rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06);">
+						<span style="display:inline-block; width:65px; font-weight:800; color:#34d399; letter-spacing:0.03em; user-select:none;">APRÈS :</span>
+						<span style="color:#ffffff; font-weight:700; word-break:break-all;">$item['new_path']</span>
+					</td>
+				</tr>
+#end for
+			</tbody>
+		</table>
+#end for
+#end if
+
+		<div style="clear:both; margin-top:20px; margin-bottom:40px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+#if $show_obj
+			<a href="$sbRoot/home/view-show?tvid_prodid=$show_obj.tvid_prodid" class="btn btn-primary" style="padding:8px 22px; font-weight:700; color:#07090e; background:linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%); border:none; box-shadow:0 4px 14px rgba(56,189,248,0.35);">
+				Retour à la fiche de la série
+			</a>
+#end if
+			<a href="$sbRoot/view-shows/" class="btn btn-default" style="padding:8px 18px;">
+				Voir la liste des séries
+			</a>
+			<a href="$sbRoot/dashboard/" class="btn btn-default" style="padding:8px 18px;">
+				Aller au Dashboard
+			</a>
+		</div>
+	</div>
+
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

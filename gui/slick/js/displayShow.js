@@ -1,13 +1,13 @@
-/** @namespace $.SickGear.Root */
-/** @namespace $.SickGear.glideFancyBoxOpen */
+/** @namespace $.SickShift.Root */
+/** @namespace $.SickShift.glideFancyBoxOpen */
 /** @namespace config.TVShowList */
 /** @namespace config.useIMDbInfo */
-/** @namespace $.SickGear.config.useFuzzy */
-/** @namespace $.SickGear.config.dateFormat */
-/** @namespace $.SickGear.config.timeFormat */
-/** @namespace $.SickGear.config.fuzzyTrimZero */
-/** @namespace $.SickGear.config.glideStartAt */
-/** @namespace $.SickGear.config.glideSlideTime */
+/** @namespace $.SickShift.config.useFuzzy */
+/** @namespace $.SickShift.config.dateFormat */
+/** @namespace $.SickShift.config.timeFormat */
+/** @namespace $.SickShift.config.fuzzyTrimZero */
+/** @namespace $.SickShift.config.glideStartAt */
+/** @namespace $.SickShift.config.glideSlideTime */
 $(document).ready(function() {
 
 	// handle the show selection dropbox
@@ -15,7 +15,7 @@ $(document).ready(function() {
 	select$.change(function() {
 		var val = $(this).val();
 		if (0 !== val)
-			window.location.href = $.SickGear.Root + '/home/view-show?tvid_prodid=' + val;
+			window.location.href = $.SickShift.Root + '/home/view-show?tvid_prodid=' + val;
 	});
 	populateItem = function(data) {
 		if (!data.element || !$(data.element).hasClass('ended')) {
@@ -125,8 +125,8 @@ $(document).ready(function() {
 	if (0 < slideCount) {
 
 		function slideTime(){
-			return 0 < $.SickGear.config.glideSlideTime && !$.SickGear.glideFancyBoxOpen
-				? $.SickGear.config.glideSlideTime : !1;
+			return 0 < $.SickShift.config.glideSlideTime && !$.SickShift.glideFancyBoxOpen
+				? $.SickShift.config.glideSlideTime : !1;
 		}
 
 		$.calcSlideCount = function(initSet){
@@ -148,7 +148,7 @@ $(document).ready(function() {
 		}
 
 		var initGlideVars = $.calcSlideCount(!0),
-			startAt = $('.cast[data-rid="' + $.SickGear.config.glideStartAt + '"]').index();
+			startAt = $('.cast[data-rid="' + $.SickShift.config.glideStartAt + '"]').index();
 		$.glide = new Glide('.cast-holder', {
 			type: 'carousel',
 			gap: slideGap,
@@ -174,7 +174,7 @@ $(document).ready(function() {
 			try {
 				setupFancyBox();
 			} catch {
-				var fancy = $.SickGear.Root + '/js/fancybox/jquery.fancybox.min';
+				var fancy = $.SickShift.Root + '/js/fancybox/jquery.fancybox.min';
 				$.getScript(fancy + '.js', function() {
 					$('head').append('<link rel="stylesheet" href="' + fancy + '.css">');
 					setupFancyBox();
@@ -187,23 +187,23 @@ $(document).ready(function() {
 				$().fancybox(jQuery.extend({
 					selector: 'li:not(.glide__slide--clone) a[rel="glide"]',
 					slideShow: {
-						speed: Math.abs($.SickGear.config.glideSlideTime)
+						speed: Math.abs($.SickShift.config.glideSlideTime)
 					},
 					afterShow: function(instance, slide){
-						$.SickGear.glideFancyBoxOpen = !0;
+						$.SickShift.glideFancyBoxOpen = !0;
 						$.glide.go('=' + slide.index);
 					},
 					// adhere to standard convention of prefixing args with _ to denote these exist but are unused here
 					beforeShow: function(_instance, _slide){
-						if (!$.SickGear.glideFancyBoxOpen && 0 < $.SickGear.config.glideSlideTime){
+						if (!$.SickShift.glideFancyBoxOpen && 0 < $.SickShift.config.glideSlideTime){
 							$.glide.pause();
 							$.glide.update({autoplay: !1});
 						}
 					},
 					afterClose: function(_instance, _slide){
-						if (!!$.SickGear.glideFancyBoxOpen){
-							$.SickGear.glideFancyBoxOpen = !1;
-							if (0 < $.SickGear.config.glideSlideTime){
+						if (!!$.SickShift.glideFancyBoxOpen){
+							$.SickShift.glideFancyBoxOpen = !1;
+							if (0 < $.SickShift.config.glideSlideTime){
 								$.calcSlideCount(!1);
 							}
 						}
@@ -233,7 +233,7 @@ $(document).ready(function() {
 		};
 
 		function saveGlide(saveTime){
-			if (!$.SickGear.glideFancyBoxOpen){
+			if (!$.SickShift.glideFancyBoxOpen){
 				var params = {};
 				if (!slideTime()){
 					params = {
@@ -242,10 +242,10 @@ $(document).ready(function() {
 					};
 				}
 				if (saveTime){
-					params.slidetime = $.SickGear.config.glideSlideTime;
+					params.slidetime = $.SickShift.config.glideSlideTime;
 				}
 				if (!$.isEmptyObject(params)){
-					$.get($.SickGear.Root + '/home/set-display-show-glide', params);
+					$.get($.SickShift.Root + '/home/set-display-show-glide', params);
 				}
 			}
 		}
@@ -272,13 +272,13 @@ $(document).ready(function() {
 			var ivTime = slideTime();
 
 			if (!ivTime) { // unpause as was paused when clicked
-				$.SickGear.config.glideSlideTime *= -1;
+				$.SickShift.config.glideSlideTime *= -1;
 			} else if (ivTimes[0] === ivTime) {
-				$.SickGear.config.glideSlideTime = ivTimes[1];
+				$.SickShift.config.glideSlideTime = ivTimes[1];
 			} else if (ivTimes[1] === ivTime) {
-				$.SickGear.config.glideSlideTime = ivTimes[2];
+				$.SickShift.config.glideSlideTime = ivTimes[2];
 			} else {
-				$.SickGear.config.glideSlideTime = -1 * ivTimes[0];
+				$.SickShift.config.glideSlideTime = -1 * ivTimes[0];
 			}
 			pinState($(this));
 			$.calcSlideCount(!1);
@@ -308,7 +308,7 @@ $(document).ready(function() {
 			this.checked && epArr.push($(this).attr('id'))
 		});
 		if (epArr.length)
-			window.location.href = $.SickGear.Root + '/home/set-show-status?tvid_prodid=' + $('#tvid-prodid').val() +
+			window.location.href = $.SickShift.Root + '/home/set-show-status?tvid_prodid=' + $('#tvid-prodid').val() +
 				'&eps=' + epArr.join('|') + '&status=' + $('#statusSelect').val();
 	});
 
@@ -367,7 +367,7 @@ $(document).ready(function() {
 		if ('' === sceneSeason) sceneSeason = null;
 		if ('' === sceneEpisode) sceneEpisode = null;
 
-		$.getJSON($.SickGear.Root + '/home/set-scene-numbering',
+		$.getJSON($.SickShift.Root + '/home/set-scene-numbering',
 			{
 				'tvid_prodid': show,
 				'for_season': forSeason,
@@ -393,7 +393,7 @@ $(document).ready(function() {
 		if ('' === sceneAbsolute)
 			sceneAbsolute = null;
 
-		$.getJSON($.SickGear.Root + '/home/set-scene-numbering',
+		$.getJSON($.SickShift.Root + '/home/set-scene-numbering',
 			{
 				'tvid_prodid': show,
 				'for_season': forSeason,
@@ -427,13 +427,13 @@ $(document).ready(function() {
 		sbroot$.ajaxEpSearch();
 		sbroot$.ajaxEpSubtitlesSearch();
 
-		if ($.SickGear.config.useFuzzy) {
+		if ($.SickShift.config.useFuzzy) {
 			fuzzyMoment({
 				containerClass: '.airdate',
 				dateHasTime: !1,
-				dateFormat: $.SickGear.config.dateFormat,
-				timeFormat: $.SickGear.config.timeFormat,
-				trimZero: $.SickGear.config.fuzzyTrimZero
+				dateFormat: $.SickShift.config.dateFormat,
+				timeFormat: $.SickShift.config.timeFormat,
+				trimZero: $.SickShift.config.fuzzyTrimZero
 			});
 		}
 
@@ -517,8 +517,8 @@ $(document).ready(function() {
 	}
 	tableInit($('.sickbeardTable'));
 
-	$.SickGear.season = [];
-	$.SickGear.run = !1;
+	$.SickShift.season = [];
+	$.SickShift.run = !1;
 	$('button[id*="showseason-"]').on('click', function() {
 		const this$ = $('#' + this.id),
 			table$ = this$.parents('.sickbeardTable');
@@ -529,12 +529,12 @@ $(document).ready(function() {
 			table$.find('span.images').toggleClass('hide');
 			this$.toggleClass('hide');
 			function fetchSeason() {
-				if (0 === $.SickGear.season.length)
+				if (0 === $.SickShift.season.length)
 					return;
 
-				var season = $.SickGear.season[0];
-				$.SickGear.season.shift();
-				$.getJSON($.SickGear.Root + '/home/season-render', {'tvid_prodid': $('#tvid-prodid').val(), 'season': season},
+				var season = $.SickShift.season[0];
+				$.SickShift.season.shift();
+				$.getJSON($.SickShift.Root + '/home/season-render', {'tvid_prodid': $('#tvid-prodid').val(), 'season': season},
 					function(data) {
 						if (!data.success) {
 							alert('Season listing failed.');
@@ -549,13 +549,13 @@ $(document).ready(function() {
 					}
 				);
 			}
-			$.SickGear.season.push(this.id);
+			$.SickShift.season.push(this.id);
 			var result = [];
-			$.each($.SickGear.season, function(i, e) {
+			$.each($.SickShift.season, function(i, e) {
 				if (-1 === $.inArray(e, result)) result.push(e);
 			});
-			$.SickGear.season = result;
-			if (!$.SickGear.run && 1 === $.SickGear.season.length) $.SickGear.run = !0 && fetchSeason();
+			$.SickShift.season = result;
+			if (!$.SickShift.run && 1 === $.SickShift.season.length) $.SickShift.run = !0 && fetchSeason();
 		}
 		return !1;
 	});
@@ -567,9 +567,151 @@ $(document).ready(function() {
 
 		const liveStates = $('#display-show');
 		liveStates.toggleClass('min');
-		$.get($.SickGear.Root + '/live-panel/?allseasons='
+		$.get($.SickShift.Root + '/live-panel/?allseasons='
 			+ String.prototype.toLowerCase.apply(+liveStates.hasClass('min')));
 		return !1;
+	});
+
+	// Click anywhere on season header bar to toggle collapse
+	$(document).on('click', '.row-seasonheader', function(e) {
+		if ($(e.target).closest('button, a, input, select, .btn').length > 0) {
+			return;
+		}
+		const $btn = $(this).find('button[id*="showseason-"]');
+		if ($btn.length > 0) {
+			$btn.trigger('click');
+		}
+	});
+
+	// Cast & Poster zoom and bluish glow on hold / mousedown
+	$(document).on('mousedown', '#display-show .cast.body, #display-show .cast .thumb, #display-show .cast-bg, #display-show #posterCol, #display-show #posterCol a, #display-show #posterCol .tvshowImg', function(e) {
+		const $target = $(this).closest('.cast, #posterCol');
+		$target.addClass('holding-click');
+		$target.find('.thumb, .cast-bg, .tvshowImg').addClass('holding-click');
+	});
+
+	$(document).on('mouseup mouseleave', '#display-show .cast.body, #display-show .cast .thumb, #display-show .cast-bg, #display-show #posterCol, #display-show #posterCol a, #display-show #posterCol .tvshowImg', function(e) {
+		const $target = $(this).closest('.cast, #posterCol');
+		$target.removeClass('holding-click');
+		$target.find('.thumb, .cast-bg, .tvshowImg').removeClass('holding-click');
+	});
+
+	// Prevent browser native image dragging while holding
+	$(document).on('dragstart', '#display-show .cast img, #display-show .cast a, #display-show #posterCol img', function(e) {
+		e.preventDefault();
+		return false;
+	});
+
+	// Episode Delete Handler
+	let epToDelete = null;
+	$(document).on('click', '.ep-delete-btn', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const $btn = $(this);
+		const $row = $btn.closest('tr');
+		const tvidProdid = $btn.data('tvid-prodid') || $('#tvid-prodid').val();
+		const season = $btn.data('season');
+		const episode = $btn.data('episode');
+		const hasFile = $btn.data('has-file') == '1' || $row.data('has-file') == '1';
+		const location = $btn.data('location') || '';
+		const showname = $btn.data('showname') || $('#showtitle').data('showname') || '';
+
+		epToDelete = {
+			$row: $row,
+			$btn: $btn,
+			tvidProdid: tvidProdid,
+			season: season,
+			episode: episode,
+			hasFile: hasFile,
+			location: location,
+			showname: showname
+		};
+
+		// Create or show modal
+		let $modal = $('#sg-delete-ep-modal');
+		if (!$modal.length) {
+			$('body').append(`
+				<div id="sg-delete-ep-modal" style="display:none; position:fixed; z-index:999999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(3px); align-items:center; justify-content:center;">
+					<div class="sg-del-card" style="background:#1b2028; border:1px solid #e05252; box-shadow:0 0 25px rgba(224,82,82,0.4); border-radius:8px; padding:24px 28px; width:440px; max-width:92vw; color:#f0f0f0; font-family:sans-serif;">
+						<h3 style="margin:0 0 14px; font-size:17px; font-weight:700; color:#ff5252; display:flex; align-items:center; gap:8px;">
+							<i class="sgicon-delete" style="font-size:18px;"></i> Confirmer la suppression
+						</h3>
+						<p style="margin:0 0 12px; font-size:13.5px; line-height:1.45; color:#ddd;">
+							Êtes-vous sûr de vouloir supprimer définitivement cet épisode ?
+						</p>
+						<div id="sg-del-info" style="background:rgba(0,0,0,0.35); border-left:3px solid #ff5252; border-radius:4px; padding:10px 14px; margin-bottom:18px; font-size:12.5px; color:#bbb; line-height:1.5;"></div>
+						<div style="display:flex; justify-content:flex-end; gap:10px;">
+							<button type="button" id="sg-del-cancel" class="btn btn-default" style="padding:6px 16px; border-radius:4px; font-weight:600;">Annuler</button>
+							<button type="button" id="sg-del-confirm" class="btn btn-danger" style="padding:6px 18px; border-radius:4px; font-weight:600; background:#e05252; border-color:#e05252;">Supprimer pour de vrai</button>
+						</div>
+					</div>
+				</div>
+			`);
+			$modal = $('#sg-delete-ep-modal');
+
+			$modal.on('click', function(e) {
+				if (e.target === this) {
+					$modal.css('display', 'none');
+				}
+			});
+
+			$('#sg-del-cancel').on('click', function() {
+				$modal.css('display', 'none');
+			});
+
+			$('#sg-del-confirm').on('click', function() {
+				if (!epToDelete) return;
+				const btn = $(this);
+				btn.prop('disabled', true).text('Suppression en cours...');
+
+				$.ajax({
+					url: $.SickShift.Root + '/home/delete_episode',
+					data: {
+						tvid_prodid: epToDelete.tvidProdid,
+						season: epToDelete.season,
+						episode: epToDelete.episode,
+						delete_file: '1'
+					},
+					dataType: 'json',
+					success: function(resp) {
+						btn.prop('disabled', false).text('Supprimer pour de vrai');
+						$modal.css('display', 'none');
+						if (resp && resp.result === 'success') {
+							// Update row in table
+							const $row = epToDelete.$row;
+							$row.removeClass('good archived wanted').addClass('skipped');
+							$row.attr('data-has-file', '0');
+							$row.find('.col-status').html('<span class="quality">Ignoré</span>');
+							$row.find('.col-ep span.addQTip').removeAttr('title');
+							epToDelete.$btn.replaceWith('<span style="color:#666; font-size:12px;">—</span>');
+							$row.css('transition', 'background-color 500ms ease').css('background-color', 'rgba(224,82,82,0.18)');
+							setTimeout(() => {
+								$row.css('background-color', '');
+							}, 1500);
+						} else {
+							alert((resp && resp.message) ? resp.message : 'Erreur lors de la suppression.');
+						}
+					},
+					error: function(xhr, status, err) {
+						btn.prop('disabled', false).text('Supprimer pour de vrai');
+						$modal.css('display', 'none');
+						alert('Erreur serveur lors de la suppression: ' + (err || status));
+					}
+				});
+			});
+		}
+
+		let infoHtml = `<strong>${epToDelete.showname || 'Série'}</strong> — Saison ${epToDelete.season}, Épisode ${epToDelete.episode}`;
+		if (epToDelete.hasFile || epToDelete.location) {
+			const fname = epToDelete.location.split('/').pop() || 'fichier';
+			infoHtml += `<br><span style="color:#ff8888;">Fichier disque :</span> <span style="word-break:break-all;">${fname}</span><br><em style="color:#ffaaaa; font-size:11.5px;">⚠️ Le fichier sera physiquement effacé de votre disque dur.</em>`;
+		} else {
+			infoHtml += `<br><em>Aucun fichier local associé. Le statut sera réinitialisé à Ignoré.</em>`;
+		}
+
+		$('#sg-del-info').html(infoHtml);
+		$modal.css('display', 'flex');
 	});
 
 });

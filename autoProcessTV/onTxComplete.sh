@@ -2,9 +2,9 @@
 : <<'main'
 *******************************************************************************
 
-onTxComplete.sh v1.4 for SickGear
+onTxComplete.sh v1.4 for SickShift
 
-  Script to copy select files to a location for SickGear to post process.
+  Script to copy select files to a location for SickShift to post process.
 
   This is used with the 'Move' post process episode method
   so that seeding files are not post processed over and over.
@@ -48,7 +48,7 @@ at the client website. Other clients may be able to replace param3 and param4
 to fit (see examples).
 
 
-To set up SickGear
+To set up SickShift
 ------------------
 a) Set /config/postProcessing/Post Processing -> "Completed TV downloads"
    .. to match param1
@@ -113,7 +113,7 @@ to the config file param2 value to isolate SG downloads from everything else.
 1) Edit/Preferences/Downloading/Call script when torrent is completed
    ... Navigate to this script location and select it
 
-2) Follow "To set up SickGear" instruction but at step (e),
+2) Follow "To set up SickShift" instruction but at step (e),
    set "Downloaded files location" to a created folder with name ending in the
    config file value of param2 e.g. [path]/[param2]
 

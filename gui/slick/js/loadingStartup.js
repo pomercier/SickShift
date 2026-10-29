@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 
 var dev = !1,
 	logInfo = dev && console.info.bind(window.console) || function (){},
@@ -11,7 +11,7 @@ $(function () {
 });
 
 var baseUrl = function () {
-	return $.SickGear.Root;
+	return $.SickShift.Root;
 };
 
 var reloading = false

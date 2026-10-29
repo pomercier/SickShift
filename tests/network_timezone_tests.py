@@ -8,8 +8,8 @@ import test_lib as test
 import os.path
 import datetime
 from lib.dateutil import tz
-import sickgear
-from sickgear import network_timezones, helpers
+import sickshift
+from sickshift import network_timezones, helpers
 
 
 class NetworkTimezoneTests(test.SickbeardTestDBCase):
@@ -18,20 +18,20 @@ class NetworkTimezoneTests(test.SickbeardTestDBCase):
         super(NetworkTimezoneTests, cls).tearDownClass()
         cls.remove_zoneinfo()
         try:
-            os.rmdir(sickgear.ZONEINFO_DIR)
+            os.rmdir(sickshift.ZONEINFO_DIR)
         except (BaseException, Exception):
             pass
 
     @classmethod
     def setUpClass(cls):
         super(NetworkTimezoneTests, cls).setUpClass()
-        os.makedirs(sickgear.ZONEINFO_DIR)
+        os.makedirs(sickshift.ZONEINFO_DIR)
         cls.remove_zoneinfo()
 
     @classmethod
     def remove_zoneinfo(cls):
         # delete all existing zoneinfo files
-        for (path, dirs, files) in os.walk(helpers.real_path(sickgear.ZONEINFO_DIR)):
+        for (path, dirs, files) in os.walk(helpers.real_path(sickshift.ZONEINFO_DIR)):
             for filename in files:
                 if filename.endswith('.tar.gz'):
                     file_w_path = os.path.join(path, filename)

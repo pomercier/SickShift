@@ -1,12 +1,12 @@
-#import sickgear
+#import sickshift
 #import datetime
 #import re
 #import urllib
-#from sickgear.common import Quality, SNATCHED_ANY, DOWNLOADED, ARCHIVED, FAILED
-#from sickgear.helpers import anon_url
-#from sickgear.show_name_helpers import abbr_showname
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#from sickshift.common import Quality, SNATCHED_ANY, DOWNLOADED, ARCHIVED, FAILED
+#from sickshift.helpers import anon_url
+#from sickshift.show_name_helpers import abbr_showname
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 #slurp
 <!DOCTYPE html>
 <html>
@@ -16,7 +16,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-	<title>SickGear - $title</title>
+	<title>SickShift - $title</title>
 
 	<!--[if lt IE 9]>
 	<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -90,7 +90,7 @@
 	<!--
 		var sbRoot = '$sbRoot', anonURL = '$sg_str('ANON_REDIRECT')', themeSpinner = '#echo ('', '-dark')['dark' == $sg_str('THEME_NAME', 'dark')]#',
 			top_image_html = '<img src="$sbRoot/images/top.gif" width="31" height="11" alt="Jump to top">';
-		\$.SickGear = {Root: '${sbRoot}', PID: '${sbPID}', anonURL: '$sg_str('ANON_REDIRECT')'};
+		\$.SickShift = {Root: '${sbRoot}', PID: '${sbPID}', anonURL: '$sg_str('ANON_REDIRECT')'};
 	//-->
 	</script>
 	<script src="$sbRoot/js/inc_top.js?v=$sbPID"></script>
@@ -98,6 +98,139 @@
 	<script src="$sbRoot/js/browser.js"></script>
 	<script src="$sbRoot/js/ajaxNotifications.js"></script>
 	<script src="$sbRoot/js/confirmations.js?v=$sbPID"></script>
+#import locale, os
+#set $sys_lang = os.environ.get('LANG', os.environ.get('LC_ALL', locale.getdefaultlocale()[0] or 'en')).split('.')[0].split('_')[0].lower()
+	<script>window.SG_SYS_LANG = "$sys_lang";</script>
+	<script src="$sbRoot/js/i18n.js?v=$sbPID"></script>
+	<style>
+		#NAVsoundtrack {
+			float: left !important;
+			height: 50px !important;
+			display: none !important; /* Only shown when viewing a specific show */
+			align-items: center !important;
+			padding: 0 8px 0 0 !important;
+			margin: 0 !important;
+		}
+		#NAVsoundtrack button.soundtrack-nav-btn {
+			width: auto !important;
+			height: 32px !important;
+			margin: 0 !important;
+			padding: 0 10px !important;
+			display: inline-flex !important;
+			align-items: center !important;
+			gap: 6px !important;
+			line-height: 30px !important;
+			font-size: 13px !important;
+			font-weight: 600 !important;
+			color: #10b981 !important;
+			background: rgba(16, 185, 129, 0.12) !important;
+			border: 1px solid rgba(16, 185, 129, 0.35) !important;
+			border-radius: 6px !important;
+			cursor: pointer !important;
+			outline: none !important;
+			box-shadow: none !important;
+			box-sizing: border-box !important;
+			transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+		}
+		#NAVsoundtrack button.soundtrack-nav-btn:hover {
+			background: rgba(16, 185, 129, 0.22) !important;
+			border-color: #10b981 !important;
+			color: #ffffff !important;
+		}
+		#NAVsoundtrack button.soundtrack-nav-btn.muted {
+			color: #8e8e9e !important;
+			background: rgba(160, 160, 175, 0.10) !important;
+			border-color: rgba(160, 160, 175, 0.25) !important;
+		}
+		#NAVsoundtrack button.soundtrack-nav-btn.muted:hover {
+			background: rgba(160, 160, 175, 0.18) !important;
+			border-color: #a0a0b0 !important;
+			color: #ffffff !important;
+		}
+		.st-wave {
+			display: inline-block;
+			animation: stPulse 1.4s infinite ease-in-out;
+		}
+		@keyframes stPulse {
+			0%, 100% { transform: scale(1); }
+			50% { transform: scale(1.18); }
+		}
+		#NAVdashboard {
+			float: left !important;
+			height: 50px !important;
+			display: flex !important;
+			align-items: center !important;
+			padding: 0 10px 0 0 !important;
+			margin: 0 !important;
+		}
+		#NAVdashboard > a {
+			width: auto !important;
+			height: 32px !important;
+			margin: 0 !important;
+			padding: 0 12px !important;
+			display: inline-flex !important;
+			align-items: center !important;
+			gap: 6px !important;
+			line-height: 30px !important;
+			font-size: 13px !important;
+			font-weight: 600 !important;
+			color: #3dd9eb !important;
+			background: rgba(61, 217, 235, 0.12) !important;
+			border: 1px solid rgba(61, 217, 235, 0.3) !important;
+			border-radius: 6px !important;
+			text-decoration: none !important;
+			box-shadow: none !important;
+			box-sizing: border-box !important;
+			transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+		}
+		#NAVdashboard > a:hover {
+			background: rgba(61, 217, 235, 0.22) !important;
+			border-color: #3dd9eb !important;
+			color: #ffffff !important;
+		}
+		#NAVdashboard > a i {
+			font-size: 14px;
+			color: inherit;
+		}
+		#NAVscanrename {
+			float: left !important;
+			height: 50px !important;
+			display: flex !important;
+			align-items: center !important;
+			padding: 0 10px 0 0 !important;
+			margin: 0 !important;
+		}
+		#NAVscanrename > a.scanrename-nav-btn {
+			width: auto !important;
+			height: 32px !important;
+			margin: 0 !important;
+			padding: 0 12px !important;
+			display: inline-flex !important;
+			align-items: center !important;
+			gap: 6px !important;
+			line-height: 30px !important;
+			font-size: 13px !important;
+			font-weight: 700 !important;
+			color: #07090e !important;
+			background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%) !important;
+			border: 1px solid rgba(56, 189, 248, 0.4) !important;
+			border-radius: 8px !important;
+			text-decoration: none !important;
+			box-shadow: 0 2px 10px rgba(56, 189, 248, 0.3) !important;
+			box-sizing: border-box !important;
+			transition: all 180ms ease !important;
+		}
+		#NAVscanrename > a.scanrename-nav-btn:hover {
+			background: linear-gradient(135deg, #7dd3fc 0%, #60a5fa 100%) !important;
+			transform: translateY(-1px) !important;
+			box-shadow: 0 4px 14px rgba(56, 189, 248, 0.5) !important;
+			color: #07090e !important;
+		}
+		#NAVscanrename > a.scanrename-nav-btn i {
+			font-size: 13px;
+			color: inherit;
+		}
+	</style>
 </head>
 #set $tab = 4
 #set global $body_attr = ''
@@ -108,7 +241,7 @@
 #end try
 #if not any(x in $body_attr for x in ['back-art', 'pro', 'ii'])
     #set $parts = $body_attr.split('class="')
-    #set $body_attr = ('class="%s '.join($parts), $parts[0] + ' class="%s"')[1 == len($parts)] % {0: '', 1: 'pro', 2: 'pro ii'}.get(getattr($sickgear, 'DISPLAY_SHOW_VIEWMODE', 0))
+    #set $body_attr = ('class="%s '.join($parts), $parts[0] + ' class="%s"')[1 == len($parts)] % {0: '', 1: 'pro', 2: 'pro ii'}.get(getattr($sickshift, 'DISPLAY_SHOW_VIEWMODE', 0))
 #end if
 
 #set $classes = ' '.join(([], ['shows-not-found'])[any([$getVar('log_num_not_found_shows_all', 0)])] \
@@ -130,7 +263,7 @@
 				</button>
 #set date = $datetime.datetime.today().timetuple()
 #set logo = ('', '-xmas')[(12 <= $date.tm_mon) or (3 > $date.tm_yday) or (3 == $date.tm_yday and 5 > $date.tm_hour)]
-				<a href="$sbRoot/home/" class="navbar-brand" tabindex="-1" title="SickGear"><img alt="SickGear" src="$sbRoot/images/sickgear${logo}.png" style="height: 50px;" class="img-responsive pull-left"></a>
+				<a href="$sbRoot/home/" class="navbar-brand" tabindex="-1" title="SickShift"><img alt="SickShift" src="$sbRoot/images/sickshift${logo}.png" style="height: 50px;" class="img-responsive pull-left"></a>
 			</div>
 #set $current_menu_home = ' active' if 'home' == $topmenu else ''
 #set $current_menu_manage = ' active' if 'manage' == $topmenu else ''
@@ -139,17 +272,228 @@
 #set $hover_dropdown='data-hover="dropdown" data-hover-delay="400" data-delay="500"'
 			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 				<ul class="nav navbar-nav navbar-right">
+					<li id="NAVsoundtrack">
+						<button type="button" id="btn-global-soundtrack" class="soundtrack-nav-btn" title="Thème musical : Activé par défaut (cliquer pour couper)">
+							<span class="st-speaker-icon">🔊</span>
+							<span class="st-speaker-label">Musique</span>
+						</button>
+					</li>
+					<audio id="global-sg-soundtrack" preload="none" style="display:none"></audio>
+					<script>
+					(function(){
+						var STORAGE_KEY = 'sg_soundtrack_enabled';
+						var state = localStorage.getItem(STORAGE_KEY);
+						if (state === null) {
+							state = 'on';
+							localStorage.setItem(STORAGE_KEY, 'on');
+						}
+						window.sgSoundtrackState = state;
+
+						function updateBtn(){
+							var btn = document.getElementById('btn-global-soundtrack');
+							if (!btn) return;
+							var icon = btn.querySelector('.st-speaker-icon');
+							var label = btn.querySelector('.st-speaker-label');
+							if (window.sgSoundtrackState === 'on') {
+								btn.classList.remove('muted');
+								btn.classList.add('playing');
+								if (icon) {
+									icon.textContent = '🔊';
+									icon.classList.add('st-wave');
+								}
+								if (label) label.textContent = 'Musique';
+								btn.title = 'Thème musical : Activé (cliquer pour couper la musique)';
+							} else {
+								btn.classList.add('muted');
+								btn.classList.remove('playing');
+								if (icon) {
+									icon.textContent = '🔇';
+									icon.classList.remove('st-wave');
+								}
+								if (label) label.textContent = 'Musique off';
+								btn.title = 'Thème musical : Désactivé (cliquer pour activer)';
+							}
+						}
+
+						window.toggleGlobalSoundtrack = function(){
+							var current = localStorage.getItem(STORAGE_KEY) || 'on';
+							var next = (current === 'on') ? 'off' : 'on';
+							localStorage.setItem(STORAGE_KEY, next);
+							window.sgSoundtrackState = next;
+							updateBtn();
+							var audio = document.getElementById('global-sg-soundtrack');
+							if (next === 'off') {
+								if (audio) { audio.pause(); }
+							} else {
+								if (window.sgCurrentShowSoundtrackUrl && audio) {
+									audio.src = window.sgCurrentShowSoundtrackUrl;
+									audio.volume = 0.35;
+									audio.loop = true;
+									audio.play().catch(function(){});
+								}
+							}
+						};
+
+						var soundtrackFadeTimer = null;
+						window.fadeGlobalSoundtrackOut = function(duration){
+							duration = duration || 450;
+							var audio = document.getElementById('global-sg-soundtrack');
+							if (!audio || audio.paused || audio.volume <= 0) return;
+							clearInterval(soundtrackFadeTimer);
+							var startVol = audio.volume;
+							var stepTime = 25;
+							var steps = Math.max(1, Math.floor(duration / stepTime));
+							var volStep = startVol / steps;
+							var step = 0;
+							window.sgSoundtrackFadingOut = true;
+							soundtrackFadeTimer = setInterval(function(){
+								step++;
+								var v = Math.max(0, startVol - (volStep * step));
+								audio.volume = v;
+								if (v <= 0.005 || step >= steps) {
+									clearInterval(soundtrackFadeTimer);
+									audio.volume = 0;
+									audio.pause();
+									window.sgSoundtrackFadingOut = false;
+									window.sgSoundtrackPausedByPopup = true;
+								}
+							}, stepTime);
+						};
+
+						window.fadeGlobalSoundtrackIn = function(targetVol, duration){
+							targetVol = (typeof targetVol !== 'undefined') ? targetVol : 0.35;
+							duration = duration || 600;
+							if (window.sgSoundtrackState === 'off') return;
+							var audio = document.getElementById('global-sg-soundtrack');
+							if (!audio) return;
+							if (!audio.src && window.sgCurrentShowSoundtrackUrl) {
+								audio.src = window.sgCurrentShowSoundtrackUrl;
+							}
+							if (!audio.src) return;
+							clearInterval(soundtrackFadeTimer);
+							window.sgSoundtrackFadingOut = false;
+							var startVol = audio.volume;
+							if (audio.paused) {
+								audio.volume = 0;
+								startVol = 0;
+								audio.loop = true;
+								var p = audio.play();
+								if (p !== undefined) p.catch(function(){});
+							}
+							var stepTime = 25;
+							var steps = Math.max(1, Math.floor(duration / stepTime));
+							var volDiff = targetVol - startVol;
+							var volStep = volDiff / steps;
+							var step = 0;
+							soundtrackFadeTimer = setInterval(function(){
+								step++;
+								var v = Math.min(targetVol, Math.max(0, startVol + (volStep * step)));
+								audio.volume = v;
+								if (v >= targetVol - 0.005 || step >= steps) {
+									clearInterval(soundtrackFadeTimer);
+									audio.volume = targetVol;
+									window.sgSoundtrackPausedByPopup = false;
+								}
+							}, stepTime);
+						};
+
+						window.playShowSoundtrack = function(showId, showName, indexer){
+							if (!showId) return;
+							indexer = indexer || 1;
+							var navItem = document.getElementById('NAVsoundtrack');
+							if (navItem) {
+								navItem.style.setProperty('display', 'flex', 'important');
+							}
+							var audio = document.getElementById('global-sg-soundtrack');
+							if (!audio) return;
+							var root = (typeof window.sbRoot !== 'undefined' ? window.sbRoot : '') || '';
+							var primaryUrl = root + '/dashboard/media/soundtrack/' + indexer + '/' + showId;
+							var fallbackUrl = 'https://tvthemes.plexapp.com/' + showId + '.mp3';
+
+							window.sgCurrentShowSoundtrackUrl = primaryUrl;
+							updateBtn();
+
+							if (window.sgSoundtrackState !== 'on') {
+								return;
+							}
+
+							audio.loop = true;
+							audio.src = primaryUrl;
+							audio.volume = 0.35;
+
+							audio.onerror = function() {
+								if (audio.src !== fallbackUrl && indexer == 1) {
+									audio.src = fallbackUrl;
+									audio.play().catch(function(){});
+								}
+							};
+
+							var p = audio.play();
+							if (p !== undefined) {
+								p.catch(function(err){
+									function onFirstInteraction(){
+										document.removeEventListener('click', onFirstInteraction);
+										if (window.sgSoundtrackState === 'on' && audio.paused) {
+											audio.play().catch(function(){});
+										}
+									}
+									document.addEventListener('click', onFirstInteraction, { once: true });
+								});
+							}
+						};
+
+						document.addEventListener('DOMContentLoaded', function(){
+							updateBtn();
+							var btn = document.getElementById('btn-global-soundtrack');
+							if (btn) {
+								btn.addEventListener('click', function(e){
+									e.preventDefault();
+									e.stopPropagation();
+									window.toggleGlobalSoundtrack();
+								});
+							}
+						});
+					})();
+					</script>
+					<li id="NAVdashboard">
+						<a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#" title="Tableau de bord - Épisodes à venir et manquants">
+							<i class="sgicon-cal"></i>
+							<span>Dashboard</span>
+						</a>
+					</li>
+					<li id="NAVscanrename">
+						<a href="javascript:void(0)" onclick="executeGlobalScanRename(event)" class="scanrename-nav-btn" tabindex="$tab#set $tab += 1#" title="Lancer la recherche de médias et le renommage automatique">
+							<i class="sgicon-search"></i>
+							<span>Scan &amp; Renommer</span>
+						</a>
+					</li>
+					<script>
+					function executeGlobalScanRename(e) {
+						if (e) { e.preventDefault(); e.stopPropagation(); }
+						var root = (window.sbRoot || '').replace(/\/$/, '');
+						var params = new URLSearchParams(window.location.search);
+						var tvidProdid = params.get('tvid_prodid') || (window.$ && $('#tvid-prodid').length ? $('#tvid-prodid').val() : '');
+						if (tvidProdid) {
+							window.location.href = root + '/home/scan-and-rename?tvid_prodid=' + encodeURIComponent(tvidProdid);
+						} else {
+							window.location.href = root + '/home/scan-and-rename';
+						}
+					}
+					</script>
 					<li id="NAVhome" class="dropdown$current_menu_home">
 						<a href="$sbRoot/home/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#">Shows <b class="caret"></b></a>
 #set $showlist_home, $episode_home, $history_home = 3 * ['(<i class="sgicon-home tight"></i>)']
-#if 'shows' == $sickgear.DEFAULT_HOME
+#if 'shows' == $sickshift.DEFAULT_HOME
     #set $episode_home, $history_home = 2 * ['']
-#elif 'episodes' == $sickgear.DEFAULT_HOME
+#elif 'episodes' == $sickshift.DEFAULT_HOME
     #set $showlist_home, $history_home = 2 * ['']
 #else
     #set $showlist_home, $episode_home = 2 * ['']
 #end if
 						<ul class="dropdown-menu" style="min-width:204px">
+							<li><a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#"><i class="sgicon-cal"></i>Dashboard (À venir / Manquants)</a></li>
+							<li><a href="$sbRoot/dashboard/mini" tabindex="$tab#set $tab += 1#"><i class="sgicon-episodestatus"></i>Dashboard Mini</a></li>
+							<li class="divider"></li>
 							<li><a href="$sbRoot/view-shows/" tabindex="$tab#set $tab += 1#"><i class="sgicon-list" style="font-size:12px"></i>Show List $showlist_home</a></li>
 							<li><a href="$sbRoot/daily-schedule/" tabindex="$tab#set $tab += 1#"><i class="sgicon-cal"></i>Daily Schedule $episode_home</a></li>
 							<li>
@@ -268,43 +612,45 @@
 						</ul>
 					</li>
 
-					<li id="NAVmanage" class="dropdown$current_menu_manage">
-						<a href="$sbRoot/manage/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#">Manage <b class="caret"></b><span class="snf bar"><i class="sgicon-warning"><em class="pulse"></em></i></span></a>
-						<ul class="dropdown-menu">
+#set num_errors = $getVar('$log_num_errors', None)
+#set $err_class = ('', ' errors ' + (len('%s' % $num_errors ) * 'n')[0:4])[any([$num_errors])]
+					<li id="NAVconfig" class="dropdown$current_menu_config$current_menu_tools$current_menu_manage$err_class">
+						<a href="$sbRoot/config/general/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#" title="Gestion, Configuration et Système">
+							<img src="$sbRoot/images/menu/system18-all.png" class="navbaricon hidden-xs" alt="Gestion, Config &amp; Système">
+							<b class="caret hidden-xs"></b>
+							<span class="visible-xs">Gestion &amp; Outils <b class="caret"></b></span>
+							<span class="snf bar"><i class="sgicon-warning"><em class="pulse"></em></i></span>
+							<span class="logger bar$err_class"><i class="sgicon-warning"><em class="pulse"></em></i></span>
+						</a>
+						<ul class="dropdown-menu dropdown-menu-right" style="min-width:235px">
 							<li><a href="$sbRoot/home/process-media/" tabindex="$tab#set $tab += 1#"><i class="sgicon-postprocess"></i>Process Media</a></li>
 							<li class="divider"></li>
+							<li class="menu-item-noicon opacity60" style="padding:4px 15px;font-size:11px;font-weight:700;text-transform:uppercase;color:#3dd9eb;letter-spacing:0.5px;">Gestion</li>
 							<li><a href="$sbRoot/manage/bulk" tabindex="$tab#set $tab += 1#"><i class="sgicon-bulk-change"></i>Bulk Change</a></li>
 							<li><a href="$sbRoot/manage/backlog-overview/" tabindex="$tab#set $tab += 1#"><i class="sgicon-backlog"></i>Backlog Overview</a></li>
 							<li><a href="$sbRoot/manage/search-tasks/" tabindex="$tab#set $tab += 1#"><i class="sgicon-search"></i>Search Tasks</a></li>
 							<li><a href="$sbRoot/manage/show-tasks/" tabindex="$tab#set $tab += 1#"><span class="snf item"><i class="sgicon-warning"><em class="pulse"></em></i><i class="sgicon-showqueue"></i></span>Show Tasks</a></li>
 							<li><a href="$sbRoot/manage/episode-overview/" tabindex="$tab#set $tab += 1#"><i class="sgicon-episodestatus"></i>Episode Overview</a></li>
-#if hasattr($sickgear, 'USE_EMBY') and $sg_var('USE_EMBY') and $sg_str('EMBY_HOST') != '' and $sg_str('EMBY_APIKEY') != ''
+#if hasattr($sickshift, 'USE_EMBY') and $sg_var('USE_EMBY') and $sg_str('EMBY_HOST') != '' and $sg_str('EMBY_APIKEY') != ''
 							<li><a href="$sbRoot/home/update-mb/" tabindex="$tab#set $tab += 1#"><i class="sgicon-emby"></i>Update Emby</a></li>
 #end if
-#if hasattr($sickgear, 'USE_KODI') and $sg_var('USE_KODI') and $sg_str('KODI_HOST') != ''
+#if hasattr($sickshift, 'USE_KODI') and $sg_var('USE_KODI') and $sg_str('KODI_HOST') != ''
 							<li><a href="$sbRoot/home/update-kodi/" tabindex="$tab#set $tab += 1#"><i class="sgicon-kodi"></i>Update Kodi</a></li>
 #end if
-#if hasattr($sickgear, 'USE_PLEX') and $sg_var('USE_PLEX') and $sg_str('PLEX_SERVER_HOST') != ''
+#if hasattr($sickshift, 'USE_PLEX') and $sg_var('USE_PLEX') and $sg_str('PLEX_SERVER_HOST') != ''
 							<li><a href="$sbRoot/home/update-plex/" tabindex="$tab#set $tab += 1#"><i class="sgicon-plex"></i>Update PLEX</a></li>
 #end if
-## #if hasattr($sickgear, 'USE_XBMC') and $sg_var('USE_XBMC') and $sg_str('XBMC_HOST') != ''
+## #if hasattr($sickshift, 'USE_XBMC') and $sg_var('USE_XBMC') and $sg_str('XBMC_HOST') != ''
 ##							<li><a href="$sbRoot/home/update-xbmc/" tabindex="$tab#set $tab += 1#"><i class="sgicon-xbmc"></i>Update XBMC</a></li>
 ## #end if
-#if hasattr($sickgear, 'USE_FAILED_DOWNLOADS') and $sg_var('USE_FAILED_DOWNLOADS')
+#if hasattr($sickshift, 'USE_FAILED_DOWNLOADS') and $sg_var('USE_FAILED_DOWNLOADS')
 							<li><a href="$sbRoot/manage/failed-downloads/" tabindex="$tab#set $tab += 1#"><i class="sgicon-failed"></i>Failed Downloads</a></li>
 #end if
-#if hasattr($sickgear, 'USE_SUBTITLES') and $sg_var('USE_SUBTITLES')
+#if hasattr($sickshift, 'USE_SUBTITLES') and $sg_var('USE_SUBTITLES')
 							<li><a href="$sbRoot/manage/subtitle-missed/" tabindex="$tab#set $tab += 1#"><i class="sgicon-subtitles"></i>Subtitles Missed</a></li>
 #end if
-						</ul>
-					</li>
-
-					<li id="NAVconfig" class="dropdown$current_menu_config">
-						<a href="$sbRoot/config/general/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#"><img src="$sbRoot/images/menu/system18.png" class="navbaricon hidden-xs"><b class="caret hidden-xs"></b><span class="visible-xs">Config <b class="caret"></b></span></a>
-						<ul class="dropdown-menu">
-        					<li><a href="#" id="theme" tabindex="$tab#set $tab += 1#"><i class="glyphicon glyphicon-lamp"></i>Light or Dark</a></li>
 							<li class="divider"></li>
-							<li class="menu-item-noicon opacity60">Settings...</li>
+							<li class="menu-item-noicon opacity60" style="padding:4px 15px;font-size:11px;font-weight:700;text-transform:uppercase;color:#3dd9eb;letter-spacing:0.5px;">Settings...</li>
 							<li><a href="$sbRoot/config/general/" tabindex="$tab#set $tab += 1#"><i class="sgicon-config"></i>General</a></li>
 							<li><a href="$sbRoot/config/providers/" tabindex="$tab#set $tab += 1#"><i class="sgicon-book"></i>Media Providers</a></li>
 							<li><a href="$sbRoot/config/search/" tabindex="$tab#set $tab += 1#"><i class="sgicon-search"></i>Search</a></li>
@@ -312,27 +658,18 @@
 							<li><a href="$sbRoot/config/media-process/" tabindex="$tab#set $tab += 1#"><i class="sgicon-postprocess"></i>Media Process</a></li>
 							<li><a href="$sbRoot/config/notifications/" tabindex="$tab#set $tab += 1#"><i class="sgicon-notification"></i>Notifications</a></li>
 							<li><a href="$sbRoot/config/anime/" tabindex="$tab#set $tab += 1#"><i class="sgicon-anime"></i>Anime</a></li>
-						</ul>
-					</li>
-
-#set num_errors = $getVar('$log_num_errors', None)
-#set $err_class = ('', ' errors ' + (len('%s' % $num_errors ) * 'n')[0:4])[any([$num_errors])]
-					<li id="NAVtools" class="dropdown$current_menu_tools$err_class">
-						<a href="$sbRoot/about/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#"><img src="$sbRoot/images/menu/system18-2.png" class="navbaricon hidden-xs"><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span><span class="logger bar$err_class"><i class="sgicon-warning"><em class="pulse"></em></i></span></a>
-## new without $err_class					<a href="$sbRoot/about/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#"><img src="$sbRoot/images/menu/system18-2.png" class="navbaricon hidden-xs"><b class="caret hidden-xs"></b><span class="visible-xs">System <b class="caret"></b></span><span class="logger bar"><i class="sgicon-warning"><em class="pulse"></em></i></span></a>
-						<ul class="dropdown-menu">
-							<li><a href="$sbRoot/about/" tabindex="$tab#set $tab += 1#"><i class="sgicon-info"></i>About</a></li>
+							<li><a href="#" id="theme" tabindex="$tab#set $tab += 1#"><i class="glyphicon glyphicon-lamp"></i>Light or Dark</a></li>
 							<li class="divider"></li>
+							<li class="menu-item-noicon opacity60" style="padding:4px 15px;font-size:11px;font-weight:700;text-transform:uppercase;color:#3dd9eb;letter-spacing:0.5px;">System</li>
+							<li><a href="$sbRoot/about/" tabindex="$tab#set $tab += 1#"><i class="sgicon-info"></i>About</a></li>
 #if not $sg_var('EXT_UPDATES')
 							<li><a href="$sbRoot/home/check-update" tabindex="$tab#set $tab += 1#"><i class="sgicon-updatecheck"></i>Check for Updates</a></li>
 #end if
 							<li><a href="$sbRoot/home/view-changes" tabindex="$tab#set $tab += 1#"><i class="sgicon-changes"></i>View Changes</a></li>
-							<li class="divider"></li>
 #if $err_class
-							<li><a href="$sbRoot/errors/" tabindex="$tab#set $tab += 1#"><span class="logger item$err_class"><i class="sgicon-warning"><em class="pulse"></em></i></span></i>View Errors</a></li>
+							<li><a href="$sbRoot/errors/" tabindex="$tab#set $tab += 1#"><span class="logger item$err_class"><i class="sgicon-warning"><em class="pulse"></em></i></span>View Errors</a></li>
 #end if
 							<li><a href="$sbRoot/events/view-log/" tabindex="$tab#set $tab += 1#"><i class="sgicon-log"></i>View Log File</a></li>
-							<li class="divider"></li>
 							<li><a href="$sbRoot/add-shows/import/" tabindex="$tab#set $tab += 1#"><i class="sgicon-import"></i>Import
 								<div class="menu-item-desc opacity60">existing shows</div></a></li>
 							<li class="divider"></li>
@@ -350,11 +687,13 @@
 	</nav>
 
 #if $varExists('submenu')
+#set $clean_submenu = [x for x in $submenu if not (isinstance(x, dict) and (x.get('path') == 'home/process-media/' or ('requires' in x and (not (x['requires']() if callable(x['requires']) else x['requires'])))))]
+#if $clean_submenu
 	<div id="SubMenu">
 		<span>
     #set $first = True
     #set $row = 1
-    #for $subitem in $submenu
+    #for $subitem in $clean_submenu
         #if 'newrow' in $subitem
             #set $first = True
             #set $row += 1
@@ -385,7 +724,7 @@
     #end for
 		</span>
 	</div><!-- /SubMenu$row -->
-
+#end if
 #end if
 ##
 #set $py_ver = sys.version_info[:3]
@@ -420,18 +759,18 @@
 	</div>
 #end if
 ##
-#if $sickgear.MEMCACHE.get('DEPRECATE_SB_RUNNER')
+#if $sickshift.MEMCACHE.get('DEPRECATE_SB_RUNNER')
 	<div class="alert" style="background-color:#a00; margin-top:35px; padding:5px 5px 1px 5px">
 		<p>Since Jan 2019, installations like this one have displayed a
-		message on every startup to run `<em><span style="color:#fff">sickgear.py</em></span>` instead of `SickBeard.py`.<br>
+		message on every startup to run `<em><span style="color:#fff">sickshift.py</em></span>` instead of `SickBeard.py`.<br>
 		But some runners (e.g. Linux service files) hide the message.</p>
 		<p>Nov 2022:
 		To remove this red box, and to prevent a future startup failure when the outdated `<span style="color:#fff">SickBeard.py</span>` is removed,
-		<br>please change whatever starts SickGear to run `<em><span style="color:#fff">sickgear.py</em></span>`.</p>
+		<br>please change whatever starts SickShift to run `<em><span style="color:#fff">sickshift.py</em></span>`.</p>
 	</div>
 #end if
 ##
-#if $sickgear.MEMCACHE.get('DEPRECATE_PP_LEGACY')
+#if $sickshift.MEMCACHE.get('DEPRECATE_PP_LEGACY')
 	<div class="alert" style="background-color:#a00; margin-top:35px; padding:5px 5px 1px 5px">
 		<p>Mar 2020: The `<em><span style="color:#fff">nzbToMedia</em></span>`  script began using the <em><span style="color:#fff">secure</em></span> API to process media</p>
 		<p>Mar 2023: To remove this red box, please follow this <a target="_blank" href="https://github.com/SickGear/SickGear/wiki/FAQ-nzbToMedia"><span style="color:#fff">guidance</span></a></p>

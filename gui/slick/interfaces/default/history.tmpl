@@ -1,14 +1,14 @@
 #import datetime
 #import re
 ##
-#import sickgear
-#from sickgear import history, providers, WEB_PORT
-#from sickgear.common import Quality, statusStrings, SNATCHED_ANY, SNATCHED_PROPER, DOWNLOADED, SUBTITLED, ARCHIVED, FAILED
-#from sickgear.helpers import human
-#from sickgear.providers import generic
-#from sickgear.sgdatetime import SGDatetime
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift import history, providers, WEB_PORT
+#from sickshift.common import Quality, statusStrings, SNATCHED_ANY, SNATCHED_PROPER, DOWNLOADED, SUBTITLED, ARCHIVED, FAILED
+#from sickshift.helpers import human
+#from sickshift.providers import generic
+#from sickshift.sgdatetime import SGDatetime
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #import humanize
 ##
@@ -29,7 +29,7 @@
 
 <script>
 <!--
-\$.SickGear.history = {
+\$.SickShift.history = {
 	layoutName: '$layout',
 	isCompact: #echo ('!1', '!0')['compact' in $layout]#,
 	isTrashit: #echo ('!1', '!0')[bool($sg_var('TRASH_REMOVE_SHOW'))]#,
@@ -465,19 +465,19 @@
 					<br>
 					<p>In Kodi media player;</p>
 					<ol>
-						<li>Install the SickGear repo to access its Kodi Add-on
+						<li>Install the SickShift repo to access its Kodi Add-on
 						<ul style="padding-left:20px">
 							<li>in <b class="boldest">Filemanager</b>, add a source with <span class="grey-text">&lt;ip&gt;:&lt;port&gt;/kodi/</span> (e.g. <span class="grey-text">http://192.168.0.10:$sg_port/kodi/</span> or<br>
-								for SSL <span class="grey-text">https://192.168.0.10:$sg_port/kodi/</span> ... <a href="https://github.com/SickGear/SickGear/wiki/Install-SickGear-%5B81%5D-Media-Apps">see SSL guide</a>) and name it for example, <span class="grey-text">SickGear</span><br>
+								for SSL <span class="grey-text">https://192.168.0.10:$sg_port/kodi/</span> ... <a href="https://github.com/SickGear/SickGear/wiki/Install-SickGear-%5B81%5D-Media-Apps">see SSL guide</a>) and name it for example, <span class="grey-text">SickShift</span><br>
 								- <em>You must allow <span class="highlight-text">Unknown Sources</span> in Kodi settings if not already</em> </li>
-							<li>in <b class="boldest">System/Add-ons</b>, "<span class="grey-text">Install from zip file</span>", select the <span class="grey-text">SickGear</span> source</li>
-							<li>select <span class="grey-text">repository.sickgear</span> from the list, and install the repository zip<br>
-								- <em>Kodi will connect to the SickGear app to download and install its Add-on repository</em></li>
+							<li>in <b class="boldest">System/Add-ons</b>, "<span class="grey-text">Install from zip file</span>", select the <span class="grey-text">SickShift</span> source</li>
+							<li>select <span class="grey-text">repository.sickshift</span> from the list, and install the repository zip<br>
+								- <em>Kodi will connect to the SickShift app to download and install its Add-on repository</em></li>
 						</ul>
-						<li>Install the SickGear Add-on from the repo</li>
+						<li>Install the SickShift Add-on from the repo</li>
 						<ul style="padding-left:20px">
-							<li>in <b class="boldest">System/Add-ons</b>, "<span class="grey-text">Install from zip repository</span>", select "<span class="grey-text">SickGear Add-on repository</span>" / "<span class="grey-text">Services</span>"<br>
-							<li>select Add-on "<span class="grey-text">SickGear Watched State Updater</span>"</li>
+							<li>in <b class="boldest">System/Add-ons</b>, "<span class="grey-text">Install from zip repository</span>", select "<span class="grey-text">SickShift Add-on repository</span>" / "<span class="grey-text">Services</span>"<br>
+							<li>select Add-on "<span class="grey-text">SickShift Watched State Updater</span>"</li>
 							<li>configure Add-on and restart Kodi after install or after switching profiles for the first time</li>
 						</ul>
 					</ol>
@@ -539,14 +539,14 @@
 						{
 							values: [#echo ', '.join($perc)#],
 							labels: [#echo '\'%s\'' % '\', \''.join($labels)#],
-							name: 'SickGear provider activity',
+							name: 'SickShift provider activity',
 							hoverinfo: 'label+percent+name',
 							domain: {x: [0, .5]},
 							hole: .42,
 							type: 'pie'
 						}
 					],
-					{title: 'SickGear provider activity (1% and above for #echo ('latest %s' % $limit, 'all')['0' == $limit]#)',
+					{title: 'SickShift provider activity (1% and above for #echo ('latest %s' % $limit, 'all')['0' == $limit]#)',
 					annotations: [{font: {size: 14}, showarrow: false, text: 'Activity', x: 0.16, y: 0.5}]
 					}, {displaylogo: !1, showLink: !1});
 				</script>
@@ -602,13 +602,13 @@
 			<div id="check-$check" data-check="check_$check" class="check-site" style="margin-bottom:10px">
 				<input type="button" class="btn" value="Check $check_name">
 				<span style="line-height:26px">Test if site is up<span class="result"></span>
-					<a class="addQTip" style="margin-left:2px;display:none" href="$sickgear.helpers.anon_url('http://www.isitdownrightnow.com/downorjustme.php?url=' + $check_url)" rel="noreferrer" onclick="window.open(this.href, '_blank'); return !1;" title="View full report for $check_name in new tab"><img alt="[IsItDown]" height="16" width="16" src="$sbRoot/images/iidrn.png"></a>
+					<a class="addQTip" style="margin-left:2px;display:none" href="$sickshift.helpers.anon_url('http://www.isitdownrightnow.com/downorjustme.php?url=' + $check_url)" rel="noreferrer" onclick="window.open(this.href, '_blank'); return !1;" title="View full report for $check_name in new tab"><img alt="[IsItDown]" height="16" width="16" src="$sbRoot/images/iidrn.png"></a>
 				</span>
 			</div>
     #end for
 		</div>
 
-#if $sickgear.USE_NZBS
+#if $sickshift.USE_NZBS
 <style>
 	table.last_rls th{padding-right:20px}
 	table.last_rls td{vertical-align:middle;line-height:1.1em}
@@ -628,7 +628,7 @@
 			</thead>
     #set global $row = 0
 			<tbody>
-    #for $cur_provider in $sorted($sickgear.newznab_providers, key=lambda x: x.last_recent_search or SGDatetime(2000,1,1), reverse=True)
+    #for $cur_provider in $sorted($sickshift.newznab_providers, key=lambda x: x.last_recent_search or SGDatetime(2000,1,1), reverse=True)
         #set $last_rls_date = '-'
         #set $last_rls_age = None
         #set $last_rls_age_str = '-'
@@ -721,7 +721,7 @@
 			</div>
 		</div>
         #end if
-		<p id="bubble-after">When a server cannot be contacted over a period, SickGear backs off and waits an increasing interval between each retry</p>
+		<p id="bubble-after">When a server cannot be contacted over a period, SickShift backs off and waits an increasing interval between each retry</p>
     #end if
 
     #if not $domain_fail_cnt

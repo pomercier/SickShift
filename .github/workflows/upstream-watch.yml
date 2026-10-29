@@ -1,0 +1,26 @@
+name: Review upstream changes
+on:
+  schedule:
+    - cron: '21 9 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Notify only when upstream has new commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch https://github.com/SickGear/SickGear.git main
+          revision=$(git rev-parse FETCH_HEAD)
+          if git merge-base --is-ancestor "$revision" HEAD; then exit 0; fi
+          title="Upstream update available: ${revision:0:12}"
+          existing=$(gh issue list --search "$title in:title" --state all --json title --jq '.[].title')
+          if printf '%s\n' "$existing" | grep -Fxq "$title"; then exit 0; fi
+          gh issue create --title "$title" --body "New SickGear changes are available. Run scripts/integrate_upstream.sh in a clean development clone, resolve conflicts, run the release checks and submit a pull request. This workflow never modifies main or your installation."

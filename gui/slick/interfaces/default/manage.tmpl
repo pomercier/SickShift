@@ -1,28 +1,28 @@
-#import sickgear
-#from sickgear.common import *
-#from sickgear.helpers import get_size, human
+#import sickshift
+#from sickshift.common import *
+#from sickshift.helpers import get_size, human
 ##
 #set global $title = 'Bulk Change'
 #set global $header = 'Bulk Change'
 #set global $sbPath = '../..'
 #set global $topmenu = 'manage'
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 ##
 <script charset="utf-8">
 <!--
 ## an arbitrary high number greater than a media file size
 #set $high = 1000000000000
-\$.SickGear.high = $high;
+\$.SickShift.high = $high;
 
 \$.tablesorter.addParser({
 	id: 'showNames',
 	is: function(s) { return !1; },
 	format: function(s) {
-	    return (s || '')#if not $sickgear.SORT_ARTICLE#.replace(/^(?:(?:A(?!\s+to)n?)|The)\s(\w)/i, '$1')#end if#;
+	    return (s || '')#if not $sickshift.SORT_ARTICLE#.replace(/^(?:(?:A(?!\s+to)n?)|The)\s(\w)/i, '$1')#end if#;
 	},
 	type: 'text'
 });
@@ -48,9 +48,9 @@
     ((None, "'anime'")[$has_any_anime], '!1', True),
     ((None, "'flatfold'")[$has_any_flat_folders], '!1', True),
     ("'paused'", '!1', True), ("'status'", '!0', False),
-    ('!1', '!1', False), ('!1', '!1', False), ('!1', '!1', False), ((None, '!1')[$sickgear.USE_SUBTITLES], '!1', False), ('!1', '!1', False), ('!1', '!1', False)
+    ('!1', '!1', False), ('!1', '!1', False), ('!1', '!1', False), ((None, '!1')[$sickshift.USE_SUBTITLES], '!1', False), ('!1', '!1', False), ('!1', '!1', False)
 ]
-#set $columns_total = $len($column_headers) - ((1, 0)[$has_any_sports] + (1, 0)[$has_any_anime] + (1, 0)[$has_any_flat_folders] + (1, 0)[$sickgear.USE_SUBTITLES])
+#set $columns_total = $len($column_headers) - ((1, 0)[$has_any_sports] + (1, 0)[$has_any_anime] + (1, 0)[$has_any_flat_folders] + (1, 0)[$sickshift.USE_SUBTITLES])
 #set $headers = []
 #set $text_extract = []
 #set $column = -1
@@ -168,7 +168,7 @@ $xsrf_form_html
 			<th width="1%"><div class="rotate-holder2"><div class="rotate-body"><label><input type="checkbox" class="bulk-check right-2px" id="update-check"><span>Update</span></label></div></div></th>
 			<th width="1%"><div class="rotate-holder2"><div class="rotate-body"><label><input type="checkbox" class="bulk-check right-2px" id="refresh-check"><span>Rescan</span></label></div></div></th>
 			<th width="1%"><div class="rotate-holder2"><div class="rotate-body"><label><input type="checkbox" class="bulk-check right-2px" id="rename-check"><span>Rename</span></label></div></div></th>
-#if $sickgear.USE_SUBTITLES
+#if $sickshift.USE_SUBTITLES
 			<th width="1%"><div class="rotate-holder2"><div class="rotate-body"><label><input type="checkbox" class="bulk-check right-2px" id="subtitleCheck"><span>Subtitle</span></label></div></div></th>
 #end if
 			<th width="1%"><div class="rotate-holder2"><div class="rotate-body"><label><input type="checkbox" class="bulk-check right-2px" id="delete-check"><span>Delete</span></label></div></div></th>
@@ -188,46 +188,46 @@ $xsrf_form_html
     #set $show_size = $max if not $show_loc else $get_size($show_loc)
     #set $option_state = '<input type="checkbox"%s class="%s-check"%s>'
     ##
-    #set $curUpdate_disabled = $sickgear.show_queue_scheduler.action.is_being_updated($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_update_queue($cur_show_obj)
+    #set $curUpdate_disabled = $sickshift.show_queue_scheduler.action.is_being_updated($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_update_queue($cur_show_obj)
     #set $tip = ' title="Update%s"' % ('', $disabled_inprogress_tip)[$curUpdate_disabled]
     #set $curUpdate = ($tip, $option_state % (('', $disabled)[$curUpdate_disabled], 'update', $tip))
     ##
-    #set $curRefresh_disabled = $sickgear.show_queue_scheduler.action.is_being_refreshed($cur_show_obj)\
-                                or $sickgear.show_queue_scheduler.action.is_in_refresh_queue($cur_show_obj)
+    #set $curRefresh_disabled = $sickshift.show_queue_scheduler.action.is_being_refreshed($cur_show_obj)\
+                                or $sickshift.show_queue_scheduler.action.is_in_refresh_queue($cur_show_obj)
     #set $tip = ' title="Rescan%s"' % ('', $disabled_inprogress_tip)[$curRefresh_disabled]
     #set $curRefresh = ($tip, $option_state % (('', $disabled)[$curRefresh_disabled], 'refresh', $tip))
     ##
-    #set $curRename_disabled = $sickgear.show_queue_scheduler.action.is_being_renamed($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_rename_queue($cur_show_obj)
+    #set $curRename_disabled = $sickshift.show_queue_scheduler.action.is_being_renamed($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_rename_queue($cur_show_obj)
     #set $tip = ' title="Rename%s"' % ('', $disabled_inprogress_tip)[$curRename_disabled]
     #set $curRename = ($tip, $option_state % (('', $disabled)[$curRename_disabled], 'rename', $tip))
     ##
     #set $subtitles_disabled = not $cur_show_obj.subtitles\
-                               or $sickgear.show_queue_scheduler.action.is_being_subtitled($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_subtitle_queue($cur_show_obj)
+                               or $sickshift.show_queue_scheduler.action.is_being_subtitled($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_subtitle_queue($cur_show_obj)
     #set $tip = (' title="Search subtitle"', (' title="Search subtitle%s"' % $disabled_inprogress_tip,
                                               $disabled_subtitles_tip)[not $cur_show_obj.subtitles])[$subtitles_disabled]
     #set $curSubtitle = ($tip, $option_state % (('', $disabled)[$subtitles_disabled], 'subtitle', $tip))
     ##
-    #set $curDelete_disabled = $sickgear.show_queue_scheduler.action.is_being_renamed($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_rename_queue($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_refresh_queue($cur_show_obj)
+    #set $curDelete_disabled = $sickshift.show_queue_scheduler.action.is_being_renamed($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_rename_queue($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_refresh_queue($cur_show_obj)
     #set $tip = ' title="Delete%s"' % ('', $disabled_inprogress_tip)[$curDelete_disabled]
     #set $curDelete = ($tip, $option_state % (('', $disabled)[$curDelete_disabled], 'delete', $tip))
     ##
-    #set $curRemove_disabled = $sickgear.show_queue_scheduler.action.is_being_renamed($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_rename_queue($cur_show_obj)\
-                               or $sickgear.show_queue_scheduler.action.is_in_refresh_queue($cur_show_obj)
+    #set $curRemove_disabled = $sickshift.show_queue_scheduler.action.is_being_renamed($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_rename_queue($cur_show_obj)\
+                               or $sickshift.show_queue_scheduler.action.is_in_refresh_queue($cur_show_obj)
     #set $tip = ' title="Remove%s"' % ('', $disabled_inprogress_tip)[$curRemove_disabled]
     #set $curRemove = ($tip, $option_state % (('', $disabled)[$curRemove_disabled], 'remove', $tip))
 		<tr data-tvid_prodid="$cur_show_obj.tvid_prodid" data-size="$show_size">
 			<td><input type="checkbox" class="edit-check"></td>
-    #set $display_name = (re.sub(r'^((?:A(?!\s+to)n?)|The)\s(\w)', r'<span class="article">\1</span> \2', getattr($cur_show_obj, 'unique_name', $cur_show_obj.name)), getattr($cur_show_obj, 'unique_name', $cur_show_obj.name))[$sickgear.SORT_ARTICLE]
+    #set $display_name = (re.sub(r'^((?:A(?!\s+to)n?)|The)\s(\w)', r'<span class="article">\1</span> \2', getattr($cur_show_obj, 'unique_name', $cur_show_obj.name)), getattr($cur_show_obj, 'unique_name', $cur_show_obj.name))[$sickshift.SORT_ARTICLE]
 			<td class="tvShow">#if not $show_loc#<i class="img-warning-16" title="Location no longer exists"></i>#end if#<a href="$sbRoot/home/view-show?tvid_prodid=${cur_show_obj.tvid_prodid}">$display_name</a></td>
 			<td colspan=2>#if 0 <= $show_size < $max#<span class="text-nowrap ui-size">$human($show_size)</span>#end if#</td>
     #if $enable_tvinfo
-			<td><i class="icon16 $sickgear.TVInfoAPI($cur_show_obj.tvid).config['slug']" data-tvid="$cur_show_obj.tvid"></i></td>
+			<td><i class="icon16 $sickshift.TVInfoAPI($cur_show_obj.tvid).config['slug']" data-tvid="$cur_show_obj.tvid"></i></td>
     #end if
     #if $cur_show_obj.quality in $qualityPresets
 			<td><span class="quality $qualityPresetStrings[$cur_show_obj.quality]">$qualityPresetStrings[$cur_show_obj.quality]</span></td>
@@ -249,7 +249,7 @@ $xsrf_form_html
 			<td$curUpdate[0]>$curUpdate[1]</td>
 			<td$curRefresh[0]>$curRefresh[1]</td>
 			<td$curRename[0]>$curRename[1]</td>
-    #if $sickgear.USE_SUBTITLES
+    #if $sickshift.USE_SUBTITLES
 			<td$curSubtitle[0]>$curSubtitle[1]</td>
     #end if
 			<td$curDelete[0]>$curDelete[1]</td>
@@ -265,4 +265,4 @@ $xsrf_form_html
 </div>
 </form>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

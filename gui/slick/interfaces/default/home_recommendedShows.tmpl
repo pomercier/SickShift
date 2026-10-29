@@ -1,5 +1,5 @@
 #import os.path
-#import sickgear
+#import sickshift
 ##
 #set global $header = "Recommended Shows"
 #set global $title = "Recommended Shows"
@@ -7,7 +7,7 @@
 #set global $statpath = "../.."
 #set global $topmenu = "home"
 ##
-#include $os.path.join($sickgear.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
+#include $os.path.join($sickshift.PROG_DIR, "gui/slick/interfaces/default/inc_top.tmpl")
 
 <script src="$sbRoot/js/formwizard.js?v=$sbPID"></script>
 <script src="$sbRoot/js/qualityChooser.js?v=$sbPID"></script>
@@ -20,7 +20,7 @@
 <h1 class="title">$title</h1>
 #end if
 
-<image class="preload-image" style="position:absolute;top:-999px" src="$sbRoot/images/loading32<%= '-dark' if 'dark' == sickgear.THEME_NAME else '' %>.gif" width="32" height="32" border="0">
+<image class="preload-image" style="position:absolute;top:-999px" src="$sbRoot/images/loading32<%= '-dark' if 'dark' == sickshift.THEME_NAME else '' %>.gif" width="32" height="32" border="0">
 
 <div id="newShowPortal">
 
@@ -43,7 +43,7 @@
 			<legend class="legendStep"><p>Pick parent folder</p></legend>
 
 			<div class="stepDiv parent-folder">
-				#include $os.path.join($sickgear.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
+				#include $os.path.join($sickshift.PROG_DIR, "gui/slick/interfaces/default/inc_rootDirs.tmpl")
 			</div>
 			<div style="clear:both">&nbsp;</div>
 		</fieldset>
@@ -52,7 +52,7 @@
 			<legend class="legendStep"><p>Set custom options</p></legend>
 
 			<div class="stepDiv">
-				#include $os.path.join($sickgear.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
+				#include $os.path.join($sickshift.PROG_DIR, "gui/slick/interfaces/default/inc_addShowOptions.tmpl")
 			</div>
 			<div style="clear:both">&nbsp;</div>
 		</fieldset>
@@ -68,4 +68,4 @@
 
 </div>
 
-#include $os.path.join($sickgear.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")
+#include $os.path.join($sickshift.PROG_DIR,"gui/slick/interfaces/default/inc_bottom.tmpl")

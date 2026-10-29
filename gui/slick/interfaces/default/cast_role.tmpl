@@ -1,10 +1,10 @@
 #import re
-#import sickgear
-#from sickgear import TVInfoAPI
-#from sickgear.helpers import anon_url
-#from sickgear.tv import PersonGenders
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift import TVInfoAPI
+#from sickshift.helpers import anon_url
+#from sickshift.tv import PersonGenders
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Character'
 #if $character.name

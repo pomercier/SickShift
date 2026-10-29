@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 from time import sleep
 
@@ -25,8 +25,8 @@ try:
 except ImportError:
     import urllib2
 
-from sickgear import logger
-from sickgear.helpers import get_url, try_int, parse_xml
+from sickshift import logger
+from sickshift.helpers import get_url, try_int, parse_xml
 
 from _23 import unquote, urlencode
 from six import iteritems
@@ -109,7 +109,7 @@ class Plex(object):
         auth = ''
         try:
             auth = get_url('https://plex.tv/users/sign_in.json',
-                           headers={'X-Plex-Device-Name': 'SickGear',
+                           headers={'X-Plex-Device-Name': 'SickShift',
                                     'X-Plex-Platform': platform.system(), 'X-Plex-Device': platform.system(),
                                     'X-Plex-Platform-Version': platform.release(),
                                     'X-Plex-Provides': 'Python', 'X-Plex-Product': 'Python',
@@ -188,7 +188,7 @@ class Plex(object):
             if 0 < x:
                 sleep(0.5)
             try:
-                headers = {'X-Plex-Device-Name': 'SickGear',
+                headers = {'X-Plex-Device-Name': 'SickShift',
                            'X-Plex-Platform': platform.system(), 'X-Plex-Device': platform.system(),
                            'X-Plex-Platform-Version': platform.release(),
                            'X-Plex-Provides': 'controller', 'X-Plex-Product': 'Python',

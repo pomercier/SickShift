@@ -23,5 +23,5 @@ cur_commit_branch = "master"
 version_notify = 0
 EOT
 
-# relocate autoProcessTV to /var/snap/sickgear/current/
+# relocate autoProcessTV to /var/snap/sickshift/current/
 cp -R "${SNAP}/${SNAP_NAME}/autoProcessTV" "${SNAP_DATA}"

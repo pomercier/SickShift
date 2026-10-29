@@ -1,9 +1,9 @@
-#import sickgear
-#from sickgear import db
-#from sickgear.helpers import anon_url
+#import sickshift
+#from sickshift import db
+#from sickshift.helpers import anon_url
 #import os.path
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Configuration'
 #set global $header = 'Configuration'
@@ -42,7 +42,7 @@
 #end if
 		<tr class="infoTableSeperator"><td class="infoTableHeader"><i class="icon16-sg"></i> Homepage</td><td class="infoTableCell"><a href="<%= anon_url('https://github.com/SickGear/SickGear/wiki') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickGear/SickGear/wiki</a></td></tr>
 		<tr><td class="infoTableHeader"><i class="icon16-github"></i> Source</td><td class="infoTableCell"><a href="<%= anon_url('https://github.com/SickGear/SickGear/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://github.com/SickGear/SickGear/</a></td></tr>
-		<tr><td class="infoTableHeader"><i class="icon16-mirc"></i> Internet Relay Chat</td><td class="infoTableCell">web: <a href="<%= anon_url('https://libera.chat/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libera.chat</a> irc: <a href="irc://irc.libera.chat/#sickgear" rel="noreferrer"><i>#SickGear</i> on <i>irc.libera.chat</i></a></td></tr>
+		<tr><td class="infoTableHeader"><i class="icon16-mirc"></i> Internet Relay Chat</td><td class="infoTableCell">web: <a href="<%= anon_url('https://libera.chat/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">Libera.chat</a> irc: <a href="irc://irc.libera.chat/#sickshift" rel="noreferrer"><i>#SickShift</i> on <i>irc.libera.chat</i></a></td></tr>
 		<tr class="infoTableSeperator"><td class="infoTableHeader">Powered by</td><td class="infoTableCell">Python, HTML5, jQuery, SQLite, Regex, CSS, Javascript, Tornado webserver</td></tr>
 		<tr><td class="infoTableHeader">Credits to</td><td class="infoTableHeader">Trakt.tv, TVmaze, Fanart.tv, IMDb, TheXem, Metacritic, TV Calendar, Next Episode, srrDB, Predb, flaticon.com, and GitHub</td></tr>
 		<tr><td class="infoTableHeader">&nbsp;</td><td class="infoTableHeader">This project also uses the TMDb API but is not endorsed or certified by TMDb</td></tr>

@@ -1,11 +1,11 @@
 #import datetime
-#import sickgear
-#from sickgear import network_timezones, subtitles
-#from sickgear.common import Overview, Quality, statusStrings, ARCHIVED, UNAIRED, SUBTITLED, SNATCHED_ANY, DOWNLOADED
-#from sickgear.sgdatetime import SGDatetime
+#import sickshift
+#from sickshift import network_timezones, subtitles
+#from sickshift.common import Overview, Quality, statusStrings, ARCHIVED, UNAIRED, SUBTITLED, SNATCHED_ANY, DOWNLOADED
+#from sickshift.sgdatetime import SGDatetime
 #from lib import subliminal
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 #######
 #set $network_timezone = $network_timezones.get_network_timezone($show_obj.network)
 #set $network_time = $network_timezones.parse_time($show_obj.airs)
@@ -24,8 +24,9 @@
     #set $ep_key = ($ep['season'], $ep['episode'])
     #set $ep_str = '%sx%s' % $ep_key
     #set $epLoc = $ep['location']
+    #set $has_file = ('0', '1')['' != $epLoc and None != $epLoc]
     #set never_aired = 0 < int($ep['season']) and 1 == int($ep['airdate'])
-		<tr class="#echo ' '.join([$Overview.overviewStrings[$ep_cats[$ep_str]], ('', 'airdate-never')[$never_aired], ('', 'archived')[$ARCHIVED == $Quality.split_composite_status(int($ep['status']))[0]]])#">
+		<tr class="#echo ' '.join([$Overview.overviewStrings[$ep_cats[$ep_str]], ('', 'airdate-never')[$never_aired], ('', 'archived')[$ARCHIVED == $Quality.split_composite_status(int($ep['status']))[0]]])#" data-indexer="$show_obj.tvid" data-show-id="$show_obj.prodid" data-season="$ep['season']" data-episode="$ep['episode']" data-has-file="$has_file">
 			<td class="col-checkbox">
 				<input type="checkbox" class="epCheck #echo 'hide' if $UNAIRED == int($ep['status']) else ''#" id="$ep_str" name="$ep_str">
 			</td>
@@ -42,7 +43,7 @@
     #end if
 
     #set $episode = str($ep['episode']) + ('', ' (%s)' % $ep['absolute_number'])[$show_obj.is_anime]
-    #set $downloaded = ('', '<strong>file</strong> %s<br><strong>size</strong> %s' % ($epLoc, $sickgear.helpers.human($ep['file_size'])))['' != $epLoc and None != $epLoc]
+    #set $downloaded = ('', '<strong>file</strong> %s<br><strong>size</strong> %s' % ($epLoc, $sickshift.helpers.human($ep['file_size'])))['' != $epLoc and None != $epLoc]
     #set $attr=(('', 'Ep # %s' % $attr_title_ep)[bool($attr_title_ep)], $downloaded)[any($downloaded)]
 			<td align="center">
 				<span style="white-space:nowrap"#if $attr# class="addQTip" title="$attr"#end if#>$episode</span>
@@ -118,6 +119,11 @@
     #if $sg_var('USE_SUBTITLES') and $show_obj.subtitles and len(set(str($ep['subtitles']).split(',')).intersection(set($subtitles.wanted_languages()))) < len($subtitles.wanted_languages()) and $ep['location']
 				<a class="epSubtitlesSearch" href="$sbRoot/home/search-episode-subtitles?tvid_prodid=$show_obj.tvid_prodid&amp;season=$ep['season']&amp;episode=$ep['episode']"><img src="$sbRoot/images/closed_captioning.png" height="16" alt="search subtitles" title="Search subtitles"></a>
     #end if
+			</td>
+			<td class="col-delete" align="center">
+				<a class="ep-delete-btn addQTip" href="javascript:void(0);" data-tvid-prodid="$show_obj.tvid_prodid" data-season="$ep['season']" data-episode="$ep['episode']" data-has-file="$has_file" data-location="#echo ($epLoc or '')#" data-showname="$show_obj.name" title="Supprimer cet épisode">
+					<i class="sgicon-delete"></i>
+				</a>
 			</td>
 		</tr>
 #end for

@@ -8,6 +8,7 @@ config.ini*
 cache.db*
 failed.db*
 sickbeard.db*
+sickshift.db*
 server.crt
 server.key
 
@@ -16,7 +17,7 @@ server.key
 tests/cache/*
 tests/Logs/*
 tests/*.db
-tests/sickgear.*
+tests/sickshift.*
 
 ######################
 #  Compiled source   #
@@ -50,4 +51,29 @@ desktop.ini
 ehthumbs.db
 Thumbs.db
 btn-status.json
-states-data.json
+states-data.json.white_cache/
+gui/slick/images/network/.white_cache/
+
+# SickShift: private runtime state never belongs in a release.
+/.env*
+!/.env.example
+/.aws/
+/.codex/
+/.agents/
+/venv/
+/.venv/
+/backup/
+/backups/
+/Logs/
+/cache/
+/restore/
+*.db
+*.db-*
+*.sqlite*
+*.log
+*.tar
+*.zip
+/config.ini*
+/*dashboard_config.json
+/SICKSHIFT_LOCAL.md
+/SICKSHIFT_MIGRATION.json

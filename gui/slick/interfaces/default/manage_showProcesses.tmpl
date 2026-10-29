@@ -1,6 +1,6 @@
-#import sickgear
-#from sickgear.helpers import find_show_by_id, maybe_plural
-#from sickgear.sgdatetime import SGDatetime
+#import sickshift
+#from sickshift.helpers import find_show_by_id, maybe_plural
+#from sickshift.sgdatetime import SGDatetime
 ##
 #set global $title = 'Show Tasks'
 #set global $header = 'Show Tasks'
@@ -8,7 +8,7 @@
 #set global $topmenu = 'manage'
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script src="$sbRoot/js/manageShowProcesses.js?v=$sbPID" xmlns="http://www.w3.org/1999/html"></script>
 <div id="content800">
@@ -109,11 +109,11 @@
 			<div><input type="button" class="show-all-more btn" value="Expand All"><input type="button" class="hide show-all-less btn" value="Collapse All"></div>
 #end if
 			<div class="task">
-				Add: <i>$len($queue_length['add']) show$sickgear.helpers.maybe_plural($len($queue_length['add']))</i>
+				Add: <i>$len($queue_length['add']) show$sickshift.helpers.maybe_plural($len($queue_length['add']))</i>
 #if $queue_length['add']
 				<input type="button" class="#if not $queue_length['add']#hide #end if#shows-more btn left-6px" id="add-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn left-6px" id="add-btn-less" value="Collapse">
-				<input type="button" class="hide btn left-6px" id="clear-btn-add" value="Clear" data-action="$sickgear.show_queue.ShowQueueActions.ADD">
+				<input type="button" class="hide btn left-6px" id="clear-btn-add" value="Clear" data-action="$sickshift.show_queue.ShowQueueActions.ADD">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -138,11 +138,11 @@
 #end if
 
 			<div class="task">
-				Update <span class="grey-text">(Forced / Forced Web)</span>: <i>$len($queue_length['update']) <span class="grey-text">($len($queue_length['forceupdate']) / $len($queue_length['forceupdateweb']))</span> show$sickgear.helpers.maybe_plural($len($queue_length['update']))</i>
+				Update <span class="grey-text">(Forced / Forced Web)</span>: <i>$len($queue_length['update']) <span class="grey-text">($len($queue_length['forceupdate']) / $len($queue_length['forceupdateweb']))</span> show$sickshift.helpers.maybe_plural($len($queue_length['update']))</i>
 #if $queue_length['update']
 				<input type="button" class="#if not $queue_length['update']#hide #end if#shows-more btn" id="update-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn" id="update-btn-less" value="Collapse">
-				<input type="button" class="hide btn left-6px" id="clear-btn-update" value="Clear" data-action="$sickgear.show_queue.ShowQueueActions.UPDATE">
+				<input type="button" class="hide btn left-6px" id="clear-btn-update" value="Clear" data-action="$sickshift.show_queue.ShowQueueActions.UPDATE">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -175,11 +175,11 @@
 #end if
 
 			<div class="task">
-				Refresh: <i>$len($queue_length['refresh']) show$sickgear.helpers.maybe_plural($len($queue_length['refresh']))</i>
+				Refresh: <i>$len($queue_length['refresh']) show$sickshift.helpers.maybe_plural($len($queue_length['refresh']))</i>
 #if $queue_length['refresh']
 				<input type="button" class="#if not $queue_length['refresh']#hide #end if#shows-more btn" id="refresh-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn" id="refresh-btn-less" value="Collapse">
-				<input type="button" class="hide btn left-6px" id="clear-btn-refreah" value="Clear" data-action="$sickgear.show_queue.ShowQueueActions.REFRESH">
+				<input type="button" class="hide btn left-6px" id="clear-btn-refreah" value="Clear" data-action="$sickshift.show_queue.ShowQueueActions.REFRESH">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -205,11 +205,11 @@
 #end if
 
 			<div class="task">
-				Switch Source: <i>$len($queue_length['switch']) show$sickgear.helpers.maybe_plural($len($queue_length['switch']))</i>
+				Switch Source: <i>$len($queue_length['switch']) show$sickshift.helpers.maybe_plural($len($queue_length['switch']))</i>
 #if $queue_length['switch']
 				<input type="button" class="#if not $queue_length['switch']#hide #end if#shows-more btn left-6px" id="switch-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn left-6px" id="switch-btn-less" value="Collapse">
-				<input type="button" class="hide btn left-6px" id="clear-btn-switch" value="Clear" data-action="$sickgear.show_queue.ShowQueueActions.SWITCH">
+				<input type="button" class="hide btn left-6px" id="clear-btn-switch" value="Clear" data-action="$sickshift.show_queue.ShowQueueActions.SWITCH">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -225,7 +225,7 @@
 						<td class="text-left">
 							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_show['tvid_prodid']">$cur_show['name']</a>
 						</td>
-						<td class="text-center"><span>$sickgear.TVInfoAPI($cur_show['new_tvid']).name</span><input type="button" class="btn left-6px" id="remove-btn-$cur_show['uid']" value="Remove" data-uid="$cur_show['uid']"></td>
+						<td class="text-center"><span>$sickshift.TVInfoAPI($cur_show['new_tvid']).name</span><input type="button" class="btn left-6px" id="remove-btn-$cur_show['uid']" value="Remove" data-uid="$cur_show['uid']"></td>
 					</tr>
     #end for
 				</tbody>
@@ -235,7 +235,7 @@
 #end if
 
 			<div class="task">
-				Switch Failed: <i>$len($failed_switch) show$sickgear.helpers.maybe_plural($len($failed_switch))</i>
+				Switch Failed: <i>$len($failed_switch) show$sickshift.helpers.maybe_plural($len($failed_switch))</i>
 #if $failed_switch
 				<input type="button" class="#if not $failed_switch#hide #end if#shows-more btn" id="switch-failed-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn" id="switch-failed-btn-less" value="Collapse">
@@ -260,7 +260,7 @@
 							<span>Unknown</span>
         #end if
 						</td>
-						<td class="text-center">$sickgear.TVInfoAPI($cur_show['new_tvid']).name</td>
+						<td class="text-center">$sickshift.TVInfoAPI($cur_show['new_tvid']).name</td>
 						<td class="text-center">
 							$cur_show['status']<input type="button" class="btn" id="remove-btn-$cur_show['uid']" value="Remove" data-uid="$cur_show['uid']" data-force="1">
 						</td>
@@ -273,11 +273,11 @@
 #end if
 
 			<div class="task">
-				People: <i>$len($people_queue['main_cast']) show$sickgear.helpers.maybe_plural($len($people_queue['main_cast']))</i>
+				People: <i>$len($people_queue['main_cast']) show$sickshift.helpers.maybe_plural($len($people_queue['main_cast']))</i>
 #if $people_queue['main_cast']
 				<input type="button" class="#if not $people_queue['main_cast']#hide #end if#shows-more btn" id="main_cast-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn" id="main_cast-btn-less" value="Collapse">
-				<input type="button" class="hide btn left-6px" id="clear-people-btn" value="Clear" data-action="$sickgear.people_queue.PeopleQueueActions.SHOWCAST">
+				<input type="button" class="hide btn left-6px" id="clear-people-btn" value="Clear" data-action="$sickshift.people_queue.PeopleQueueActions.SHOWCAST">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -303,11 +303,11 @@
 #end if
 
 			<div class="task">
-				Rename: <i>$len($queue_length['rename']) show$sickgear.helpers.maybe_plural($len($queue_length['rename']))</i>
+				Rename: <i>$len($queue_length['rename']) show$sickshift.helpers.maybe_plural($len($queue_length['rename']))</i>
 #if $queue_length['rename']
 				<input type="button" class="#if not $queue_length['rename']#hide #end if#shows-more btn" id="rename-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn" id="rename-btn-less" value="Collapse">
-				<input type="button" class="hide btn left-6px" id="clear-btn-rename" value="Clear" data-action="$sickgear.show_queue.ShowQueueActions.RENAME">
+				<input type="button" class="hide btn left-6px" id="clear-btn-rename" value="Clear" data-action="$sickshift.show_queue.ShowQueueActions.RENAME">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -332,13 +332,13 @@
 			</div><!-- /task -->
 #end if
 
-#if $sickgear.USE_SUBTITLES
+#if $sickshift.USE_SUBTITLES
 			<div class="task">
-				Subtitle: <i>$len($queue_length['subtitle']) show$sickgear.helpers.maybe_plural($len($queue_length['subtitle']))</i>
+				Subtitle: <i>$len($queue_length['subtitle']) show$sickshift.helpers.maybe_plural($len($queue_length['subtitle']))</i>
     #if $queue_length['subtitle']
 				<input type="button" class="#if not $queue_length['subtitle']#hide #end if#shows-more btn" id="subtitle-btn-more" value="Expand">
 				<input type="button" class="hide shows-less btn" id="subtitle-btn-less" value="Collapse">
-				<input type="button" class="btn left-6px" id="hide clear-btn-subtitles" value="Clear" data-action="$sickgear.show_queue.ShowQueueActions.SUBTITLE">
+				<input type="button" class="btn left-6px" id="hide clear-btn-subtitles" value="Clear" data-action="$sickshift.show_queue.ShowQueueActions.SUBTITLE">
 			</div>
 			<table class="hide sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0">
 				<thead>
@@ -368,4 +368,4 @@
 
 </div><!-- /content800 -->
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

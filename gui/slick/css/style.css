@@ -126,7 +126,7 @@ fonts
 	font-style:italic
 }
 
-/* SickGear Icons */
+/* SickShift Icons */
 @font-face{
 	font-family:"sgicons";
 	src:url("fonts/sgicons.eot?v4");
@@ -1006,17 +1006,17 @@ home.tmpl
 	border-bottom-right-radius:3px
 }
 #show-list .show-card .ui-progressbar{
-	height:8px !important
+	height:5px !important
 }
 
 #show-list .show-card .ui-corner-all, #show-list .show-card .ui-corner-bottom,
 #show-list .show-card .ui-corner-right, #show-list .show-card .ui-corner-br{
-	border-bottom-right-radius:5px
+	border-bottom-right-radius:16px !important
 }
 
 #show-list .show-card .ui-corner-all, #show-list .show-card .ui-corner-bottom,
 #show-list .show-card .ui-corner-left, #show-list .show-card .ui-corner-bl{
-	border-bottom-left-radius:5px
+	border-bottom-left-radius:16px !important
 }
 
 #browse-list .show-card .ui-corner-all, #browse-list .show-card .ui-corner-top,
@@ -1034,10 +1034,7 @@ home.tmpl
 }
 
 #show-list .show-card .ui-widget-content{
-	border-top:1px solid #111;
-	border-bottom:1px solid #111;
-	border-left:0;
-	border-right:0
+	border: none !important;
 }
 
 .ui-progressbar .ui-progressbar-value{
@@ -1070,7 +1067,8 @@ home.tmpl
 	overflow:hidden;
 	white-space:nowrap;
 	font-size:11px;
-	margin:4px 4px 0 4px
+	margin:4px 4px 0 4px;
+	text-align:center;
 }
 
 .show-title:after{
@@ -1109,7 +1107,8 @@ home.tmpl
 	overflow:hidden;
 	white-space:nowrap;
 	font-size:11px;
-	margin:0 4px 4px 4px
+	margin:0 4px 4px 4px;
+	text-align:center;
 }
 
 .show-date:after{
@@ -1150,8 +1149,13 @@ home.tmpl
 }
 
 .show-network-image{
-	width:50px;
-	height:auto
+	width:68px !important;
+	height:22px !important;
+	max-width:68px !important;
+	max-height:22px !important;
+	object-fit:contain !important;
+	display:inline-block !important;
+	vertical-align:middle !important;
 }
 
 .show-dlstats{

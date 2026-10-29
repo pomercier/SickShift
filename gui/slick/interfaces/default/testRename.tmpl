@@ -1,5 +1,5 @@
-#import sickgear
-#from sickgear import common
+#import sickshift
+#from sickshift import common
 #from lib import exceptions_helper as exceptions
 ##
 #set global $title = 'Media Rename ' + $show_obj.name
@@ -11,7 +11,7 @@
 #set global $page_body_attr = 'edit-show" class="' + $css
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script src="$sbRoot/js/testRename.js"></script>
 <script src="$sbRoot/js/livepanel.js?v=$sbPID"></script>
@@ -42,15 +42,15 @@
 
 				<div id="core-component-group1" class="component-group">
 
-#if 1 == int($show_obj.air_by_date) and $sickgear.NAMING_CUSTOM_ABD:
+#if 1 == int($show_obj.air_by_date) and $sickshift.NAMING_CUSTOM_ABD:
     #set $type = 'Air-by-date'
-    #set $pattern = $sickgear.NAMING_ABD_PATTERN
-#elif 1 == int($show_obj.sports) and $sickgear.NAMING_CUSTOM_SPORTS:
+    #set $pattern = $sickshift.NAMING_ABD_PATTERN
+#elif 1 == int($show_obj.sports) and $sickshift.NAMING_CUSTOM_SPORTS:
     #set $type = 'Sports'
-    #set $pattern = $sickgear.NAMING_SPORTS_PATTERN
+    #set $pattern = $sickshift.NAMING_SPORTS_PATTERN
 #else
     #set $type = 'Single episode'
-    #set $pattern = $sickgear.NAMING_PATTERN
+    #set $pattern = $sickshift.NAMING_PATTERN
 #end if
 					<h3>Proposed changes of existing files</h3>
 
@@ -126,4 +126,4 @@
 	</div>
 
 	<input type="submit" value="Rename Selected" class="btn btn-success"> <a href="$sbRoot/home/view-show?tvid_prodid=$show_obj.tvid_prodid" class="btn btn-danger">Cancel Rename</a>
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

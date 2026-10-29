@@ -1,4 +1,4 @@
-#import sickgear
+#import sickshift
 #import os
 ##
 #set global $title = 'Search Tasks'
@@ -8,7 +8,7 @@
 #set $dev_mode = os.environ.get('SG_DEV_MODE')
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <input type="hidden" id="sbRoot" value="$sbRoot">
 <script src="$sbRoot/js/plotTooltip.js?v=$sbPID"></script>
@@ -83,12 +83,12 @@
 		<input type="button" class="show-all-more btn" id="all-btn-more" value="Expand All"><input type="button" class="show-all-less btn" id="all-btn-less" value="Collapse All"><br>
 #end if
 		<div id="queue-recent" class="section">
-			Recent: <i>$queue_length['recent'] item$sickgear.helpers.maybe_plural($queue_length['recent'])</i>
+			Recent: <i>$queue_length['recent'] item$sickshift.helpers.maybe_plural($queue_length['recent'])</i>
 		</div>
 
 
 		<div id="queue-proper" class="section">
-			Proper: <i>$len($queue_length['proper']) item$sickgear.helpers.maybe_plural($queue_length['proper'])</i>
+			Proper: <i>$len($queue_length['proper']) item$sickshift.helpers.maybe_plural($queue_length['proper'])</i>
 #if $queue_length['proper']
 			<input type="button" class="shows-more btn" id="proper-btn-more" value="Expand" #if not $queue_length['proper']# style="display:none" #end if#><input type="button" class="shows-less btn" id="proper-btn-less" value="Collapse" style="display:none"><br>
 			<table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0" style="display:none">
@@ -112,7 +112,7 @@
 
 
 		<div id="queue-backlog" class="section">
-			Backlog: <i>$len($queue_length['backlog']) item$sickgear.helpers.maybe_plural($len($queue_length['backlog']))</i>#if $dev_mode #<input type="button" class="btn" id="clear-btn-backlog" value="Clear" data-action="$sickgear.search_queue.BACKLOG_SEARCH">#end if#
+			Backlog: <i>$len($queue_length['backlog']) item$sickshift.helpers.maybe_plural($len($queue_length['backlog']))</i>#if $dev_mode #<input type="button" class="btn" id="clear-btn-backlog" value="Clear" data-action="$sickshift.search_queue.BACKLOG_SEARCH">#end if#
 #if $queue_length['backlog']
 			<input type="button" class="shows-more btn" id="backlog-btn-more" value="Expand" #if not $queue_length['backlog']# style="display:none" #end if#><input type="button" class="shows-less btn" id="backlog-btn-less" value="Collapse" style="display:none"><br>
 			<table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0" style="display:none">
@@ -138,7 +138,7 @@
         #end if
 					<tr class="#echo ('odd', 'even')[$row % 2]##set $row+=1#">
 						<td style="width:80%;text-align:left;color:white">
-							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_item['tvid_prodid']">$cur_item['name']</a> - $sickgear.helpers.make_search_segment_html_string($cur_item['segment'])
+							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_item['tvid_prodid']">$cur_item['name']</a> - $sickshift.helpers.make_search_segment_html_string($cur_item['segment'])
 						</td>
 						<td style="width:20%;text-align:center;color:white">$search_type#if $dev_mode #<input type="button" class="btn" id="remove-btn-$cur_item['uid']" value="Remove" data-uid="$cur_item['uid']">#end if#</td>
 					</tr>
@@ -150,7 +150,7 @@
 
 
 		<div id="queue-manual" class="section">
-			Manual: <i>$len($queue_length['manual']) item$sickgear.helpers.maybe_plural($len($queue_length['manual']))</i> #if $dev_mode #<input type="button" class="btn" id="clear-btn-manual" value="Clear" data-action="$sickgear.search_queue.MANUAL_SEARCH">#end if#
+			Manual: <i>$len($queue_length['manual']) item$sickshift.helpers.maybe_plural($len($queue_length['manual']))</i> #if $dev_mode #<input type="button" class="btn" id="clear-btn-manual" value="Clear" data-action="$sickshift.search_queue.MANUAL_SEARCH">#end if#
 #if $queue_length['manual']
 			<input type="button" class="shows-more btn" id="manual-btn-more" value="Expand" #if not $queue_length['manual']# style="display:none" #end if#><input type="button" class="shows-less btn" id="manual-btn-less" value="Collapse" style="display:none"><br>
 			<table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0" style="display:none">
@@ -160,7 +160,7 @@
     #for $cur_item in $queue_length['manual']:
 					<tr class="#echo ('odd', 'even')[$row % 2]##set $row+=1#">
 						<td style="width:100%;text-align:left;color:white">
-							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_item['tvid_prodid']">$cur_item['name']</a> - $sickgear.helpers.make_search_segment_html_string($cur_item['segment'])
+							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_item['tvid_prodid']">$cur_item['name']</a> - $sickshift.helpers.make_search_segment_html_string($cur_item['segment'])
 							#if $dev_mode #<input type="button" class="btn" id="remove-btn-$cur_item['uid']" value="Remove" data-uid="$cur_item['uid']">#end if#
 						</td>
 					</tr>
@@ -172,7 +172,7 @@
 
 
 		<div id="queue-failed" class="section">
-			Failed: <i>$len($queue_length['failed']) item$sickgear.helpers.maybe_plural($len($queue_length['failed']))</i> #if $dev_mode #<input type="button" class="btn" id="clear-btn-failed" value="Clear" data-action="$sickgear.search_queue.FAILED_SEARCH">#end if#
+			Failed: <i>$len($queue_length['failed']) item$sickshift.helpers.maybe_plural($len($queue_length['failed']))</i> #if $dev_mode #<input type="button" class="btn" id="clear-btn-failed" value="Clear" data-action="$sickshift.search_queue.FAILED_SEARCH">#end if#
 #if $queue_length['failed']
 			<input type="button" class="shows-more btn" id="failed-btn-more" value="Expand" #if not $queue_length['failed']# style="display:none" #end if#><input type="button" class="shows-less btn" id="failed-btn-less" value="Collapse" style="display:none"><br>
 			<table class="sickbeardTable manageTable" cellspacing="1" border="0" cellpadding="0" style="display:none">
@@ -182,7 +182,7 @@
     #for $cur_item in $queue_length['failed']:
 					<tr class="#echo ('odd', 'even')[$row % 2]##set $row+=1#">
 						<td style="width:100%;text-align:left;color:white">
-							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_item['tvid_prodid']">$cur_item['name']</a> - $sickgear.helpers.make_search_segment_html_string($cur_item['segment'])
+							<a class="whitelink" href="$sbRoot/home/view-show?tvid_prodid=$cur_item['tvid_prodid']">$cur_item['name']</a> - $sickshift.helpers.make_search_segment_html_string($cur_item['segment'])
 							#if $dev_mode #<input type="button" class="btn" id="remove-btn-$cur_item['uid']" value="Remove" data-uid="$cur_item['uid']">#end if#
 						</td>
 					</tr>
@@ -195,4 +195,4 @@
 
 </div>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

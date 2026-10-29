@@ -1,12 +1,12 @@
-#import sickgear
-#from sickgear.helpers import anon_url
+#import sickshift
+#from sickshift.helpers import anon_url
 ##
 #set global $title = 'Config - Anime'
 #set global $header = 'Anime'
 #set global $sbPath = '../..'
 #set global $topmenu = 'config'
 ##
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script src="$sbRoot/js/config.js?v=$sbPID"></script>
 
@@ -41,7 +41,7 @@
 							<label for="anime_treat_as_hdtv">
 								<span class="component-title">Quality control</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="anime_treat_as_hdtv" id="anime_treat_as_hdtv"#if $sickgear.ANIME_TREAT_AS_HDTV# checked="checked"#end if#>
+									<input type="checkbox" class="enabler" name="anime_treat_as_hdtv" id="anime_treat_as_hdtv"#if $sickshift.ANIME_TREAT_AS_HDTV# checked="checked"#end if#>
 									<p>treat anime releases that lack a quality tag as HDTV instead of "unknown".&nbsp;This may improve snatch success</p>
 								</span>
 							</label>
@@ -64,7 +64,7 @@
 							<label for="use_anidb">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_anidb" id="use_anidb"#if $sickgear.USE_ANIDB# checked="checked"#end if#>
+									<input type="checkbox" class="enabler" name="use_anidb" id="use_anidb"#if $sickshift.USE_ANIDB# checked="checked"#end if#>
 									<p>fetch data for scene exceptions (alternative release names) and available 'release groups' per show</p>
 								</span>
 							</label>
@@ -75,7 +75,7 @@
 								<label for="anidb_username">
 									<span class="component-title">AniDB username</span>
 									<span class="component-desc">
-										<input type="text" name="anidb_username" id="anidb_username" value="$sickgear.ANIDB_USERNAME" class="form-control input-sm input350" autocorrect="off" autocapitalize="off" spellcheck="false">
+										<input type="text" name="anidb_username" id="anidb_username" value="$sickshift.ANIDB_USERNAME" class="form-control input-sm input350" autocorrect="off" autocapitalize="off" spellcheck="false">
 									</span>
 								</label>
 							</div>
@@ -84,7 +84,7 @@
 								<label for="anidb_password">
 									<span class="component-title">AniDB password</span>
 									<span class="component-desc">
-										<input type="password" autocomplete="nope" name="anidb_password" id="anidb_password" value="#echo '*' * len($sickgear.ANIDB_PASSWORD)#" class="form-control input-sm input350">
+										<input type="password" autocomplete="nope" name="anidb_password" id="anidb_password" value="#echo '*' * len($sickshift.ANIDB_PASSWORD)#" class="form-control input-sm input350">
 									</span>
 								</label>
 							</div>
@@ -93,7 +93,7 @@
 								<label>
 									<span class="component-title">Sync AniDB</span>
 									<span class="component-desc">
-										<input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist"#if $sickgear.ANIDB_USE_MYLIST# checked="checked"#end if#>
+										<input type="checkbox" name="anidb_use_mylist" id="anidb_use_mylist"#if $sickshift.ANIDB_USE_MYLIST# checked="checked"#end if#>
 										<p>add post-processed anime episodes to your "AniDB Mylist"</p>
 									</span>
 								</label>
@@ -114,4 +114,4 @@
 	</div>
 </div>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

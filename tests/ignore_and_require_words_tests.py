@@ -4,8 +4,8 @@ import unittest
 
 sys.path.insert(1, os.path.abspath('..'))
 
-import sickgear
-from sickgear import helpers, show_name_helpers
+import sickshift
+from sickshift import helpers, show_name_helpers
 
 
 class TVShow(object):
@@ -238,17 +238,17 @@ class TestCase(unittest.TestCase):
         for case_num, (name, ignore_list, require_list, expected_result, show_obj) in enumerate(test_cases):
             name = name if '%02d' not in name else name % case_num
             if ignore_list.startswith('regex:'):
-                sickgear.IGNORE_WORDS_REGEX = True
+                sickshift.IGNORE_WORDS_REGEX = True
                 ignore_list = ignore_list.replace('regex:', '')
             else:
-                sickgear.IGNORE_WORDS_REGEX = False
-            sickgear.IGNORE_WORDS = set(i.strip() for i in ignore_list.split(',') if i.strip())
+                sickshift.IGNORE_WORDS_REGEX = False
+            sickshift.IGNORE_WORDS = set(i.strip() for i in ignore_list.split(',') if i.strip())
             if require_list.startswith('regex:'):
-                sickgear.REQUIRE_WORDS_REGEX = True
+                sickshift.REQUIRE_WORDS_REGEX = True
                 require_list = require_list.replace('regex:', '')
             else:
-                sickgear.REQUIRE_WORDS_REGEX = False
-            sickgear.REQUIRE_WORDS = set(r.strip() for r in require_list.split(',') if r.strip())
+                sickshift.REQUIRE_WORDS_REGEX = False
+            sickshift.REQUIRE_WORDS = set(r.strip() for r in require_list.split(',') if r.strip())
             self.assertEqual(expected_result, show_name_helpers.pass_wordlist_checks(name, False, show_obj=show_obj),
                              'Expected %s with test: "%s" with ignore: "%s", require: "%s"' %
                              (expected_result, name, ignore_list, require_list))

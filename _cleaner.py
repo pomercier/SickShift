@@ -19,7 +19,7 @@ except (BaseException, Exception):
 
 if old_magic != magic_number:
     # print('Python magic changed: removing all .pyc, .pyo files')
-    for pc in ['sickgear', 'lib']:
+    for pc in ['sickshift', 'lib']:
         search_dir = os.path.join(parent_dir, pc)
         for dpath, dnames, fnames in os.walk(search_dir):
             for filename in [fn for fn in fnames if os.path.splitext(fn)[-1].lower() in ('.pyc', '.pyo')]:

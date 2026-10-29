@@ -1,9 +1,9 @@
-#import sickgear
-#from sickgear.common import Quality, qualityPresets, qualityPresetStrings, SD
-#from sickgear.indexers.indexer_config import TVINFO_TVMAZE, TVINFO_TVDB
+#import sickshift
+#from sickshift.common import Quality, qualityPresets, qualityPresetStrings, SD
+#from sickshift.indexers.indexer_config import TVINFO_TVMAZE, TVINFO_TVDB
 #from lib import exceptions_helper as exceptions
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Mass Edit'
 #set global $header = 'Mass Edit'
@@ -195,8 +195,8 @@
 		<div class="selectChoices">
 			<select id="edit_tvid" name="tvid" class="form-control form-control-inline input-sm">
 				<option value="keep">&lt; keep &gt;</option>
-#for $tv_src in $sickgear.TVInfoAPI().search_sources
-				<option value="$tv_src" #if $tv_src == $tvid_value then $selected else ''#>$sickgear.TVInfoAPI($tv_src).config['name']</option>
+#for $tv_src in $sickshift.TVInfoAPI().search_sources
+				<option value="$tv_src" #if $tv_src == $tvid_value then $selected else ''#>$sickshift.TVInfoAPI($tv_src).config['name']</option>
 #end for
 			</select><span style="white-space:nowrap">follow progress at manage/Show Tasks</span>
 		</div><br>

@@ -5,10 +5,10 @@ title: ""
 labels: ""
 assignees: ""
 ---
-  
-#### Branch: Insert the name of the branch (e.g. main or dev)  
-  
-#### Branch version commit hash: (See the About page)  
+
+#### Branch: Insert the name of the branch (e.g. main or dev)
+
+#### Branch version commit hash: (See the About page)
 
 
 Expectation | Result

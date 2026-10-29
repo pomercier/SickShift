@@ -1,17 +1,17 @@
 #import base64
-#import sickgear
+#import sickshift
 #import re
-#from sickgear.helpers import anon_url, starify
-#from sickgear.notifiers import NotifierFactory
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#from sickshift.helpers import anon_url, starify
+#from sickshift.notifiers import NotifierFactory
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Config - Notifications'
 #set global $header = 'Notifications'
 #set global $sbPath = '../..'
 #set global $topmenu = 'config'
 ##
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script src="$sbRoot/js/configNotifications.js?v=$sbPID"></script>
 <script src="$sbRoot/js/config.js?v=$sbPID"></script>
@@ -22,7 +22,7 @@
 	<h1 class="title">$title</h1>
 #end if
 
-<img src="$sbRoot/images/loading16#echo ('', '-dark')['dark' == $sickgear.THEME_NAME]#.gif" height="16" width="16" style="display:none">
+<img src="$sbRoot/images/loading16#echo ('', '-dark')['dark' == $sickshift.THEME_NAME]#.gif" height="16" width="16" style="display:none">
 <div id="config">
 	<div id="config-content">
 		<form id="configForm" action="$sbRoot/config/notifications/save-notifications" method="post">
@@ -63,12 +63,12 @@
 					</div>
 					<fieldset class="component-group-list">
 						<div class="field-pair">
-#if not hasattr($sickgear, 'EMBY_UPDATE_LIBRARY')#<span class="red-text">Restart SickGear to reveal new options here</span>#else#
+#if not hasattr($sickshift, 'EMBY_UPDATE_LIBRARY')#<span class="red-text">Restart SickShift to reveal new options here</span>#else#
 							<label class="cleafix" for="use-emby">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_emby" id="use-emby" #if $sickgear.USE_EMBY then 'checked="checked"' else ''#>
-									<p>should SickGear enable features for Emby server(s) ?</p>
+									<input type="checkbox" class="enabler" name="use_emby" id="use-emby" #if $sickshift.USE_EMBY then 'checked="checked"' else ''#>
+									<p>should SickShift enable features for Emby server(s) ?</p>
 								</span>
 							</label>
 						</div>
@@ -78,7 +78,7 @@
 								<label for="emby-update-library">
 									<span class="component-title">Update media library</span>
 									<span class="component-desc">
-										<input type="checkbox" name="emby_update_library" id="emby-update-library" #if $sickgear.EMBY_UPDATE_LIBRARY then 'checked="checked"' else ''#>
+										<input type="checkbox" name="emby_update_library" id="emby-update-library" #if $sickshift.EMBY_UPDATE_LIBRARY then 'checked="checked"' else ''#>
 										<p>push Emby to refresh a show that is post-processed</p>
 									</span>
 								</label>
@@ -102,10 +102,10 @@
 								<label for="emby-watched-mapped">
 									<span class="component-title">Map parent folder(s)</span>
 									<span class="component-desc">
-										<input type="text" name="emby_parent_maps" id="emby-watched-mapped" value="$sickgear.EMBY_PARENT_MAPS" class="form-control input-sm input250">
+										<input type="text" name="emby_parent_maps" id="emby-watched-mapped" value="$sickshift.EMBY_PARENT_MAPS" class="form-control input-sm input250">
 										<p>(comma separated)</p>
-										<div class="clear-left"><p>link each Emby library folder that differs to its SickGear parent folder counterpart<br>
-										(e.g. d:\tvstuff = c:\tv, /mnt/media/tv = /tv, /emby/folder = /sickgear/parent/folder)</p></div>
+										<div class="clear-left"><p>link each Emby library folder that differs to its SickShift parent folder counterpart<br>
+										(e.g. d:\tvstuff = c:\tv, /mnt/media/tv = /tv, /emby/folder = /sickshift/parent/folder)</p></div>
 									</span>
 								</label>
 							</div>
@@ -113,7 +113,7 @@
 								<label for="emby-host">
 									<span class="component-title">Host(s) running Emby</span>
 									<span class="component-desc">
-										<input type="text" name="emby_host" id="emby-host" value="$sickgear.EMBY_HOST" class="form-control input-sm input250">
+										<input type="text" name="emby_host" id="emby-host" value="$sickshift.EMBY_HOST" class="form-control input-sm input250">
 										<input type="button" class="btn" value="Discover" id="discover-emby">
 										<div class="clear-left"><p>IP:Port [, IP:Port] (e.g. 192.168.0.1:8096, 192.168.1.2:8096)</p></div>
 									</span>
@@ -123,7 +123,7 @@
 								<label for="emby-apikey">
 									<span class="component-title">API key(s)</span>
 									<span class="component-desc">
-										<input type="text" name="emby_apikey" id="emby-apikey" value="<%= starify(sickgear.EMBY_APIKEY) %>" class="form-control input-sm input250">
+										<input type="text" name="emby_apikey" id="emby-apikey" value="<%= starify(sickshift.EMBY_APIKEY) %>" class="form-control input-sm input250">
 										<p>(comma separated)</p>
 										<div class="clear-left"><p>one key per host from Emby/Manage Server/Advanced/Security</p></div>
 									</span>
@@ -149,8 +149,8 @@
 							<label class="cleafix" for="use-kodi">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_kodi" id="use-kodi" #if $sickgear.USE_KODI then 'checked="checked"' else ''#>
-									<p>should SickGear send Kodi commands ?</p>
+									<input type="checkbox" class="enabler" name="use_kodi" id="use-kodi" #if $sickshift.USE_KODI then 'checked="checked"' else ''#>
+									<p>should SickShift send Kodi commands ?</p>
 								</span>
 							</label>
 						</div>
@@ -160,7 +160,7 @@
 								<label for="kodi-always-on">
 									<span class="component-title">Always on</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_always_on" id="kodi-always-on" #if $sickgear.KODI_ALWAYS_ON then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_always_on" id="kodi-always-on" #if $sickshift.KODI_ALWAYS_ON then 'checked="checked"' else ''#>
 										<p>log errors when unreachable</p>
 									</span>
 								</label>
@@ -169,7 +169,7 @@
 								<label for="kodi-update-library">
 									<span class="component-title">Update shows known to Kodi</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_update_library" id="kodi-update-library" #if $sickgear.KODI_UPDATE_LIBRARY then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_update_library" id="kodi-update-library" #if $sickshift.KODI_UPDATE_LIBRARY then 'checked="checked"' else ''#>
 										<p>push Kodi to refresh a show that is post-processed</p>
 									</span>
 								</label>
@@ -178,7 +178,7 @@
 								<label for="kodi-update-full">
 									<span class="component-title">Perform full library update</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_update_full" id="kodi-update-full" #if $sickgear.KODI_UPDATE_FULL then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_update_full" id="kodi-update-full" #if $sickshift.KODI_UPDATE_FULL then 'checked="checked"' else ''#>
 										<p>only when "Update shows" fails. Tip: enables Kodi to add new shows</p>
 									</span>
 								</label>
@@ -187,7 +187,7 @@
 								<label for="kodi-update-onlyfirst">
 									<span class="component-title">Only update first host</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_update_onlyfirst" id="kodi-update-onlyfirst" #if $sickgear.KODI_UPDATE_ONLYFIRST then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_update_onlyfirst" id="kodi-update-onlyfirst" #if $sickshift.KODI_UPDATE_ONLYFIRST then 'checked="checked"' else ''#>
 										<p>only send library updates to the first active host</p>
 									</span>
 								</label>
@@ -196,10 +196,10 @@
 								<label for="kodi-watched-mapped">
 									<span class="component-title">Map parent folder(s)</span>
 									<span class="component-desc">
-										<input type="text" name="kodi_parent_maps" id="kodi-watched-mapped" value="$sickgear.KODI_PARENT_MAPS" class="form-control input-sm input250">
+										<input type="text" name="kodi_parent_maps" id="kodi-watched-mapped" value="$sickshift.KODI_PARENT_MAPS" class="form-control input-sm input250">
 										<p>(comma separated)</p>
-										<div class="clear-left"><p>link each Kodi library folder that differs to its SickGear parent folder counterpart<br>
-										(e.g. d:\tvstuff = c:\tv, /mnt/media/tv = /tv, /kodi/folder = /sickgear/parent/folder)</p></div>
+										<div class="clear-left"><p>link each Kodi library folder that differs to its SickShift parent folder counterpart<br>
+										(e.g. d:\tvstuff = c:\tv, /mnt/media/tv = /tv, /kodi/folder = /sickshift/parent/folder)</p></div>
 									</span>
 								</label>
 							</div>
@@ -207,7 +207,7 @@
 								<label for="kodi-host">
 									<span class="component-title">Host(s) running Kodi</span>
 									<span class="component-desc">
-										<input type="text" name="kodi_host" id="kodi-host" value="$sickgear.KODI_HOST" class="form-control input-sm input350">
+										<input type="text" name="kodi_host" id="kodi-host" value="$sickshift.KODI_HOST" class="form-control input-sm input350">
 										<div class="clear-left"><p>IP:Port [, IP:Port] (e.g. 192.168.0.1:8080, 192.168.1.2:8080)</p></div>
 									</span>
 								</label>
@@ -216,7 +216,7 @@
 								<label for="kodi-username">
 									<span class="component-title">Kodi web server username</span>
 									<span class="component-desc">
-										<input type="text" name="kodi_username" id="kodi-username" value="$sickgear.KODI_USERNAME" class="form-control input-sm input250">
+										<input type="text" name="kodi_username" id="kodi-username" value="$sickshift.KODI_USERNAME" class="form-control input-sm input250">
 										<p>(blank for none)</p>
 										<div class="clear-left"><p>in Kodi System/Settings/Services/Web server</p></div>
 									</span>
@@ -226,7 +226,7 @@
 								<label for="kodi-password">
 									<span class="component-title">Kodi web server password</span>
 									<span class="component-desc">
-										<input type="password" autocomplete="nope" name="kodi_password" id="kodi-password" value="#echo '*' * len($sickgear.KODI_PASSWORD)#" class="form-control input-sm input250">
+										<input type="password" autocomplete="nope" name="kodi_password" id="kodi-password" value="#echo '*' * len($sickshift.KODI_PASSWORD)#" class="form-control input-sm input250">
 										<p>(blank for none)</p>
 										<div class="clear-left"><p>in Kodi System/Settings/Services/Web server</p></div>
 									</span>
@@ -236,7 +236,7 @@
 								<label for="kodi-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_notify_onsnatch" id="kodi-notify-onsnatch" #if $sickgear.KODI_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_notify_onsnatch" id="kodi-notify-onsnatch" #if $sickshift.KODI_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>download start notification</p>
 									</span>
 								</label>
@@ -245,7 +245,7 @@
 								<label for="kodi-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_notify_ondownload" id="kodi-notify-ondownload" #if $sickgear.KODI_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_notify_ondownload" id="kodi-notify-ondownload" #if $sickshift.KODI_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>download finish notification</p>
 									</span>
 								</label>
@@ -254,7 +254,7 @@
 								<label for="kodi-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi-notify-onsubtitledownload" #if $sickgear.KODI_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="kodi_notify_onsubtitledownload" id="kodi-notify-onsubtitledownload" #if $sickshift.KODI_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>subtitle downloaded notification</p>
 									</span>
 								</label>
@@ -281,8 +281,8 @@
 							<label for="use-plex">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_plex" id="use-plex" #if $sickgear.USE_PLEX then 'checked="checked" ' else ''#>
-									<p>should SickGear send Plex commands ?</p>
+									<input type="checkbox" class="enabler" name="use_plex" id="use-plex" #if $sickshift.USE_PLEX then 'checked="checked" ' else ''#>
+									<p>should SickShift send Plex commands ?</p>
 								</span>
 							</label>
 						</div>
@@ -293,7 +293,7 @@
 									<label for="plex-username">
 										<span class="component-title">Server/client username</span>
 										<span class="component-desc">
-											<input type="text" name="plex_username" id="plex-username" value="$sickgear.PLEX_USERNAME" class="form-control input-sm input250">
+											<input type="text" name="plex_username" id="plex-username" value="$sickshift.PLEX_USERNAME" class="form-control input-sm input250">
 											<p>blank = no authentication</p>
 										</span>
 									</label>
@@ -302,7 +302,7 @@
 									<label for="plex-password">
 										<span class="component-title">Server/client password</span>
 										<span class="component-desc">
-											<input type="password" autocomplete="nope" name="plex_password" id="plex-password" value="#echo '*' * len($sickgear.PLEX_PASSWORD)#" class="form-control input-sm input250">
+											<input type="password" autocomplete="nope" name="plex_password" id="plex-password" value="#echo '*' * len($sickshift.PLEX_PASSWORD)#" class="form-control input-sm input250">
 											<p>blank = no authentication</p>
 										</span>
 									</label>
@@ -314,7 +314,7 @@
 									<label for="plex-update-library">
 										<span class="component-title">Update server library</span>
 										<span class="component-desc">
-											<input type="checkbox" name="plex_update_library" id="plex-update-library" #if $sickgear.PLEX_UPDATE_LIBRARY then 'checked="checked" ' else ''#>
+											<input type="checkbox" name="plex_update_library" id="plex-update-library" #if $sickshift.PLEX_UPDATE_LIBRARY then 'checked="checked" ' else ''#>
 											<p>update Plex Media Server library when a download finishes</p>
 										</span>
 									</label>
@@ -338,10 +338,10 @@
 									<label for="plex-watched-mapped">
 										<span class="component-title">Map parent folder(s)</span>
 										<span class="component-desc">
-											<input type="text" name="plex_parent_maps" id="plex-watched-mapped" value="$sickgear.PLEX_PARENT_MAPS" class="form-control input-sm input250">
+											<input type="text" name="plex_parent_maps" id="plex-watched-mapped" value="$sickshift.PLEX_PARENT_MAPS" class="form-control input-sm input250">
 											<p>(comma separated)</p>
-											<div class="clear-left"><p>link each Plex library folder that differs to its SickGear parent folder counterpart<br>
-											(e.g. d:\tvstuff = c:\tv, /mnt/media/tv = /tv, /plex/folder = /sickgear/parent/folder)</p></div>
+											<div class="clear-left"><p>link each Plex library folder that differs to its SickShift parent folder counterpart<br>
+											(e.g. d:\tvstuff = c:\tv, /mnt/media/tv = /tv, /plex/folder = /sickshift/parent/folder)</p></div>
 										</span>
 									</label>
 								</div>
@@ -349,7 +349,7 @@
 									<label for="plex-server-host">
 										<span class="component-title">Plex Media Server IP:Port</span>
 										<span class="component-desc">
-											<input type="text" name="plex_server_host" id="plex-server-host" value="<%= re.sub(r'\b,\b', ', ', sickgear.PLEX_SERVER_HOST) %>" class="form-control input-sm input350">
+											<input type="text" name="plex_server_host" id="plex-server-host" value="<%= re.sub(r'\b,\b', ', ', sickshift.PLEX_SERVER_HOST) %>" class="form-control input-sm input350">
 											<div class="clear-left">
 												<p>one or more hosts running Plex Media Server<br>(e.g. 192.168.1.1:32400, 192.168.1.2:32400)</p>
 											</div>
@@ -370,7 +370,7 @@
 									<label for="plex-notify-onsnatch">
 										<span class="component-title">Notify on snatch</span>
 										<span class="component-desc">
-											<input type="checkbox" name="plex_notify_onsnatch" id="plex-notify-onsnatch" #if $sickgear.PLEX_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+											<input type="checkbox" name="plex_notify_onsnatch" id="plex-notify-onsnatch" #if $sickshift.PLEX_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 											<p>download start notification</p>
 										</span>
 									</label>
@@ -379,7 +379,7 @@
 									<label for="plex-notify-ondownload">
 										<span class="component-title">Notify on download</span>
 										<span class="component-desc">
-											<input type="checkbox" name="plex_notify_ondownload" id="plex-notify-ondownload" #if $sickgear.PLEX_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+											<input type="checkbox" name="plex_notify_ondownload" id="plex-notify-ondownload" #if $sickshift.PLEX_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 											<p>download finish notification</p>
 										</span>
 									</label>
@@ -388,7 +388,7 @@
 									<label for="plex-notify-onsubtitledownload">
 										<span class="component-title">Notify on subtitle download</span>
 										<span class="component-desc">
-											<input type="checkbox" name="plex_notify_onsubtitledownload" id="plex-notify-onsubtitledownload" #if $sickgear.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+											<input type="checkbox" name="plex_notify_onsubtitledownload" id="plex-notify-onsubtitledownload" #if $sickshift.PLEX_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 											<p>subtitle downloaded notification</p>
 										</span>
 									</label>
@@ -397,7 +397,7 @@
 									<label for="plex-host">
 										<span class="component-title">Plex client IP:Port</span>
 										<span class="component-desc">
-											<input type="text" name="plex_host" id="plex-host" value="<%= re.sub(r'\b,\b', ', ', sickgear.PLEX_HOST) %>" class="form-control input-sm input350">
+											<input type="text" name="plex_host" id="plex-host" value="<%= re.sub(r'\b,\b', ', ', sickshift.PLEX_HOST) %>" class="form-control input-sm input350">
 											<div class="clear-left">
 												<p>one or more hosts running Plex client<br>(e.g. 192.168.1.100:3000, 192.168.1.101:3000)</p>
 											</div>
@@ -430,8 +430,8 @@
 							<label class="cleafix" for="use-xbmc">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_xbmc" id="use-xbmc" #if $sickgear.USE_XBMC then 'checked="checked"' else ''#>
-									<p>should SickGear send XBMC commands ?</p>
+									<input type="checkbox" class="enabler" name="use_xbmc" id="use-xbmc" #if $sickshift.USE_XBMC then 'checked="checked"' else ''#>
+									<p>should SickShift send XBMC commands ?</p>
 								</span>
 							</label>
 						</div>
@@ -441,7 +441,7 @@
 								<label for="xbmc-always-on">
 									<span class="component-title">Always on</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_always_on" id="xbmc-always-on" #if $sickgear.XBMC_ALWAYS_ON then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_always_on" id="xbmc-always-on" #if $sickshift.XBMC_ALWAYS_ON then 'checked="checked"' else ''#>
 										<p>log errors when unreachable ?</p>
 									</span>
 								</label>
@@ -450,7 +450,7 @@
 								<label for="xbmc-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_notify_onsnatch" id="xbmc-notify-onsnatch" #if $sickgear.XBMC_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_notify_onsnatch" id="xbmc-notify-onsnatch" #if $sickshift.XBMC_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -459,7 +459,7 @@
 								<label for="xbmc-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_notify_ondownload" id="xbmc-notify-ondownload" #if $sickgear.XBMC_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_notify_ondownload" id="xbmc-notify-ondownload" #if $sickshift.XBMC_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -468,7 +468,7 @@
 								<label for="xbmc-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_notify_onsubtitledownload" id="xbmc-notify-onsubtitledownload" #if $sickgear.XBMC_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_notify_onsubtitledownload" id="xbmc-notify-onsubtitledownload" #if $sickshift.XBMC_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -477,7 +477,7 @@
 								<label for="xbmc-update-library">
 									<span class="component-title">Update library</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_update_library" id="xbmc-update-library" #if $sickgear.XBMC_UPDATE_LIBRARY then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_update_library" id="xbmc-update-library" #if $sickshift.XBMC_UPDATE_LIBRARY then 'checked="checked"' else ''#>
 										<p>update XBMC library when a download finishes ?</p>
 									</span>
 								</label>
@@ -486,7 +486,7 @@
 								<label for="xbmc-update-full">
 									<span class="component-title">Full library update</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_update_full" id="xbmc-update-full" #if $sickgear.XBMC_UPDATE_FULL then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_update_full" id="xbmc-update-full" #if $sickshift.XBMC_UPDATE_FULL then 'checked="checked"' else ''#>
 										<p>perform a full library update if update per-show fails ?</p>
 									</span>
 								</label>
@@ -495,7 +495,7 @@
 								<label for="xbmc-update-onlyfirst">
 									<span class="component-title">Only update first host</span>
 									<span class="component-desc">
-										<input type="checkbox" name="xbmc_update_onlyfirst" id="xbmc-update-onlyfirst" #if $sickgear.XBMC_UPDATE_ONLYFIRST then 'checked="checked"' else ''#>
+										<input type="checkbox" name="xbmc_update_onlyfirst" id="xbmc-update-onlyfirst" #if $sickshift.XBMC_UPDATE_ONLYFIRST then 'checked="checked"' else ''#>
 										<p>only send library updates to the first active host ?</p>
 									</span>
 								</label>
@@ -504,7 +504,7 @@
 								<label for="xbmc-host">
 									<span class="component-title">XBMC IP:Port</span>
 									<span class="component-desc">
-										<input type="text" name="xbmc_host" id="xbmc-host" value="$sickgear.XBMC_HOST" class="form-control input-sm input350">
+										<input type="text" name="xbmc_host" id="xbmc-host" value="$sickshift.XBMC_HOST" class="form-control input-sm input350">
 										<div class="clear-left"><p>host running XBMC (eg. 192.168.1.100:8080)<br>
 											(multiple host strings must be separated by commas)</p></div>
 									</span>
@@ -514,7 +514,7 @@
 								<label for="xbmc-username">
 									<span class="component-title">XBMC username</span>
 									<span class="component-desc">
-										<input type="text" name="xbmc_username" id="xbmc-username" value="$sickgear.XBMC_USERNAME" class="form-control input-sm input250">
+										<input type="text" name="xbmc_username" id="xbmc-username" value="$sickshift.XBMC_USERNAME" class="form-control input-sm input250">
 										<p>blank = no authentication</p>
 									</span>
 								</label>
@@ -523,7 +523,7 @@
 								<label for="xbmc-password">
 									<span class="component-title">XBMC password</span>
 									<span class="component-desc">
-										<input type="password" autocomplete="nope" name="xbmc_password" id="xbmc-password" value="#echo '*' * len($sickgear.XBMC_PASSWORD)#" class="form-control input-sm input250">
+										<input type="password" autocomplete="nope" name="xbmc_password" id="xbmc-password" value="#echo '*' * len($sickshift.XBMC_PASSWORD)#" class="form-control input-sm input250">
 										<p>blank = no authentication</p>
 									</span>
 								</label>
@@ -548,8 +548,8 @@
 							<label for="use-nmj">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_nmj" id="use-nmj" #if $sickgear.USE_NMJ then 'checked="checked"' else ''#>
-									<p>should SickGear send update commands to NMJ ?</p>
+									<input type="checkbox" class="enabler" name="use_nmj" id="use-nmj" #if $sickshift.USE_NMJ then 'checked="checked"' else ''#>
+									<p>should SickShift send update commands to NMJ ?</p>
 								</span>
 							</label>
 						</div>
@@ -559,7 +559,7 @@
 								<label for="nmj-host">
 									<span class="component-title">Popcorn IP address</span>
 									<span class="component-desc">
-										<input type="text" name="nmj_host" id="nmj-host" value="$sickgear.NMJ_HOST" class="form-control input-sm input250">
+										<input type="text" name="nmj_host" id="nmj-host" value="$sickshift.NMJ_HOST" class="form-control input-sm input250">
 										<div class="clear-left">IP address of Popcorn 200-series (eg. 192.168.1.100)</div>
 									</span>
 								</label>
@@ -577,7 +577,7 @@
 								<label for="nmj-database">
 									<span class="component-title">NMJ database</span>
 									<span class="component-desc">
-										<input type="text" name="nmj_database" id="nmj-database" value="$sickgear.NMJ_DATABASE" class="form-control input-sm input250" #if $sickgear.NMJ_DATABASE then "readonly=\"readonly\"" else ''#>
+										<input type="text" name="nmj_database" id="nmj-database" value="$sickshift.NMJ_DATABASE" class="form-control input-sm input250" #if $sickshift.NMJ_DATABASE then "readonly=\"readonly\"" else ''#>
 										<div class="clear-left">automatically filled via the 'Get Settings' button</div>
 									</span>
 								</label>
@@ -586,7 +586,7 @@
 								<label for="nmj-mount">
 									<span class="component-title">NMJ mount url</span>
 									<span class="component-desc">
-										<input type="text" name="nmj_mount" id="nmj-mount" value="$sickgear.NMJ_MOUNT" class="form-control input-sm input250" #if $sickgear.NMJ_MOUNT then "readonly=\"readonly\"" else ''#>
+										<input type="text" name="nmj_mount" id="nmj-mount" value="$sickshift.NMJ_MOUNT" class="form-control input-sm input250" #if $sickshift.NMJ_MOUNT then "readonly=\"readonly\"" else ''#>
 										<div class="clear-left">automatically filled via the 'Get Settings' button</div>
 									</span>
 								</label>
@@ -611,8 +611,8 @@
 							<label for="use-nmjv2">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_nmjv2" id="use-nmjv2" #if $sickgear.USE_NMJv2 then 'checked="checked"' else ''#>
-									<p>should SickGear send update commands to NMJv2 ?</p>
+									<input type="checkbox" class="enabler" name="use_nmjv2" id="use-nmjv2" #if $sickshift.USE_NMJv2 then 'checked="checked"' else ''#>
+									<p>should SickShift send update commands to NMJv2 ?</p>
 								</span>
 							</label>
 						</div>
@@ -622,7 +622,7 @@
 								<label for="nmjv2-host">
 									<span class="component-title">Popcorn IP address</span>
 									<span class="component-desc">
-										<input type="text" name="nmjv2_host" id="nmjv2-host" value="$sickgear.NMJv2_HOST" class="form-control input-sm input250">
+										<input type="text" name="nmjv2_host" id="nmjv2-host" value="$sickshift.NMJv2_HOST" class="form-control input-sm input250">
 										<div class="clear-left">IP address of Popcorn 300/400-series (eg. 192.168.1.100)</div>
 									</span>
 								</label>
@@ -631,10 +631,10 @@
 								<span class="component-title">Database location</span>
 								<span class="component-desc">
 									<label for="NMJV2_DBLOC_A" class="space-right">
-										<input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" #if $sickgear.NMJv2_DBLOC=='local' then 'checked="checked"' else ''#>PCH Local Media
+										<input type="radio" NAME="nmjv2_dbloc" VALUE="local" id="NMJV2_DBLOC_A" #if $sickshift.NMJv2_DBLOC=='local' then 'checked="checked"' else ''#>PCH Local Media
 									</label>
 									<label for="NMJV2_DBLOC_B">
-										<input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" #if $sickgear.NMJv2_DBLOC=='network' then 'checked="checked"' else ''#>PCH Network Media
+										<input type="radio" NAME="nmjv2_dbloc" VALUE="network" id="NMJV2_DBLOC_B" #if $sickshift.NMJv2_DBLOC=='network' then 'checked="checked"' else ''#>PCH Network Media
 									</label>
 								</span>
 							</div>
@@ -668,7 +668,7 @@
 								<label for="nmjv2-database">
 									<span class="component-title">NMJv2 database</span>
 									<span class="component-desc">
-										<input type="text" name="nmjv2_database" id="nmjv2-database" value="$sickgear.NMJv2_DATABASE" class="form-control input-sm input250" #if $sickgear.NMJv2_DATABASE then "readonly=\"readonly\"" else ''#>
+										<input type="text" name="nmjv2_database" id="nmjv2-database" value="$sickshift.NMJv2_DATABASE" class="form-control input-sm input250" #if $sickshift.NMJv2_DATABASE then "readonly=\"readonly\"" else ''#>
 										<div class="clear-left">automatically filled via the 'Find Database' buttons</div>
 									</span>
 								</label>
@@ -695,13 +695,13 @@
 							<label for="use-synoindex">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_synoindex" id="use-synoindex" #if $sickgear.USE_SYNOINDEX then 'checked="checked"' else ''#>
-									<p>should SickGear send notifications to the Synology indexer ?</p>
+									<input type="checkbox" class="enabler" name="use_synoindex" id="use-synoindex" #if $sickshift.USE_SYNOINDEX then 'checked="checked"' else ''#>
+									<p>should SickShift send notifications to the Synology indexer ?</p>
 								</span>
 							</label>
 							<label>
 								<span class="component-title">&nbsp;</span>
-								<span class="component-desc"><b>Note:</b> requires SickGear to be running on a Synology NAS</span>
+								<span class="component-desc"><b>Note:</b> requires SickShift to be running on a Synology NAS</span>
 							</label>
 						</div>
 
@@ -725,13 +725,13 @@
 							<label for="use-synologynotifier">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_synologynotifier" id="use-synologynotifier" #if $sickgear.USE_SYNOLOGYNOTIFIER then 'checked="checked"' else ''#>
-									<p>should SickGear send notifications to the Synology Notifier ?</p>
+									<input type="checkbox" class="enabler" name="use_synologynotifier" id="use-synologynotifier" #if $sickshift.USE_SYNOLOGYNOTIFIER then 'checked="checked"' else ''#>
+									<p>should SickShift send notifications to the Synology Notifier ?</p>
 								</span>
 							</label>
 							<label>
 								<span class="component-title">&nbsp;</span>
-								<span class="component-desc"><b>Note:</b> requires SickGear to be running on a Synology DSM</span>
+								<span class="component-desc"><b>Note:</b> requires SickShift to be running on a Synology DSM</span>
 							</label>
 						</div>
 
@@ -740,7 +740,7 @@
 								<label for="synologynotifier-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier-notify-onsnatch" #if $sickgear.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="synologynotifier_notify_onsnatch" id="synologynotifier-notify-onsnatch" #if $sickshift.SYNOLOGYNOTIFIER_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -749,7 +749,7 @@
 								<label for="synologynotifier-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier-notify-ondownload" #if $sickgear.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="synologynotifier_notify_ondownload" id="synologynotifier-notify-ondownload" #if $sickshift.SYNOLOGYNOTIFIER_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -758,7 +758,7 @@
 								<label for="synologynotifier-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier-notify-onsubtitledownload" #if $sickgear.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="synologynotifier_notify_onsubtitledownload" id="synologynotifier-notify-onsubtitledownload" #if $sickshift.SYNOLOGYNOTIFIER_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -780,8 +780,8 @@
 							<label for="use-pytivo">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_pytivo" id="use-pytivo" #if $sickgear.USE_PYTIVO then 'checked="checked"' else ''#>
-									<p>should SickGear send notifications to pyTivo ?</p>
+									<input type="checkbox" class="enabler" name="use_pytivo" id="use-pytivo" #if $sickshift.USE_PYTIVO then 'checked="checked"' else ''#>
+									<p>should SickShift send notifications to pyTivo ?</p>
 								</span>
 							</label>
 							<label>
@@ -794,7 +794,7 @@
 								<label for="pytivo-host">
 									<span class="component-title">pyTivo IP:Port</span>
 									<span class="component-desc">
-										<input type="text" name="pytivo_host" id="pytivo-host" value="$sickgear.PYTIVO_HOST" class="form-control input-sm input250">
+										<input type="text" name="pytivo_host" id="pytivo-host" value="$sickshift.PYTIVO_HOST" class="form-control input-sm input250">
 										<div class="clear-left">host running pyTivo (eg. 192.168.1.1:9032)</div>
 									</span>
 								</label>
@@ -803,7 +803,7 @@
 								<label for="pytivo-share-name">
 									<span class="component-title">pyTivo share name</span>
 									<span class="component-desc">
-										<input type="text" name="pytivo_share_name" id="pytivo-share-name" value="$sickgear.PYTIVO_SHARE_NAME" class="form-control input-sm input250">
+										<input type="text" name="pytivo_share_name" id="pytivo-share-name" value="$sickshift.PYTIVO_SHARE_NAME" class="form-control input-sm input250">
 										<div class="clear-left">value used in pyTivo Web Configuration to name the share</div>
 									</span>
 								</label>
@@ -812,7 +812,7 @@
 								<label for="pytivo-tivo-name">
 									<span class="component-title">Tivo name</span>
 									<span class="component-desc">
-										<input type="text" name="pytivo_tivo_name" id="pytivo-tivo-name" value="$sickgear.PYTIVO_TIVO_NAME" class="form-control input-sm input250">
+										<input type="text" name="pytivo_tivo_name" id="pytivo-tivo-name" value="$sickshift.PYTIVO_TIVO_NAME" class="form-control input-sm input250">
 										<div class="clear-left">in pyTivo use DVR name in ...<br>Messages & Settings > Account & System Information > System Information</div>
 									</span>
 								</label>
@@ -857,8 +857,8 @@
 							<label for="use-pushalot">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_pushalot" id="use-pushalot" #if $sickgear.USE_PUSHALOT then 'checked="checked"' else ''#>
-									<p>should SickGear send Pushalot notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_pushalot" id="use-pushalot" #if $sickshift.USE_PUSHALOT then 'checked="checked"' else ''#>
+									<p>should SickShift send Pushalot notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -868,7 +868,7 @@
 								<label for="pushalot-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot-notify-onsnatch" #if $sickgear.PUSHALOT_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushalot_notify_onsnatch" id="pushalot-notify-onsnatch" #if $sickshift.PUSHALOT_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -877,7 +877,7 @@
 								<label for="pushalot-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushalot_notify_ondownload" id="pushalot-notify-ondownload" #if $sickgear.PUSHALOT_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushalot_notify_ondownload" id="pushalot-notify-ondownload" #if $sickshift.PUSHALOT_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -886,7 +886,7 @@
 								<label for="pushalot-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot-notify-onsubtitledownload" #if $sickgear.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushalot_notify_onsubtitledownload" id="pushalot-notify-onsubtitledownload" #if $sickshift.PUSHALOT_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -895,7 +895,7 @@
 								<label for="pushalot-authorizationtoken">
 									<span class="component-title">Pushalot auth token</span>
 									<span class="component-desc">
-										<input type="text" name="pushalot_authorizationtoken" id="pushalot-authorizationtoken" value="<%= starify(sickgear.PUSHALOT_AUTHORIZATIONTOKEN) %>" class="form-control input-sm input350">
+										<input type="text" name="pushalot_authorizationtoken" id="pushalot-authorizationtoken" value="<%= starify(sickshift.PUSHALOT_AUTHORIZATIONTOKEN) %>" class="form-control input-sm input350">
 										<div class="clear-left">authorization token of Pushalot account</div>
 									</span>
 								</label>
@@ -921,8 +921,8 @@
 							<label for="use-pushbullet">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_pushbullet" id="use-pushbullet" #if $sickgear.USE_PUSHBULLET then 'checked="checked"' else ''#>
-									<p>should SickGear send Pushbullet notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_pushbullet" id="use-pushbullet" #if $sickshift.USE_PUSHBULLET then 'checked="checked"' else ''#>
+									<p>should SickShift send Pushbullet notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -932,7 +932,7 @@
 								<label for="pushbullet-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet-notify-onsnatch" #if $sickgear.PUSHBULLET_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushbullet_notify_onsnatch" id="pushbullet-notify-onsnatch" #if $sickshift.PUSHBULLET_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -941,7 +941,7 @@
 								<label for="pushbullet-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet-notify-ondownload" #if $sickgear.PUSHBULLET_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushbullet_notify_ondownload" id="pushbullet-notify-ondownload" #if $sickshift.PUSHBULLET_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -950,7 +950,7 @@
 								<label for="pushbullet-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet-notify-onsubtitledownload" #if $sickgear.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushbullet_notify_onsubtitledownload" id="pushbullet-notify-onsubtitledownload" #if $sickshift.PUSHBULLET_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -959,8 +959,8 @@
 								<label for="pushbullet-access-token">
 									<span class="component-title">Pushbullet access token</span>
 									<span class="component-desc">
-										<input type="text" name="pushbullet_access_token" id="pushbullet-access-token" value="<%= starify(sickgear.PUSHBULLET_ACCESS_TOKEN) %>" class="form-control input-sm input250">
-										<div class="clear-left">get token at: <a href="<%= anon_url('https://www.pushbullet.com/account') %>" rel="noreferrer" onclick="window.open('${sickgear.ANON_REDIRECT}' + this.href, '_blank'); return false;">https://www.pushbullet.com/account</a></div>
+										<input type="text" name="pushbullet_access_token" id="pushbullet-access-token" value="<%= starify(sickshift.PUSHBULLET_ACCESS_TOKEN) %>" class="form-control input-sm input250">
+										<div class="clear-left">get token at: <a href="<%= anon_url('https://www.pushbullet.com/account') %>" rel="noreferrer" onclick="window.open('${sickshift.ANON_REDIRECT}' + this.href, '_blank'); return false;">https://www.pushbullet.com/account</a></div>
 									</span>
 								</label>
 							</div>
@@ -968,7 +968,7 @@
 								<label for="pushbullet-device-iden">
 									<span class="component-title">Pushbullet device</span>
 									<span class="component-desc">
-										<input type="hidden" name="pushbullet_device_iden" id="pushbullet-device-iden" value="$sickgear.PUSHBULLET_DEVICE_IDEN" size="35">
+										<input type="hidden" name="pushbullet_device_iden" id="pushbullet-device-iden" value="$sickshift.PUSHBULLET_DEVICE_IDEN" size="35">
 										<select id="pushbullet-device-list" class="pull-left form-control input-sm" style="margin-right: 5px"></select>
 										<input type="button" class="btn btn-inline" value="Refresh Devices" id="get-pushbulletDevices">
 										<div class="clear-left">which device do you want to push to ?</div>
@@ -995,8 +995,8 @@
 							<label for="use-pushover">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_pushover" id="use-pushover" #if $sickgear.USE_PUSHOVER then 'checked="checked"' else ''#>
-									<p>should SickGear send Pushover notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_pushover" id="use-pushover" #if $sickshift.USE_PUSHOVER then 'checked="checked"' else ''#>
+									<p>should SickShift send Pushover notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1006,7 +1006,7 @@
 								<label for="pushover-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushover_notify_onsnatch" id="pushover-notify-onsnatch" #if $sickgear.PUSHOVER_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushover_notify_onsnatch" id="pushover-notify-onsnatch" #if $sickshift.PUSHOVER_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1015,7 +1015,7 @@
 								<label for="pushover-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushover_notify_ondownload" id="pushover-notify-ondownload" #if $sickgear.PUSHOVER_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushover_notify_ondownload" id="pushover-notify-ondownload" #if $sickshift.PUSHOVER_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1024,7 +1024,7 @@
 								<label for="pushover-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover-notify-onsubtitledownload" #if $sickgear.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="pushover_notify_onsubtitledownload" id="pushover-notify-onsubtitledownload" #if $sickshift.PUSHOVER_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1033,7 +1033,7 @@
 								<label for="pushover-userkey">
 									<span class="component-title">Pushover account user key</span>
 									<span class="component-desc">
-										<input type="text" name="pushover_userkey" id="pushover-userkey" value="<%= starify(sickgear.PUSHOVER_USERKEY) %>" class="form-control input-sm input250">
+										<input type="text" name="pushover_userkey" id="pushover-userkey" value="<%= starify(sickshift.PUSHOVER_USERKEY) %>" class="form-control input-sm input250">
 									</span>
 								</label>
 							</div>
@@ -1041,7 +1041,7 @@
 								<label for="pushover-apikey">
 									<span class="component-title">Pushover API key</span>
 									<span class="component-desc">
-										<input type="text" name="pushover_apikey" id="pushover-apikey" value="<%= starify(sickgear.PUSHOVER_APIKEY) %>" class="form-control input-sm input250">
+										<input type="text" name="pushover_apikey" id="pushover-apikey" value="<%= starify(sickshift.PUSHOVER_APIKEY) %>" class="form-control input-sm input250">
 										<div class="clear-left"><a href="<%= anon_url('https://pushover.net/apps/') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;"><b>Click here</b></a> to create a Pushover API key</div>
 									</span>
 								</label>
@@ -1051,12 +1051,12 @@
 									<span class="component-title">Pushover priority:</span>
 									<span class="component-desc">
 										<select id="pushover-priority" name="pushover_priority" class="form-control input-sm">
-											<option value="-2" #if $sickgear.PUSHOVER_PRIORITY == '-2' then 'selected="selected"' else ''#>Lowest</option>
-											<option value="-1" #if $sickgear.PUSHOVER_PRIORITY == '-1' then 'selected="selected"' else ''#>Low</option>
-											<option value="0" #if $sickgear.PUSHOVER_PRIORITY == '0' then 'selected="selected"' else ''#>Normal</option>
-											<option value="1" #if $sickgear.PUSHOVER_PRIORITY == '1' then 'selected="selected"' else ''#>High</option>
+											<option value="-2" #if $sickshift.PUSHOVER_PRIORITY == '-2' then 'selected="selected"' else ''#>Lowest</option>
+											<option value="-1" #if $sickshift.PUSHOVER_PRIORITY == '-1' then 'selected="selected"' else ''#>Low</option>
+											<option value="0" #if $sickshift.PUSHOVER_PRIORITY == '0' then 'selected="selected"' else ''#>Normal</option>
+											<option value="1" #if $sickshift.PUSHOVER_PRIORITY == '1' then 'selected="selected"' else ''#>High</option>
 										</select>
-										<span>priority of Pushover messages from SickGear</span>
+										<span>priority of Pushover messages from SickShift</span>
 										<div class="clear-left">overview: <a href="<%= anon_url('https://pushover.net/api#priority') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://pushover.net/api#priority</a></div>
 									</span>
 								</label>
@@ -1065,7 +1065,7 @@
 								<label for="pushover-device">
 									<span class="component-title">Pushover device</span>
 									<span class="component-desc">
-										<input type="hidden" name="pushover_device" id="pushover-device" value="$sickgear.PUSHOVER_DEVICE" size="35">
+										<input type="hidden" name="pushover_device" id="pushover-device" value="$sickshift.PUSHOVER_DEVICE" size="35">
 										<select id="pushover-device-list" name="pushover_device_list" class="pull-left form-control input-sm" style="margin-right:5px"></select>
 										<input type="button" class="btn btn-inline" value="Refresh Devices" id="get-pushoverDevices">
 										<div class="clear-left">select device to push to ?</div>
@@ -1077,28 +1077,28 @@
 									<span class="component-title">Pushover sound</span>
 									<span class="component-desc">
 										<select id="pushover-sound" name="pushover_sound" class="form-control input-sm">
-											<option value="pushover" #if $sickgear.PUSHOVER_SOUND == 'pushover' then 'selected="selected"' else ''#>Pushover (default)</option>
-											<option value="bike" #if $sickgear.PUSHOVER_SOUND == 'bike' then 'selected="selected"' else ''#>Bike</option>
-											<option value="bugle" #if $sickgear.PUSHOVER_SOUND == 'bugle' then 'selected="selected"' else ''#>Bugle</option>
-											<option value="cashregister" #if $sickgear.PUSHOVER_SOUND == 'cashregister' then 'selected="selected"' else ''#>Cash Register</option>
-											<option value="classical" #if $sickgear.PUSHOVER_SOUND == 'classical' then 'selected="selected"' else ''#>Classical</option>
-											<option value="cosmic" #if $sickgear.PUSHOVER_SOUND == 'cosmic' then 'selected="selected"' else ''#>Cosmic</option>
-											<option value="falling" #if $sickgear.PUSHOVER_SOUND == 'falling' then 'selected="selected"' else ''#>Falling</option>
-											<option value="gamelan" #if $sickgear.PUSHOVER_SOUND == 'gamelan' then 'selected="selected"' else ''#>Gamelan</option>
-											<option value="incoming" #if $sickgear.PUSHOVER_SOUND == 'incoming' then 'selected="selected"' else ''#>Incoming</option>
-											<option value="intermission" #if $sickgear.PUSHOVER_SOUND == 'intermission' then 'selected="selected"' else ''#>Intermission</option>
-											<option value="magic" #if $sickgear.PUSHOVER_SOUND == 'magic' then 'selected="selected"' else ''#>Magic</option>
-											<option value="mechanical" #if $sickgear.PUSHOVER_SOUND == 'mechanical' then 'selected="selected"' else ''#>Mechanical</option>
-											<option value="pianobar" #if $sickgear.PUSHOVER_SOUND == 'pianobar' then 'selected="selected"' else ''#>Piano Bar</option>
-											<option value="siren" #if $sickgear.PUSHOVER_SOUND == 'siren' then 'selected="selected"' else ''#>Siren</option>
-											<option value="spacealarm" #if $sickgear.PUSHOVER_SOUND == 'spacealarm' then 'selected="selected"' else ''#>Space Alarm</option>
-											<option value="tugboat" #if $sickgear.PUSHOVER_SOUND == 'tugboat' then 'selected="selected"' else ''#>Tug Boat</option>
-											<option value="alien" #if $sickgear.PUSHOVER_SOUND == 'alien' then 'selected="selected"' else ''#>Alien Alarm (long)</option>
-											<option value="climb" #if $sickgear.PUSHOVER_SOUND == 'climb' then 'selected="selected"' else ''#>Climb (long)</option>
-											<option value="persistent" #if $sickgear.PUSHOVER_SOUND == 'persistent' then 'selected="selected"' else ''#>Persistent (long)</option>
-											<option value="echo" #if $sickgear.PUSHOVER_SOUND == 'echo' then 'selected="selected"' else ''#>Pushover Echo (long)</option>
-											<option value="updown" #if $sickgear.PUSHOVER_SOUND == 'updown' then 'selected="selected"' else ''#>Up Down (long)</option>
-											<option value="none" #if $sickgear.PUSHOVER_SOUND == 'none' then 'selected="selected"' else ''#>None (silent)</option>
+											<option value="pushover" #if $sickshift.PUSHOVER_SOUND == 'pushover' then 'selected="selected"' else ''#>Pushover (default)</option>
+											<option value="bike" #if $sickshift.PUSHOVER_SOUND == 'bike' then 'selected="selected"' else ''#>Bike</option>
+											<option value="bugle" #if $sickshift.PUSHOVER_SOUND == 'bugle' then 'selected="selected"' else ''#>Bugle</option>
+											<option value="cashregister" #if $sickshift.PUSHOVER_SOUND == 'cashregister' then 'selected="selected"' else ''#>Cash Register</option>
+											<option value="classical" #if $sickshift.PUSHOVER_SOUND == 'classical' then 'selected="selected"' else ''#>Classical</option>
+											<option value="cosmic" #if $sickshift.PUSHOVER_SOUND == 'cosmic' then 'selected="selected"' else ''#>Cosmic</option>
+											<option value="falling" #if $sickshift.PUSHOVER_SOUND == 'falling' then 'selected="selected"' else ''#>Falling</option>
+											<option value="gamelan" #if $sickshift.PUSHOVER_SOUND == 'gamelan' then 'selected="selected"' else ''#>Gamelan</option>
+											<option value="incoming" #if $sickshift.PUSHOVER_SOUND == 'incoming' then 'selected="selected"' else ''#>Incoming</option>
+											<option value="intermission" #if $sickshift.PUSHOVER_SOUND == 'intermission' then 'selected="selected"' else ''#>Intermission</option>
+											<option value="magic" #if $sickshift.PUSHOVER_SOUND == 'magic' then 'selected="selected"' else ''#>Magic</option>
+											<option value="mechanical" #if $sickshift.PUSHOVER_SOUND == 'mechanical' then 'selected="selected"' else ''#>Mechanical</option>
+											<option value="pianobar" #if $sickshift.PUSHOVER_SOUND == 'pianobar' then 'selected="selected"' else ''#>Piano Bar</option>
+											<option value="siren" #if $sickshift.PUSHOVER_SOUND == 'siren' then 'selected="selected"' else ''#>Siren</option>
+											<option value="spacealarm" #if $sickshift.PUSHOVER_SOUND == 'spacealarm' then 'selected="selected"' else ''#>Space Alarm</option>
+											<option value="tugboat" #if $sickshift.PUSHOVER_SOUND == 'tugboat' then 'selected="selected"' else ''#>Tug Boat</option>
+											<option value="alien" #if $sickshift.PUSHOVER_SOUND == 'alien' then 'selected="selected"' else ''#>Alien Alarm (long)</option>
+											<option value="climb" #if $sickshift.PUSHOVER_SOUND == 'climb' then 'selected="selected"' else ''#>Climb (long)</option>
+											<option value="persistent" #if $sickshift.PUSHOVER_SOUND == 'persistent' then 'selected="selected"' else ''#>Persistent (long)</option>
+											<option value="echo" #if $sickshift.PUSHOVER_SOUND == 'echo' then 'selected="selected"' else ''#>Pushover Echo (long)</option>
+											<option value="updown" #if $sickshift.PUSHOVER_SOUND == 'updown' then 'selected="selected"' else ''#>Up Down (long)</option>
+											<option value="none" #if $sickshift.PUSHOVER_SOUND == 'none' then 'selected="selected"' else ''#>None (silent)</option>
 										</select>
 										<div class="clear-left">select one of the predefined sounds for notifications</div>
 									</span>
@@ -1124,8 +1124,8 @@
 							<label for="use-growl">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_growl" id="use-growl" #if $sickgear.USE_GROWL then 'checked="checked"' else ''#>
-									<p>should SickGear send Growl notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_growl" id="use-growl" #if $sickshift.USE_GROWL then 'checked="checked"' else ''#>
+									<p>should SickShift send Growl notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1135,7 +1135,7 @@
 								<label for="growl-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="growl_notify_onsnatch" id="growl-notify-onsnatch" #if $sickgear.GROWL_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="growl_notify_onsnatch" id="growl-notify-onsnatch" #if $sickshift.GROWL_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1144,7 +1144,7 @@
 								<label for="growl-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="growl_notify_ondownload" id="growl-notify-ondownload" #if $sickgear.GROWL_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="growl_notify_ondownload" id="growl-notify-ondownload" #if $sickshift.GROWL_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1153,7 +1153,7 @@
 								<label for="growl-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="growl_notify_onsubtitledownload" id="growl-notify-onsubtitledownload" #if $sickgear.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="growl_notify_onsubtitledownload" id="growl-notify-onsubtitledownload" #if $sickshift.GROWL_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1162,8 +1162,8 @@
 								<label for="growl-host">
 									<span class="component-title">Growl password@host:port</span>
 									<span class="component-desc">
-										<input type="text" name="growl_host" id="growl-host" value="$sickgear.GROWL_HOST" class="form-control input-sm input250"> comma separated hosts
-										<div class="clear-left"><p><span class="grey-text">password@</span> is optional if SickGear is on the same host, otherwise it is required<br>
+										<input type="text" name="growl_host" id="growl-host" value="$sickshift.GROWL_HOST" class="form-control input-sm input250"> comma separated hosts
+										<div class="clear-left"><p><span class="grey-text">password@</span> is optional if SickShift is on the same host, otherwise it is required<br>
 										<span class="grey-text">:port</span> is optional. (e.g. password@localhost, p4ssw0rd@192.168.1.5:23053)</p>
 										</div>
 									</span>
@@ -1189,8 +1189,8 @@
 							<label for="use-prowl">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_prowl" id="use-prowl" #if $sickgear.USE_PROWL then 'checked="checked"' else ''#>
-									<p>should SickGear send Prowl notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_prowl" id="use-prowl" #if $sickshift.USE_PROWL then 'checked="checked"' else ''#>
+									<p>should SickShift send Prowl notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1200,7 +1200,7 @@
 								<label for="prowl-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="prowl_notify_onsnatch" id="prowl-notify-onsnatch" #if $sickgear.PROWL_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="prowl_notify_onsnatch" id="prowl-notify-onsnatch" #if $sickshift.PROWL_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1209,7 +1209,7 @@
 								<label for="prowl-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="prowl_notify_ondownload" id="prowl-notify-ondownload" #if $sickgear.PROWL_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="prowl_notify_ondownload" id="prowl-notify-ondownload" #if $sickshift.PROWL_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1218,7 +1218,7 @@
 								<label for="prowl-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl-notify-onsubtitledownload" #if $sickgear.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="prowl_notify_onsubtitledownload" id="prowl-notify-onsubtitledownload" #if $sickshift.PROWL_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1227,7 +1227,7 @@
 								<label for="prowl-api">
 									<span class="component-title">Prowl API key:</span>
 									<span class="component-desc">
-										<input type="text" name="prowl_api" id="prowl-api" value="<%= starify(sickgear.PROWL_API) %>" class="form-control input-sm input250">
+										<input type="text" name="prowl_api" id="prowl-api" value="<%= starify(sickshift.PROWL_API) %>" class="form-control input-sm input250">
 										<div class="clear-left">get key at: <a href="<%= anon_url('https://www.prowlapp.com/api_settings.php') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">https://www.prowlapp.com/api_settings.php</a></div>
 									</span>
 								</label>
@@ -1237,13 +1237,13 @@
 									<span class="component-title">Prowl priority:</span>
 									<span class="component-desc">
 										<select id="prowl-priority" name="prowl_priority" class="form-control input-sm">
-											<option value="-2" #if $sickgear.PROWL_PRIORITY == '-2' then 'selected="selected"' else ''#>Very Low</option>
-											<option value="-1" #if $sickgear.PROWL_PRIORITY == '-1' then 'selected="selected"' else ''#>Moderate</option>
-											<option value="0" #if $sickgear.PROWL_PRIORITY == '0' then 'selected="selected"' else ''#>Normal</option>
-											<option value="1" #if $sickgear.PROWL_PRIORITY == '1' then 'selected="selected"' else ''#>High</option>
-											<option value="2" #if $sickgear.PROWL_PRIORITY == '2' then 'selected="selected"' else ''#>Emergency</option>
+											<option value="-2" #if $sickshift.PROWL_PRIORITY == '-2' then 'selected="selected"' else ''#>Very Low</option>
+											<option value="-1" #if $sickshift.PROWL_PRIORITY == '-1' then 'selected="selected"' else ''#>Moderate</option>
+											<option value="0" #if $sickshift.PROWL_PRIORITY == '0' then 'selected="selected"' else ''#>Normal</option>
+											<option value="1" #if $sickshift.PROWL_PRIORITY == '1' then 'selected="selected"' else ''#>High</option>
+											<option value="2" #if $sickshift.PROWL_PRIORITY == '2' then 'selected="selected"' else ''#>Emergency</option>
 										</select>
-										<span>priority of Prowl messages from SickGear</span>
+										<span>priority of Prowl messages from SickShift</span>
 									</span>
 								</label>
 							</div>
@@ -1267,8 +1267,8 @@
 							<label for="use-libnotify">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_libnotify" id="use-libnotify" #if $sickgear.USE_LIBNOTIFY then 'checked="checked"' else ''#>
-									<p>should SickGear send Libnotify notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_libnotify" id="use-libnotify" #if $sickshift.USE_LIBNOTIFY then 'checked="checked"' else ''#>
+									<p>should SickShift send Libnotify notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1278,7 +1278,7 @@
 								<label for="libnotify-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify-notify-onsnatch" #if $sickgear.LIBNOTIFY_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="libnotify_notify_onsnatch" id="libnotify-notify-onsnatch" #if $sickshift.LIBNOTIFY_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1287,7 +1287,7 @@
 								<label for="libnotify-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="libnotify_notify_ondownload" id="libnotify-notify-ondownload" #if $sickgear.LIBNOTIFY_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="libnotify_notify_ondownload" id="libnotify-notify-ondownload" #if $sickshift.LIBNOTIFY_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1296,7 +1296,7 @@
 								<label for="libnotify-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify-notify-onsubtitledownload" #if $sickgear.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="libnotify_notify_onsubtitledownload" id="libnotify-notify-onsubtitledownload" #if $sickshift.LIBNOTIFY_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1337,8 +1337,8 @@
 							<label for="use-slack">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_slack" id="use-slack" #if $sickgear.USE_SLACK then 'checked="checked"' else ''#>
-									<p>should SickGear send Slack notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_slack" id="use-slack" #if $sickshift.USE_SLACK then 'checked="checked"' else ''#>
+									<p>should SickShift send Slack notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1348,7 +1348,7 @@
 								<label for="slack-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="slack_notify_onsnatch" id="slack-notify-onsnatch" #if $sickgear.SLACK_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="slack_notify_onsnatch" id="slack-notify-onsnatch" #if $sickshift.SLACK_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1357,7 +1357,7 @@
 								<label for="slack-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="slack_notify_ondownload" id="slack-notify-ondownload" #if $sickgear.SLACK_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="slack_notify_ondownload" id="slack-notify-ondownload" #if $sickshift.SLACK_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1366,7 +1366,7 @@
 								<label for="slack-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="slack_notify_onsubtitledownload" id="slack-notify-onsubtitledownload" #if $sickgear.SLACK_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="slack_notify_onsubtitledownload" id="slack-notify-onsubtitledownload" #if $sickshift.SLACK_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1376,7 +1376,7 @@
 								<label for="slack-channel">
 									<span class="component-title">Slack channel</span>
 									<span class="component-desc">
-										<input type="text" name="slack_channel" id="slack-channel" value="$sickgear.SLACK_CHANNEL" class="form-control input-sm input250">
+										<input type="text" name="slack_channel" id="slack-channel" value="$sickshift.SLACK_CHANNEL" class="form-control input-sm input250">
 										<span style="float:left">channel to send notifications to</span>
 									</span>
 								</label>
@@ -1385,7 +1385,7 @@
 								<label for="slack-as-authed">
 									<span class="component-title">Post as authed user</span>
 									<span class="component-desc">
-										<input type="checkbox" class="view-if" name="slack_as_authed" id="slack-as-authed" #if $sickgear.SLACK_AS_AUTHED then 'checked="checked"' else ''#>
+										<input type="checkbox" class="view-if" name="slack_as_authed" id="slack-as-authed" #if $sickshift.SLACK_AS_AUTHED then 'checked="checked"' else ''#>
 										<p>send notifications using the profile name and photo of the access token</p>
 									</span>
 								</label>
@@ -1395,8 +1395,8 @@
 									<label for="slack-bot-name">
 										<span class="component-title">Post as a custom name</span>
 										<span class="component-desc">
-											<input type="text" name="slack_bot_name" id="slack-bot-name" value="$sickgear.SLACK_BOT_NAME" class="form-control input-sm input250">
-											<p>blank for 'SickGear'</p>
+											<input type="text" name="slack_bot_name" id="slack-bot-name" value="$sickshift.SLACK_BOT_NAME" class="form-control input-sm input250">
+											<p>blank for 'SickShift'</p>
 										</span>
 									</label>
 								</div>
@@ -1404,8 +1404,8 @@
 									<label for="slack-icon-url">
 										<span class="component-title">Custom icon image url</span>
 										<span class="component-desc">
-											<input type="text" name="slack_icon_url" id="slack-icon-url" value="$sickgear.SLACK_ICON_URL" class="form-control input-sm input250">
-											<p>blank for SickGear image</p>
+											<input type="text" name="slack_icon_url" id="slack-icon-url" value="$sickshift.SLACK_ICON_URL" class="form-control input-sm input250">
+											<p>blank for SickShift image</p>
 										</span>
 									</label>
 								</div>
@@ -1414,8 +1414,8 @@
 								<label for="slack-access-token">
 									<span class="component-title">Slack oauth access token</span>
 									<span class="component-desc">
-										<input type="text" name="slack_access_token" id="slack-access-token" value="$sickgear.SLACK_ACCESS_TOKEN" class="form-control input-sm input350">
-										<div class="clear-left"><p>1. <a href="<%= anon_url('https://api.slack.com/apps/new') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">create a Slack app</a> name for SickGear and select a workspace<br>
+										<input type="text" name="slack_access_token" id="slack-access-token" value="$sickshift.SLACK_ACCESS_TOKEN" class="form-control input-sm input350">
+										<div class="clear-left"><p>1. <a href="<%= anon_url('https://api.slack.com/apps/new') %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false;">create a Slack app</a> name for SickShift and select a workspace<br>
 										2. under the 'Features' section of the left sidebar, click 'OAuth & Perms'<br>
 										3. scroll page to section 'Scopes' and open the menu 'Select Permission Scopes'<br>
 										4. in the 'Chat' menu section, select 'Send messages as <em class="grey-text">appname</em>' - (<em class="grey-text">set in step 1</em>)<br>
@@ -1444,8 +1444,8 @@
 							<label for="use-discord">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_discord" id="use-discord" #if $sickgear.USE_DISCORD then 'checked="checked"' else ''#>
-									<p>should SickGear send Discord notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_discord" id="use-discord" #if $sickshift.USE_DISCORD then 'checked="checked"' else ''#>
+									<p>should SickShift send Discord notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1455,7 +1455,7 @@
 								<label for="discord-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="discord_notify_onsnatch" id="discord-notify-onsnatch" #if $sickgear.DISCORD_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="discord_notify_onsnatch" id="discord-notify-onsnatch" #if $sickshift.DISCORD_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1464,7 +1464,7 @@
 								<label for="discord-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="discord_notify_ondownload" id="discord-notify-ondownload" #if $sickgear.DISCORD_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="discord_notify_ondownload" id="discord-notify-ondownload" #if $sickshift.DISCORD_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1473,7 +1473,7 @@
 								<label for="discord-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="discord_notify_onsubtitledownload" id="discord-notify-onsubtitledownload" #if $sickgear.DISCORD_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="discord_notify_onsubtitledownload" id="discord-notify-onsubtitledownload" #if $sickshift.DISCORD_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1483,7 +1483,7 @@
 								<label for="discord-as-authed">
 									<span class="component-title">Post as authed user</span>
 									<span class="component-desc">
-										<input type="checkbox" class="view-if" name="discord_as_authed" id="discord-as-authed" #if $sickgear.DISCORD_AS_AUTHED then 'checked="checked"' else ''#>
+										<input type="checkbox" class="view-if" name="discord_as_authed" id="discord-as-authed" #if $sickshift.DISCORD_AS_AUTHED then 'checked="checked"' else ''#>
 										<p>send notifications using the username and avatar of the channel webhook</p>
 									</span>
 								</label>
@@ -1493,8 +1493,8 @@
 									<label for="discord-username">
 										<span class="component-title">Post as a custom name</span>
 										<span class="component-desc">
-											<input type="text" name="discord_username" id="discord-username" value="$sickgear.DISCORD_USERNAME" class="form-control input-sm input250">
-											<p>blank for 'SickGear'</p>
+											<input type="text" name="discord_username" id="discord-username" value="$sickshift.DISCORD_USERNAME" class="form-control input-sm input250">
+											<p>blank for 'SickShift'</p>
 										</span>
 									</label>
 								</div>
@@ -1502,8 +1502,8 @@
 									<label for="discord-icon-url">
 										<span class="component-title">Custom icon image url</span>
 										<span class="component-desc">
-											<input type="text" name="discord_icon_url" id="discord-icon-url" value="$sickgear.DISCORD_ICON_URL" class="form-control input-sm input250">
-											<p>blank for SickGear image</p>
+											<input type="text" name="discord_icon_url" id="discord-icon-url" value="$sickshift.DISCORD_ICON_URL" class="form-control input-sm input250">
+											<p>blank for SickShift image</p>
 										</span>
 									</label>
 								</div>
@@ -1512,7 +1512,7 @@
 								<label for="discord-as-tts">
 									<span class="component-title">Post as Text-To-Speech</span>
 									<span class="component-desc">
-										<input type="checkbox" name="discord_as_tts" id="discord-as-tts" #if $sickgear.DISCORD_AS_TTS then 'checked="checked"' else ''#>
+										<input type="checkbox" name="discord_as_tts" id="discord-as-tts" #if $sickshift.DISCORD_AS_TTS then 'checked="checked"' else ''#>
 										<p>send notifications with Text-To-Speech enabled</p>
 									</span>
 								</label>
@@ -1521,7 +1521,7 @@
 								<label for="discord-access-token">
 									<span class="component-title">Discord channel webhook</span>
 									<span class="component-desc">
-										<input type="text" name="discord_access_token" id="discord-access-token" value="$sickgear.DISCORD_ACCESS_TOKEN" class="form-control input-sm input350">
+										<input type="text" name="discord_access_token" id="discord-access-token" value="$sickshift.DISCORD_ACCESS_TOKEN" class="form-control input-sm input350">
 										<div class="clear-left"><p>1. 'Edit Channel' for the server where you have permission<br>
 										2. select the 'Webhooks' menu item then 'Create Webhook'<br>
 										3. copy the webook url, paste it to the above field<br>
@@ -1548,8 +1548,8 @@
 							<label for="use-telegram">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_telegram" id="use-telegram" #if $sickgear.USE_TELEGRAM then 'checked="checked"' else ''#>
-									<p>should SickGear send Telegram notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_telegram" id="use-telegram" #if $sickshift.USE_TELEGRAM then 'checked="checked"' else ''#>
+									<p>should SickShift send Telegram notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1559,7 +1559,7 @@
 								<label for="telegram-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="telegram_notify_onsnatch" id="telegram-notify-onsnatch" #if $sickgear.TELEGRAM_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="telegram_notify_onsnatch" id="telegram-notify-onsnatch" #if $sickshift.TELEGRAM_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1568,7 +1568,7 @@
 								<label for="telegram-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="telegram_notify_ondownload" id="telegram-notify-ondownload" #if $sickgear.TELEGRAM_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="telegram_notify_ondownload" id="telegram-notify-ondownload" #if $sickshift.TELEGRAM_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1577,7 +1577,7 @@
 								<label for="telegram-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram-notify-onsubtitledownload" #if $sickgear.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="telegram_notify_onsubtitledownload" id="telegram-notify-onsubtitledownload" #if $sickshift.TELEGRAM_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1604,7 +1604,7 @@
 								<label for="telegram-access-token">
 									<span class="component-title">Telegram bot access token</span>
 									<span class="component-desc">
-										<input type="text" name="telegram_access_token" id="telegram-access-token" value="$sickgear.TELEGRAM_ACCESS_TOKEN" class="form-control input-sm input350">
+										<input type="text" name="telegram_access_token" id="telegram-access-token" value="$sickshift.TELEGRAM_ACCESS_TOKEN" class="form-control input-sm input350">
 										<div class="clear-left"><p>msg BotFather with <code>/newbot</code> for a token. (tip: enter <code>tg://resolve?domain=BotFather</code> in a browser to make a running desktop client connect to BotFather)</p></div>
 									</span>
 								</label>
@@ -1613,7 +1613,7 @@
 								<label for="telegram-chatid">
 									<span class="component-title">Telegram chat id</span>
 									<span class="component-desc">
-										<input type="text" name="telegram_chatid" id="telegram-chatid" value="$sickgear.TELEGRAM_CHATID" class="form-control input-sm input250">
+										<input type="text" name="telegram_chatid" id="telegram-chatid" value="$sickshift.TELEGRAM_CHATID" class="form-control input-sm input250">
 										<span style="float:left">where to send notifications</span>
 										<div class="clear-left"><p>search and add @myidbot to a channel/group and use <code>/getgroupid</code><br>
 										then click on ID (e.g. <span class="grey-text">-1234567890123</span>) to copy and paste it here </p></div>
@@ -1639,8 +1639,8 @@
 							<label for="use-email">
 								<span class="component-title">Enable</span>
 								<span class="component-desc">
-									<input type="checkbox" class="enabler" name="use_email" id="use-email" #if $sickgear.USE_EMAIL then 'checked="checked"' else ''#>
-									<p>should SickGear send email notifications ?</p>
+									<input type="checkbox" class="enabler" name="use_email" id="use-email" #if $sickshift.USE_EMAIL then 'checked="checked"' else ''#>
+									<p>should SickShift send email notifications ?</p>
 								</span>
 							</label>
 						</div>
@@ -1650,7 +1650,7 @@
 								<label for="email-notify-onsnatch">
 									<span class="component-title">Notify on snatch</span>
 									<span class="component-desc">
-										<input type="checkbox" name="email_notify_onsnatch" id="email-notify-onsnatch" #if $sickgear.EMAIL_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
+										<input type="checkbox" name="email_notify_onsnatch" id="email-notify-onsnatch" #if $sickshift.EMAIL_NOTIFY_ONSNATCH then 'checked="checked"' else ''#>
 										<p>send a notification when a download starts ?</p>
 									</span>
 								</label>
@@ -1659,7 +1659,7 @@
 								<label for="email-notify-ondownload">
 									<span class="component-title">Notify on download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="email_notify_ondownload" id="email-notify-ondownload" #if $sickgear.EMAIL_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="email_notify_ondownload" id="email-notify-ondownload" #if $sickshift.EMAIL_NOTIFY_ONDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when a download finishes ?</p>
 									</span>
 								</label>
@@ -1668,7 +1668,7 @@
 								<label for="email-notify-onsubtitledownload">
 									<span class="component-title">Notify on subtitle download</span>
 									<span class="component-desc">
-										<input type="checkbox" name="email_notify_onsubtitledownload" id="email-notify-onsubtitledownload" #if $sickgear.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
+										<input type="checkbox" name="email_notify_onsubtitledownload" id="email-notify-onsubtitledownload" #if $sickshift.EMAIL_NOTIFY_ONSUBTITLEDOWNLOAD then 'checked="checked"' else ''#>
 										<p>send a notification when subtitles are downloaded ?</p>
 									</span>
 								</label>
@@ -1677,34 +1677,34 @@
 								<label for="email-from">
 									<span class="component-title">SMTP sender email address</span>
 									<span class="component-desc">
-										<input type="text" name="email_from" id="email-from" value="$sickgear.EMAIL_FROM" class="form-control input-sm input250">
+										<input type="text" name="email_from" id="email-from" value="$sickshift.EMAIL_FROM" class="form-control input-sm input250">
 										<div class="clear-left"><p>some recipient hosts require a real address</p></div>
 									</span>
 								</label>
 								<div style="margin-bottom:5px;display:inline-block">
 									<span class="component-title">SMTP server hostname</span>
 									<span class="component-desc">
-										<input type="text" name="email_host" id="email-host" value="$sickgear.EMAIL_HOST" class="form-control input-sm input250">
-										<span style="float:left;margin-right:6px">and port</span><input type="text" name="email_port" id="email-port" value="$sickgear.EMAIL_PORT" class="form-control input-sm input75" style="width:60px">
+										<input type="text" name="email_host" id="email-host" value="$sickshift.EMAIL_HOST" class="form-control input-sm input250">
+										<span style="float:left;margin-right:6px">and port</span><input type="text" name="email_port" id="email-port" value="$sickshift.EMAIL_PORT" class="form-control input-sm input75" style="width:60px">
 									</span>
 								</div>
 								<label for="email-tls">
 									<span class="component-title">Enable TLS encryption</span>
 									<span class="component-desc">
-										<input type="checkbox" name="email_tls" id="email-tls" #if $sickgear.EMAIL_TLS then 'checked="checked"' else ''#>
+										<input type="checkbox" name="email_tls" id="email-tls" #if $sickshift.EMAIL_TLS then 'checked="checked"' else ''#>
 									</span>
 								</label>
 								<label for="email-user">
 									<span class="component-title">SMTP server username</span>
 									<span class="component-desc">
-										<input type="text" name="email_user" id="email-user" value="$sickgear.EMAIL_USER" class="form-control input-sm input250">
+										<input type="text" name="email_user" id="email-user" value="$sickshift.EMAIL_USER" class="form-control input-sm input250">
 										<p>(optional)</p>
 									</span>
 								</label>
 								<label for="email-password">
 									<span class="component-title">SMTP server password</span>
 									<span class="component-desc">
-										<input type="password" autocomplete="nope" name="email_password" id="email-password" value="#echo '*' * len($sickgear.EMAIL_PASSWORD)#" class="form-control input-sm input250">
+										<input type="password" autocomplete="nope" name="email_password" id="email-password" value="#echo '*' * len($sickshift.EMAIL_PASSWORD)#" class="form-control input-sm input250">
 										<p>(optional)</p>
 									</span>
 								</label>
@@ -1713,7 +1713,7 @@
 								<label for="email-list">
 									<span class="component-title">Notify for every show</span>
 									<span class="component-desc">
-										<input type="text" name="email_list" id="email-list" value="$sickgear.EMAIL_LIST" class="form-control input-sm input350">
+										<input type="text" name="email_list" id="email-list" value="$sickshift.EMAIL_LIST" class="form-control input-sm input350">
 										<div class="clear-left"><p>comma separated email list</p></div>
 									</span>
 								</label>
@@ -1758,4 +1758,4 @@
 //-->
 </script>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

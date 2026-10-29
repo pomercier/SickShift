@@ -70,10 +70,10 @@ if False:
         import py7zr
     except ImportError:
         py7zr = None
-    # sickgear is strictly used here for resolution, this is only possible because
+    # sickshift is strictly used here for resolution, this is only possible because
     # this section is not used at runtime which would create circular reference issues
     # noinspection PyPep8Naming
-    from sickgear import db, notifiers as NOTIFIERS
+    from sickshift import db, notifiers as NOTIFIERS
     # noinspection PyUnresolvedReferences
     from typing import Any, AnyStr, Dict, Generator, NoReturn, integer_types, Iterable, Iterator, List, Optional, \
         Tuple, Type, Union
@@ -709,9 +709,9 @@ def get_system_temp_dir():
         try:
             uid = getpass.getuser()
         except ImportError:
-            return os.path.join(tempfile.gettempdir(), 'SickGear')
+            return os.path.join(tempfile.gettempdir(), 'SickShift')
 
-    return os.path.join(tempfile.gettempdir(), 'SickGear-%s' % uid)
+    return os.path.join(tempfile.gettempdir(), 'SickShift-%s' % uid)
 
 
 def proxy_setting(setting, request_url, force=False):
@@ -798,7 +798,7 @@ def get_url(url,  # type: AnyStr
     Return data from a URI with a possible check for authentication prior to the data fetch.
     Raised errors and no data in responses are tracked for making future logic decisions.
 
-    # param url_solver=sickgear.FLARESOLVERR_HOST must be passed if url is behind CF for use in cf_scrape/__init__.py
+    # param url_solver=sickshift.FLARESOLVERR_HOST must be passed if url is behind CF for use in cf_scrape/__init__.py
 
     Returned data is either:
     1) a byte-string retrieved from the URL provider.

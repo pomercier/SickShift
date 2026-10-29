@@ -7,17 +7,17 @@
 # 1/29 Created          Richard Powell          richard@powell.ws
 
 # You will need to create a configuration file in order for this script
-# to work properly. Please create /etc/conf.d/sickgear with the following:
+# to work properly. Please create /etc/conf.d/sickshift with the following:
 #
-# SICKGEAR_USER=<user you want sickgear to run under>
-# SICKGEAR_GROUP=<group you want sickgear to run under>
-# SICKGEAR_DIR=<path to sickgear.py>
+# SICKSHIFT_USER=<user you want sickshift to run under>
+# SICKSHIFT_GROUP=<group you want sickshift to run under>
+# SICKSHIFT_DIR=<path to sickshift.py>
 # PATH_TO_PYTHON=/usr/bin/python
-# SICKGEAR_DATADIR=<directory that contains sickbeard.db file>
-# SICKGEAR_CONFDIR=<directory that contains SickGear's config.ini file>
+# SICKSHIFT_DATADIR=<directory that contains sickbeard.db file>
+# SICKSHIFT_CONFDIR=<directory that contains SickShift's config.ini file>
 #
 
-RUNDIR=/var/run/sickgear
+RUNDIR=/var/run/sickshift
 
 depend() {
     need net
@@ -30,32 +30,32 @@ get_pidfile() {
         -e 's/[[:space:]]*$//' \
         -e 's/^[[:space:]]*//' \
         -e "s/^\(.*\)=\([^\"']*\)$/\1=\"\2\"/" \
-       <  ${SICKGEAR_CONFDIR}/config.ini \
+       <  ${SICKSHIFT_CONFDIR}/config.ini \
         | sed -n -e "/^\[General\]/,/^\s*\[/{/^[^;].*\=.*/p;}"`
 
-    echo "${RUNDIR}/sickgear-${web_port}.pid"
+    echo "${RUNDIR}/sickshift-${web_port}.pid"
 }
 
 start() {
-    ebegin "Starting SickGear"
+    ebegin "Starting SickShift"
 
-    checkpath -q -d -o ${SICKGEAR_USER}:${SICKGEAR_GROUP} -m 0770 "${RUNDIR}"
+    checkpath -q -d -o ${SICKSHIFT_USER}:${SICKSHIFT_GROUP} -m 0770 "${RUNDIR}"
 
     start-stop-daemon \
         --quiet \
         --start \
-        --user ${SICKGEAR_USER} \
-        --group ${SICKGEAR_GROUP} \
-        --name sickgear \
+        --user ${SICKSHIFT_USER} \
+        --group ${SICKSHIFT_GROUP} \
+        --name sickshift \
         --background \
         --pidfile $(get_pidfile) \
         --exec ${PATH_TO_PYTHON} \
         -- \
-        ${SICKGEAR_DIR}/sickgear.py \
+        ${SICKSHIFT_DIR}/sickshift.py \
         -d \
         --pidfile $(get_pidfile) \
-        --config ${SICKGEAR_CONFDIR}/config.ini \
-        --datadir ${SICKGEAR_DATADIR}
+        --config ${SICKSHIFT_CONFDIR}/config.ini \
+        --datadir ${SICKSHIFT_DATADIR}
     eend $?
 }
 
@@ -74,5 +74,5 @@ stop() {
     local pidfile=$(get_pidfile)
     local rc
 
-    ebegin "Stopping SickGear"
+    ebegin "Stopping SickShift"
 }

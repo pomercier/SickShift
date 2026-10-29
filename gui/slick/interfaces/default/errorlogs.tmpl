@@ -1,6 +1,6 @@
-#import sickgear
-#from sickgear import classes
-#from sickgear.common import *
+#import sickshift
+#from sickshift import classes
+#from sickshift.common import *
 ##
 #set global $header = 'Logs &amp; Errors'
 #set global $title = 'Logs &amp; Errors'
@@ -8,7 +8,7 @@
 #set global $topmenu = 'tools'
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 #if $varExists('header')
 	<h1 class="header">$header</h1>
@@ -30,4 +30,4 @@ window.setInterval('location.reload(true)', 600000); // Refresh every 10 minutes
 //-->
 </script>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

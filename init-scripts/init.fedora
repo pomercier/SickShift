@@ -1,39 +1,39 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          sickgear
+# Provides:          sickshift
 # Required-Start:    $all
 # Required-Stop:     $all
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts SickGear
-# Description:       starts SickGear
+# Short-Description: starts SickShift
+# Description:       starts SickShift
 ### END INIT INFO
 
 # Source function library.
 . /etc/init.d/functions
 
-# Source SickGear configuration
-if [ -f /etc/sysconfig/sickgear ]; then
-        . /etc/sysconfig/sickgear
+# Source SickShift configuration
+if [ -f /etc/sysconfig/sickshift ]; then
+        . /etc/sysconfig/sickshift
 fi
 
-prog=sickgear
+prog=sickshift
 lockfile=/var/lock/subsys/$prog
 
-## Edit user configuration in /etc/sysconfig/sickgear to change
+## Edit user configuration in /etc/sysconfig/sickshift to change
 ## the defaults
-username=${SG_USER-sickgear}
-homedir=${SG_HOME-/opt/sickgear}
-datadir=${SG_DATA-/opt/sickgear}
-pidfile=${SG_PIDFILE-/var/run/sickgear/sickgear.pid}
+username=${SG_USER-sickshift}
+homedir=${SG_HOME-/opt/sickshift}
+datadir=${SG_DATA-/opt/sickshift}
+pidfile=${SG_PIDFILE-/var/run/sickshift/sickshift.pid}
 nice=${SG_NICE-}
 ##
 
 pidpath=`dirname ${pidfile}`
 options=" --daemon --nolaunch --pidfile=${pidfile} --datadir=${datadir}"
 
-# create PID directory if not exist and ensure the SickGear user can write to it
+# create PID directory if not exist and ensure the SickShift user can write to it
 if [ ! -d $pidpath ]; then
         mkdir -p $pidpath
         chown $username $pidpath
@@ -47,7 +47,7 @@ fi
 start() {
         # Start daemon.
         echo -n $"Starting $prog: "
-        daemon --user=${username} --pidfile=${pidfile} ${nice} python ${homedir}/sickgear.py ${options}
+        daemon --user=${username} --pidfile=${pidfile} ${nice} python ${homedir}/sickshift.py ${options}
         RETVAL=$?
         echo
         [ $RETVAL -eq 0 ] && touch $lockfile

@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 /** @namespace config.sortArticle */
 /** @namespace config.resultsSortby */
 /** @namespace config.searchTests */
@@ -6,11 +6,11 @@
 $(document).ready(function () {
 
 	function htmlFlag(lang) {
-		return ' class="flag" style="background-image:url(' + $.SickGear.Root + '/images/flags/svg/lang/' + lang + '.png)"'
+		return ' class="flag" style="background-image:url(' + $.SickShift.Root + '/images/flags/svg/lang/' + lang + '.png)"'
 	}
 
 	function uriFlag(lang) {
-		return $.SickGear.Root + '/images/flags/svg/lang/' + lang + '.png'
+		return $.SickShift.Root + '/images/flags/svg/lang/' + lang + '.png'
 	}
 
 	function populateLangSelect() {
@@ -410,7 +410,7 @@ $(document).ready(function () {
 	* Visit http://www.dynamicdrive.com/ for this script and 100s more.
 	***********************************************/
 
-	var myform = $.SickGear.myform = new FormToWizard({
+	var myform = $.SickShift.myform = new FormToWizard({
 		fieldsetborderwidth: 0,
 		formid: 'addShowForm',
 		revealfx: ['slide', 500],

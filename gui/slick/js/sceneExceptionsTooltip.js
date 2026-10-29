@@ -9,7 +9,7 @@ $(function () {
                 text: function(event, api) {
                     // deferred object ensuring the request is only made once
                     $.ajax({
-                        url: $.SickGear.Root + '/home/scene-exceptions',
+                        url: $.SickShift.Root + '/home/scene-exceptions',
                         type: 'GET',
                         data: {
                             tvid_prodid: match[1],

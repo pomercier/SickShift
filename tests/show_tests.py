@@ -1,29 +1,29 @@
 # coding=UTF-8
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
 import unittest
 
-import test_lib as test  # must be before import sickgear
-import sickgear
-from sickgear import db
-from sickgear.common import Quality, UNAIRED, SKIPPED, WANTED, WantedQualities, statusStrings
-from sickgear.show_queue import QueueItemAdd
-from sickgear.tv import TVEpisode, TVShow
+import test_lib as test  # must be before import sickshift
+import sickshift
+from sickshift import db
+from sickshift.common import Quality, UNAIRED, SKIPPED, WANTED, WantedQualities, statusStrings
+from sickshift.show_queue import QueueItemAdd
+from sickshift.tv import TVEpisode, TVShow
 
 # noinspection DuplicatedCode
 wanted_tests = [
@@ -379,9 +379,9 @@ class ShowAddTests(test.SickbeardTestDBCase):
 
     def setUp(self):
         super(ShowAddTests, self).setUp()
-        sickgear.showList = []
-        sickgear.showDict = {}
-        sickgear.WANTEDLIST_CACHE = WantedQualities()
+        sickshift.showList = []
+        sickshift.showDict = {}
+        sickshift.WANTEDLIST_CACHE = WantedQualities()
 
     def test_getWanted(self):
         for ep_base, w in enumerate(wanted_tests):
@@ -396,8 +396,8 @@ class ShowAddTests(test.SickbeardTestDBCase):
             show_obj.airs = 'monday'
             show_obj.startyear = 1987
             show_obj.save_to_db()
-            sickgear.showList = [show_obj]
-            sickgear.showDict[show_obj.sid_int] = show_obj
+            sickshift.showList = [show_obj]
+            sickshift.showDict[show_obj.sid_int] = show_obj
             sql_l = []
             ep_id = ep_base * 10000
             for ep in w['episodes']:

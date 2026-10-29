@@ -7,7 +7,7 @@ var plotter = function(select$) {
 				text: function(event, api) {
 					// deferred object ensuring the request is only made once
 					$.ajax({
-						url: $.SickGear.Root + '/home/plot-details',
+						url: $.SickShift.Root + '/home/plot-details',
 						type: 'GET',
 						data: {
 							tvid_prodid: match[2],

@@ -1,18 +1,18 @@
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 # noinspection PyUnreachableCode
 if False:
@@ -27,97 +27,97 @@ def ex(e):
 
 
 # noinspection DuplicatedCode
-class SickGearException(Exception):
-    """Generic SickGear Exception - should never be thrown, only subclassed"""
+class SickShiftException(Exception):
+    """Generic SickShift Exception - should never be thrown, only subclassed"""
 
 
-class ConfigErrorException(SickGearException):
+class ConfigErrorException(SickShiftException):
     """Error in the config file"""
 
 
-class LaterException(SickGearException):
+class LaterException(SickShiftException):
     """Something bad happened that I'll make a real exception for later"""
 
 
-class NoNFOException(SickGearException):
+class NoNFOException(SickShiftException):
     """No NFO was found!"""
 
 
-class NoShowDirException(SickGearException):
+class NoShowDirException(SickShiftException):
     """Unable to find the show's directory"""
 
 
-class FileNotFoundException(SickGearException):
+class FileNotFoundException(SickShiftException):
     """The specified file doesn't exist"""
 
 
-class MultipleDBEpisodesException(SickGearException):
+class MultipleDBEpisodesException(SickShiftException):
     """Found multiple episodes in the DB! Must fix DB first"""
 
 
-class MultipleDBShowsException(SickGearException):
+class MultipleDBShowsException(SickShiftException):
     """Found multiple shows in the DB! Must fix DB first"""
 
 
-class MultipleShowObjectsException(SickGearException):
+class MultipleShowObjectsException(SickShiftException):
     """Found multiple objects for the same show! Something is very wrong"""
 
 
-class WrongShowException(SickGearException):
+class WrongShowException(SickShiftException):
     """The episode doesn't belong to the same show as its parent folder"""
 
 
-class ShowNotFoundException(SickGearException):
+class ShowNotFoundException(SickShiftException):
     """The show wasn't found on the Indexer"""
 
 
-class EpisodeNotFoundException(SickGearException):
+class EpisodeNotFoundException(SickShiftException):
     """The episode wasn't found on the Indexer"""
 
 
-class ShowDirNotFoundException(SickGearException):
+class ShowDirNotFoundException(SickShiftException):
     """The show dir doesn't exist"""
 
 
-class AuthException(SickGearException):
+class AuthException(SickShiftException):
     """Your authentication information is incorrect"""
 
 
-class EpisodeDeletedException(SickGearException):
+class EpisodeDeletedException(SickShiftException):
     """This episode has been deleted"""
 
 
-class CantRefreshException(SickGearException):
+class CantRefreshException(SickShiftException):
     """The show can't be refreshed right now"""
 
 
-class CantUpdateException(SickGearException):
+class CantUpdateException(SickShiftException):
     """The show can't be updated right now"""
 
 
-class CantSwitchException(SickGearException):
+class CantSwitchException(SickShiftException):
     """The show can't be switched right now"""
 
 
-class PostProcessingFailed(SickGearException):
+class PostProcessingFailed(SickShiftException):
     """Post-processing the episode failed"""
 
 
-class FailedProcessingFailed(SickGearException):
+class FailedProcessingFailed(SickShiftException):
     """Post-processing the failed release failed"""
 
 
-class FailedHistoryMultiSnatchException(SickGearException):
+class FailedHistoryMultiSnatchException(SickShiftException):
     """Episode was snatched again before the first one was done"""
 
 
-class FailedHistoryNotFoundException(SickGearException):
+class FailedHistoryNotFoundException(SickShiftException):
     """The release was not found in the failed download history tracker"""
 
 
-class EpisodeNotFoundByAbsoluteNumberException(SickGearException):
+class EpisodeNotFoundByAbsoluteNumberException(SickShiftException):
     """The show wasn't found in the DB while looking at Absolute Numbers"""
 
 
-class ConnectionSkipException(SickGearException):
+class ConnectionSkipException(SickShiftException):
     """Connection was skipped because of previous errors"""

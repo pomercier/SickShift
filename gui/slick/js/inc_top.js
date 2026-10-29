@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 /** @namespace content.path */
 /** @namespace content.hSize */
 /** @namespace content.nFiles */
@@ -14,10 +14,12 @@ function updateMenus(){
 }
 
 function updateMenu(menuHeader) {
+	const menu$ = $(`#NAV${menuHeader}`).find('.dropdown-menu');
+	const menu = menu$[0];
+	if (!menu) return;
+
 	const dev = !1,
 		window$ = $(window),
-		menu$ = $(`#NAV${menuHeader}`).find('.dropdown-menu'),
-		menu = menu$[0],
 		ms = menu.style,
 		visibleHeight = window$.height() - 50,
 		scrollbarWidth = window.innerWidth - window$.width();
@@ -61,7 +63,7 @@ function setStyle(){
 	}
 	style$.disabled = !0;
 	style$.attr('href', style$.attr('href').replace(fromTheme, toTheme));
-	$.get($.SickGear.Root + '/add-shows/toggle-theme',
+	$.get($.SickShift.Root + '/add-shows/toggle-theme',
 		{'theme': toTheme});
 	style$.disabled = !1;
 	return !0;
@@ -112,8 +114,8 @@ $(function(){
 	$('#add-show-name input')
 		.hover(removeHref)
 		.on('click', function(e){ e.stopPropagation(); })
-		.on('focus', function(){$.SickGear.PauseCarousel = !0;})
-		.on('blur', function(){delete $.SickGear.PauseCarousel;})
+		.on('focus', function(){$.SickShift.PauseCarousel = !0;})
+		.on('blur', function(){delete $.SickShift.PauseCarousel;})
 		.keydown(function(e){
 			if (13 === e.keyCode) {
 				e.stopPropagation();
@@ -154,7 +156,7 @@ $(function(){
 					if (/undefined/i.test(tvidProdid)){
 						tvidProdid = $(event.currentTarget).closest('[data-tvid_prodid]').attr('data-tvid_prodid');
 					}
-					$.getJSON($.SickGear.Root + '/home/media_stats', {tvid_prodid: tvidProdid})
+					$.getJSON($.SickShift.Root + '/home/media_stats', {tvid_prodid: tvidProdid})
 						.then(function(content){
 							// on success...
 							if (/undefined/.test(content[tvidProdid].message)){

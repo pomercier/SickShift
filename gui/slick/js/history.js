@@ -1,8 +1,8 @@
-/** @namespace $.SickGear.Root */
-/** @namespace $.SickGear.history.isCompact */
-/** @namespace $.SickGear.history.isTrashit */
-/** @namespace $.SickGear.history.useSubtitles */
-/** @namespace $.SickGear.history.layoutName */
+/** @namespace $.SickShift.Root */
+/** @namespace $.SickShift.history.isCompact */
+/** @namespace $.SickShift.history.isTrashit */
+/** @namespace $.SickShift.history.useSubtitles */
+/** @namespace $.SickShift.history.layoutName */
 /*
  2017 Jason Mulligan <jason.mulligan@avoidwork.com>
  @version 3.5.11
@@ -32,7 +32,7 @@ $(document).ready(function() {
 			return !dataSort ? dataSort : dataSort.toLowerCase();}},
 		tbody$ = $('#tbody'),
 		headers = {},
-		layoutName = '' + $.SickGear.history.layoutName;
+		layoutName = '' + $.SickShift.history.layoutName;
 
 	if ('detailed' === layoutName) {
 
@@ -59,7 +59,7 @@ $(document).ready(function() {
 		});
 
 		var disable = {sorter: !1}, qualSort = {sorter: 'quality'};
-		jQuery.extend(headers, $.SickGear.history.useSubtitles ? {4: disable, 5: qualSort} : {3: disable, 4: qualSort});
+		jQuery.extend(headers, $.SickShift.history.useSubtitles ? {4: disable, 5: qualSort} : {3: disable, 4: qualSort});
 
 	} else if (-1 !== layoutName.indexOf('watched')) {
 
@@ -130,12 +130,12 @@ $(document).ready(function() {
 	});
 
 	$('#limit').change(function(){
-		window.location.href = $.SickGear.Root + '/history/?limit=' + $(this).val()
+		window.location.href = $.SickShift.Root + '/history/?limit=' + $(this).val()
 	});
 
 	$('#show-watched-help').click(function () {
 		$('#watched-help').fadeToggle('fast', 'linear');
-		$.get($.SickGear.Root + '/history/toggle-help');
+		$.get($.SickShift.Root + '/history/toggle-help');
 	});
 
 	var addQTip = (function(){
@@ -148,7 +148,7 @@ $(document).ready(function() {
 	});
 	$('.add-qtip').each(addQTip);
 
-	$.SickGear.sumChecked = (function(){
+	$.SickShift.sumChecked = (function(){
 		var dedupe = [], sum = 0, output;
 
 		$('.del-check:checked').each(function(){
@@ -167,7 +167,7 @@ $(document).ready(function() {
 		$('#sum-size').text(/\s(MB)$/.test(output) ? filesize(sum, {round:1})
 			: /^1\sB/.test(output) ? output.replace('Bytes', 'Byte') : output);
 	});
-	$.SickGear.sumChecked();
+	$.SickShift.sumChecked();
 
 	var className='.del-check', lastCheck = null, check, found;
 	tbody$.on('click', className, function(ev){
@@ -184,7 +184,7 @@ $(document).ready(function() {
 			});
 		}
 		$(this).closest('table').trigger('update');
-		$.SickGear.sumChecked();
+		$.SickShift.sumChecked();
 	});
 
 	function updown(data){
@@ -212,7 +212,7 @@ $(document).ready(function() {
 		var that = $(clicked), el$=$(that.parent());
 		that.attr('disabled', !0);
 		$.ajax({
-			url: $.SickGear.Root + '/history/check-site/?site_name=' + el$.attr('data-check'),
+			url: $.SickShift.Root + '/history/check-site/?site_name=' + el$.attr('data-check'),
 			type: 'GET',
 			dataType: 'json',
 			complete: function (data) {
@@ -249,7 +249,7 @@ $(document).ready(function() {
 		$(this).addClass('disabled');
 		var match = $(this).attr('id').match(/^(.+)-btn-retry$/);
 		$.ajax({
-			url: $.SickGear.Root + '/manage/search-tasks/retry-provider?provider=' + match[1],
+			url: $.SickShift.Root + '/manage/search-tasks/retry-provider?provider=' + match[1],
 			type: 'GET',
 			complete: function () {
 				$.hardReload();
@@ -261,7 +261,7 @@ $(document).ready(function() {
 		$(this).addClass('disabled');
 		var domain = $(this).data('domain');
 		$.ajax({
-			url: $.SickGear.Root + '/history/retry_domain?domain=' + domain,
+			url: $.SickShift.Root + '/history/retry_domain?domain=' + domain,
 			type: 'GET',
 			complete: function () {
 				$.hardReload();

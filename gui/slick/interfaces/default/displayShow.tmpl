@@ -1,19 +1,19 @@
 #import re
-#import sickgear
-#from sickgear import TVInfoAPI, indexermapper, network_timezones
-#from sickgear.common import Overview, qualityPresets, qualityPresetStrings, \
+#import sickshift
+#from sickshift import TVInfoAPI, indexermapper, network_timezones
+#from sickshift.common import Overview, qualityPresets, qualityPresetStrings, \
     Quality, statusStrings, WANTED, SKIPPED, ARCHIVED, IGNORED, FAILED, DOWNLOADED
-#from sickgear.helpers import anon_url, get_size, human, maybe_plural, generate_word_str
-#from sickgear.indexers.indexer_config import TVINFO_TVDB, TVINFO_IMDB
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#from sickshift.helpers import anon_url, get_size, human, maybe_plural, generate_word_str
+#from sickshift.indexers.indexer_config import TVINFO_TVDB, TVINFO_IMDB
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = getattr($show_obj, 'unique_name', $show_obj.name)
 #set global $topmenu = 'home'
 #set $exceptions_string = ', '.join($show_obj.exceptions)
 #set $css = $getVar('css', 'reg')
 #set $has_art = $getVar('has_art', None)
-#set $restart = 'Restart SickGear for new features on this page'
+#set $restart = 'Restart SickShift for new features on this page'
 #set $show_message = ($show_message, $restart)[None is $has_art]
 #set global $page_body_attr = 'display-show" class="' + $css
 #set theme_suffix = ('', '-dark')['dark' == $sg_str('THEME_NAME', 'dark')]
@@ -33,7 +33,7 @@
 		useIMDbInfo: #echo ('!1', '!0')[$sg_var('USE_IMDB_INFO')]
 	}
 
-	\$.SickGear.config = {
+	\$.SickShift.config = {
 		useFuzzy: #echo ('!1', '!0')[$sg_var('FUZZY_DATING')]##if $sg_var('FUZZY_DATING')#,
 		dateFormat: '$sg_str('DATE_PRESET', '%x')',
 		timeFormat: '$sg_str('TIME_PRESET', '%I:%M %p')',
@@ -44,6 +44,7 @@
 //-->
 </script>
 <script src="$sbRoot/js/displayShow.js?v=$sbPID"></script>
+<script src="$sbRoot/js/episodePreview.js?v=$sbPID"></script>
 <script src="$sbRoot/js/plotTooltip.js?v=$sbPID"></script>
 <script src="$sbRoot/js/sceneExceptionsTooltip.js?v=$sbPID"></script>
 #if $sg_var('USE_IMDB_INFO')
@@ -69,6 +70,120 @@
 #select2-pickShow-results .select2-results__option,
 #select2-pickShow-results .select2-results__group{padding-top: 2px !important; padding-bottom:2px !important}
 #select2-pickShow-results .select2-results__option--highlighted.select2-results__option--selectable .ended{color:white}
+
+/* Cast & Poster zoom & bluish neon glow on long click / hold */
+#display-show .cast-panel.glide__track {
+    padding-top: 30px !important;
+    padding-bottom: 30px !important;
+    margin-top: -30px !important;
+    margin-bottom: -30px !important;
+    overflow: visible !important;
+}
+#display-show .glide__slides {
+    overflow: visible !important;
+}
+#display-show .contain-glide {
+    overflow: visible !important;
+}
+#display-show .details-plot {
+    overflow: visible !important;
+}
+#display-show .cast.body,
+#display-show .cast .thumb,
+#display-show .cast .thumb .cast-bg,
+#display-show #posterCol,
+#display-show #posterCol a,
+#display-show #posterCol .tvshowImg {
+    cursor: pointer !important;
+    -webkit-user-drag: none !important;
+    user-select: none !important;
+}
+
+#display-show .cast,
+#display-show .cast .thumb,
+#display-show .cast .thumb .cast-bg,
+#display-show #posterCol .tvshowImg {
+    display: inline-block !important;
+    transition: transform 220ms cubic-bezier(.4, 0, .2, 1), box-shadow 220ms cubic-bezier(.4, 0, .2, 1), border-color 220ms cubic-bezier(.4, 0, .2, 1), filter 220ms cubic-bezier(.4, 0, .2, 1) !important;
+    border-radius: 6px !important;
+    transform-origin: center center !important;
+}
+
+/* Hover: subtle glow */
+#display-show .cast .thumb:hover .cast-bg,
+#display-show #posterCol a:hover .tvshowImg {
+    border-color: rgba(61, 217, 235, 0.6) !important;
+    box-shadow: 0 0 12px rgba(61, 217, 235, 0.45) !important;
+}
+
+/* Hold-click / Active: Full Zoom & Intense Bluish Neon Glow */
+#display-show .cast:active,
+#display-show .cast.holding-click,
+#display-show .cast .thumb:active,
+#display-show .cast .thumb.holding-click,
+#display-show #posterCol:active,
+#display-show #posterCol.holding-click {
+    z-index: 99999 !important;
+    position: relative !important;
+}
+
+#display-show .cast:active .thumb .cast-bg,
+#display-show .cast.holding-click .thumb .cast-bg,
+#display-show .cast .thumb:active .cast-bg,
+#display-show .cast .thumb.holding-click .cast-bg,
+#display-show .cast.body.holding-click img.cast-bg,
+#display-show .cast.holding-click .thumb,
+#display-show .cast.holding-click img,
+#display-show #posterCol:active .tvshowImg,
+#display-show #posterCol.holding-click .tvshowImg {
+    transform: scale(1.25) !important;
+    border: 2px solid #3dd9eb !important;
+    border-color: #3dd9eb !important;
+    box-shadow: 0 0 25px rgba(61, 217, 235, 0.9), 0 0 50px rgba(61, 217, 235, 0.5) !important;
+    outline: none !important;
+    opacity: 1 !important;
+    filter: brightness(1.08) drop-shadow(0 0 15px rgba(61, 217, 235, 0.8)) !important;
+}
+
+/* Season collapse bar cursor & hover */
+.row-seasonheader {
+    cursor: pointer !important;
+    user-select: none !important;
+    transition: background-color 150ms ease !important;
+}
+.row-seasonheader:hover {
+    background-color: rgba(61, 217, 235, 0.07) !important;
+}
+
+/* Delete episode column and button */
+.col-delete {
+    width: 50px !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+.ep-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #ff5252;
+    transition: all 180ms ease;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+.ep-delete-btn:hover {
+    background: rgba(255, 82, 82, 0.16);
+    border-color: rgba(255, 82, 82, 0.5);
+    color: #ff3333;
+    transform: scale(1.15);
+}
+.ep-delete-btn i {
+    font-size: 14px;
+}
 </style>
 <div class="bfr"><img src="$sbRoot/images/loading16${theme_suffix}.gif"><img src="$sbRoot/images/loading16-red.gif"><img src="$sbRoot/images/queued.png"><img src="$sbRoot/images/search16.png"><img src="$sbRoot/images/no16.png"><img src="$sbRoot/images/yes16.png"><img src="$sbRoot/images/down-success.png"><img src="$sbRoot/images/down-upgrade.png"></div>
 
@@ -128,20 +243,20 @@
     #set $show_ended = '' != $show_obj.status and $show_obj.status in ['ended', 'Ended', 'Canceled']
     #set $season_list = [s[0] for s in $seasons]
     #set $many_seasons = 12 < len($seasons)
-    #set $special_text = ('', 'Specials')[bool($sg_var('DISPLAY_SHOW_SPECIALS'))]
+    #set $special_text = ('', 'Hors-série')[bool($sg_var('DISPLAY_SHOW_SPECIALS'))]
 					<div class="details-seasons">
-						<span class="details-title#echo ('', ' combo-seasons')[$many_seasons]#">Season</span>
+						<span class="details-title#echo ('', ' combo-seasons')[$many_seasons]#">Saison</span>
 						<span class="details-info">
     #if $many_seasons
 							<select id="seasonJump" class="form-control form-control-inline input-sm">
-								<option value="jump">Jump to season</option>
+								<option value="jump">Aller à la saison</option>
         #for $number in $season_list
-								<option value="#season-$number" title="Click to scroll to specials">#echo ($special_text,'Season %d' % $number)[bool($number)]#</option>
+								<option value="#season-$number" title="Cliquer pour aller aux hors-série">#echo ($special_text,'Saison %d' % $number)[bool($number)]#</option>
         #end for
 							</select>
     #else
         #for $number in $season_list
-							<a href="#season-$number" title="Click to scroll to specials">#echo ($special_text, $number)[bool($number)]#</a>
+							<a href="#season-$number" title="Cliquer pour aller aux hors-série">#echo ($special_text, $number)[bool($number)]#</a>
         #end for
     #end if
 						</span>
@@ -176,6 +291,12 @@
 						<span class="label">No genres</span>
 #end if
 					</div>
+					<!-- TV Show Soundtrack Hook -->
+					<script>
+					if (window.playShowSoundtrack) {
+						window.playShowSoundtrack("$show_obj.indexerid", "$show_obj.name", "$show_obj.indexer");
+					}
+					</script>
 				</div>
 			</div>
 
@@ -258,8 +379,17 @@
 						<span class="details-info">
 							<span class="space-right">#echo ($startyear, 'Unknown')[None is $startyear]#</span>
     #if $flags
+        #set $qc_networks = ['tqs', 'tva', 'télé-québec', 'tele-quebec', 'radio-canada', 'src', 'noovo', 'vrak', 'canal d', 'canal vie', 'ztele', 'ztélé', 'musiqueplus', 'sériesplus', 'seriesplus', 'super écran', 'super ecran', 'tou.tv', 'club illico', 'unis tv', 'addik', 'prise 2', 'casa', 'évasion', 'evasion', 'zeste']
+        #set $is_quebec = any(qn in ($show_obj.network or '').lower() for qn in $qc_networks)
         #for $country in $show_obj.imdb_info['country_codes'].split('|')
-							<img class="flag space-right" src="$sbRoot/images/flags/${$country.lower()}.png" width="24" height="20">
+            #set $c_code = $country.lower()
+            #if $is_quebec and $c_code in ['ca', 'canada']
+                #set $c_code = 'qc'
+                #set $c_title = 'Québec'
+            #else
+                #set $c_title = $country
+            #end if
+							<img class="flag space-right" src="$sbRoot/images/flags/${c_code}.png" width="24" height="20" title="$c_title">
         #end for
     #end if
 						</span>
@@ -418,7 +548,7 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
         #if $varExists('force_update')
 							A <a href="$sbRoot/$force_update" title="Trigger force full update">force full update</a> may return a plot overview for this ended show
         #else
-							Restart SickGear to get a new link here for this ended show
+							Restart SickShift to get a new link here for this ended show
         #end if
     #else
 							No plot overview available
@@ -428,7 +558,7 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
 					</div>
 
 					<div id="details-bottom">
-						<span class="label addQTip" title="Info language, $show_obj.lang"><img src="$sbRoot/images/flags/svg/lang/${show_obj.lang}.png" width="24" height="20" alt="" style="margin-top:-1px"></span>
+						<span class="label addQTip" title="Info language, $show_obj.lang"><img src="$sbRoot/images/flags/${show_obj.lang}.png" onerror="if(this.src.indexOf('en.png')===-1)this.src='$sbRoot/images/flags/en.png';" width="24" height="20" alt="$show_obj.lang" style="margin-top:-1px"></span>
 						<span class="label addQTip" title="Location#echo (' no longer exists" style="background-color:#8f1515"', '"')[$showLoc[1]]#>$showLoc[0]</span>
 						<span id="data-size" class="label" style="cursor:help">$human($get_size($showLoc[0]))</span>
 #set $filecount = sum([$c for $k, $c in $ep_counts['videos'].items()])
@@ -492,42 +622,42 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
 	<div class="clearfix"></div>
 
 	<div id="change-status" class="pull-left">
-		<p style="margin-bottom:5px">Change selected episodes to</p>
+		<p style="margin-bottom:5px">Changer les épisodes sélectionnés en</p>
 		<select id="statusSelect" class="form-control form-control-inline input-sm showlist-select">
 #for $curStatus in [$WANTED, $SKIPPED, $IGNORED, $FAILED]
 			<option value="$curStatus">$statusStrings[$curStatus]</option>
 #end for
-			<optgroup label="Downloaded">
+			<optgroup label="Téléchargé">
 #for $curStatus in sorted($Quality.DOWNLOADED)
     #if $DOWNLOADED != $curStatus
 				<option value="$curStatus">$re.sub(r'Downloaded\s*\(([^\)]+)\)', r'\1', $statusStrings[$curStatus].replace('SD DVD', 'SD DVD/BR/BD'))</option>
     #end if
 #end for
-			<option value="$DOWNLOADED">with archived quality</option>
+			<option value="$DOWNLOADED">avec la qualité archivée</option>
 			</optgroup>
-			<optgroup label="Archived with">
-				<option value="$ARCHIVED">downloaded quality</option>
-				<option value="-$ARCHIVED">default ($min_initial)</option>
+			<optgroup label="Archivé avec">
+				<option value="$ARCHIVED">qualité téléchargée</option>
+				<option value="-$ARCHIVED">par défaut ($min_initial)</option>
 			</optgroup>
 		</select>
 		<input type="hidden" id="tvid-prodid" value="$show_obj.tvid_prodid">
-		<input class="btn btn-inline" type="button" id="changeStatus" value="Go">
+		<input class="btn btn-inline" type="button" id="changeStatus" value="Valider">
 	</div>
 
 	<div class="pull-right clearfix" id="checkboxControls">
-		<div style="padding-bottom:5px" class="addQTip" title="Filter Episodes">
-			<label for="good"><span class="good"><input type="checkbox" id="good" checked="checked"> Downloaded: <b>$ep_counts[$Overview.GOOD]</b></span></label>
-			<label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked"> Snatched: <b>$ep_counts[$Overview.SNATCHED]</b></span></label>
-			<label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked"> Wanted: <b>$ep_counts[$Overview.WANTED]</b></span></label>
+		<div style="padding-bottom:5px" class="addQTip" title="Filtrer les épisodes">
+			<label for="good"><span class="good"><input type="checkbox" id="good" checked="checked"> Téléchargés : <b>$ep_counts[$Overview.GOOD]</b></span></label>
+			<label for="snatched"><span class="snatched"><input type="checkbox" id="snatched" checked="checked"> Récupérés : <b>$ep_counts[$Overview.SNATCHED]</b></span></label>
+			<label for="wanted"><span class="wanted"><input type="checkbox" id="wanted" checked="checked"> Recherchés : <b>$ep_counts[$Overview.WANTED]</b></span></label>
 #if $upgradable
-			<label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked"> Upgradable: <b>$ep_counts[$Overview.QUAL]</b></span></label>
+			<label for="qual"><span class="qual"><input type="checkbox" id="qual" checked="checked"> Améliorables : <b>$ep_counts[$Overview.QUAL]</b></span></label>
 #end if
-			<label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked"> Skipped: <b>$ep_counts[$Overview.SKIPPED]</b></span></label>
+			<label for="skipped"><span class="skipped"><input type="checkbox" id="skipped" checked="checked"> Ignorés : <b>$ep_counts[$Overview.SKIPPED]</b></span></label>
 		</div>
 
 		<div class="pull-right" >
-			<button class="btn btn-xs seriesCheck">Select filtered episodes</button>
-			<button class="btn btn-xs clearAll">Clear all</button>
+			<button class="btn btn-xs seriesCheck">Sélectionner les épisodes filtrés</button>
+			<button class="btn btn-xs clearAll">Tout désélectionner</button>
 		</div>
 	</div>
 
@@ -564,7 +694,7 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
                 #end if
                 #set $working_season = $season
 
-                #set $human_season = ('Season %s' % $season, 'Specials')[0 == $season]
+                #set $human_season = ('Saison %s' % $season, 'Hors-série')[0 == $season]
                 #if $has_season_exceptions
                     #set $human_season += '<b class="season-mark-exception">*</b>'
                 #end if
@@ -572,10 +702,10 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
 <table class="sickbeardTable#echo '%s%s%s' % (('', ' season-min')[$season in $getVar('season_min', $getVar('display_seasons', []))], ('', ' latest-season')[$latest_season == $season], ('', ' open')[$season in $getVar('other_seasons', [])])#">
 	<thead>
 		<tr>
-			<th class="row-seasonheader" colspan="13">
-				#if None is $has_art#<span class="red-text pull-right">Restart SickGear to reveal new options here</span>
-				#elif not (1 == $lowest_season and 1 == $latest_season and $latest_season >= $highest_season)#<button id="showseason-$season" type="button" class="btn btn-default pull-right"><span class="onshow">Show $human_season.lower()<i class="sgicon-arrowdown"></i></span><span class="onhide">Hide $human_season.lower()<i class="sgicon-arrowup"></i></span></button>
-				<button type="button" class="btn btn-default pull-right allseasons"><span class="onshow">Show all</span><span class="onhide">Hide most</span><i class="icon-glyph"></i></button>
+			<th class="row-seasonheader" colspan="14">
+				#if None is $has_art#<span class="red-text pull-right">Redémarrez SickShift pour voir de nouvelles options ici</span>
+				#elif not (1 == $lowest_season and 1 == $latest_season and $latest_season >= $highest_season)#<button id="showseason-$season" type="button" class="btn btn-default pull-right"><span class="onshow">#echo ('Afficher la saison %s' % $season, 'Afficher les hors-série')[0 == $season]#<i class="sgicon-arrowdown"></i></span><span class="onhide">#echo ('Masquer la saison %s' % $season, 'Masquer les hors-série')[0 == $season]#<i class="sgicon-arrowup"></i></span></button>
+				<button type="button" class="btn btn-default pull-right allseasons"><span class="onshow">Tout afficher</span><span class="onhide">Réduire</span><i class="icon-glyph"></i></button>
 				<span class="images pull-right hide"><i class="spinner"></i></span>
                 #end if
                 #set $videos = $ep_counts['videos'].get($season, '0')
@@ -587,7 +717,7 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
                 #set $archived = False if $season not in $ep_counts['archived'] else $ep_counts['archived'][$season]
 				<h3 id="season-$show_obj.tvid_prodid-$season"><span class="title">$human_season</span><a id="season-$season" name="season-$season"></a>
                 #if None is not $has_art
-					<span class="season-status"><span class="good status-badge">&nbsp;D: <strong>$good</strong>&nbsp;</span>#if snatched#<span class="snatched status-badge">&nbsp;S: <strong>$snatched</strong>&nbsp;</span>#end if##if $wanted#<span class="wanted status-badge">&nbsp;W: <strong>$wanted</strong>&nbsp;</span>#end if##if $to_upgrade#<span class="qual status-badge">&nbsp;U: <strong>$to_upgrade</strong>&nbsp;</span>#end if#&nbsp;of&nbsp;<span class="footerhighlight">$ep_counts['totals'][$season]</span>#if 0 < $archived#&nbsp;with <span class="footerhighlight">$archived</span> archived#end if##if int($videos)#&nbsp;#echo ('with', 'and')[0 < $archived]#&nbsp;<span class="footerhighlight">$videos</span> file$maybe_plural($videos)#end if#</span>
+					<span class="season-status"><span class="good status-badge">&nbsp;D: <strong>$good</strong>&nbsp;</span>#if snatched#<span class="snatched status-badge">&nbsp;S: <strong>$snatched</strong>&nbsp;</span>#end if##if $wanted#<span class="wanted status-badge">&nbsp;W: <strong>$wanted</strong>&nbsp;</span>#end if##if $to_upgrade#<span class="qual status-badge">&nbsp;U: <strong>$to_upgrade</strong>&nbsp;</span>#end if#&nbsp;sur&nbsp;<span class="footerhighlight">$ep_counts['totals'][$season]</span>#if 0 < $archived#&nbsp;avec <span class="footerhighlight">$archived</span> archivé$maybe_plural($archived)#end if##if int($videos)#&nbsp;#echo ('avec', 'et')[0 < $archived]#&nbsp;<span class="footerhighlight">$videos</span> fichier$maybe_plural($videos)#end if#</span>
                 #end if
 				</h3>
 			</th>
@@ -595,14 +725,15 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
                 #set $attr_title_ep = ('', ' (Anime #)')[$show_obj.is_anime]
 		<tr id="season-$season-cols" class="seasoncols collapse tablesorter-headerRow">
 			<th class="col-checkbox tablesorter-no-sort"><input type="checkbox" class="seasonCheck" id="$season"></th>
-			<th class="col-metadata tablesorter-no-sort">Meta</th>
+			<th class="col-metadata tablesorter-no-sort">Méta</th>
 			<th class="col-ep tablesorter-ep-num"><span title="Ep #$attr_title_ep"><span class="hdr-text">#</span></span></th>#if $scene or $scene_anime
-			<th class="col-ep tablesorter-ep-scene" style="padding-right:18px"><span class="hdr-text">Scene#if $scene_anime# absolute#end if#</span></th>#end if#
-			<th class="col-name"><span class="hdr-text">Name</span></th>
-			<th class="col-airdate tablesorter-airdate"><span class="hdr-text">Air Date</span></th>#if $sg_var('USE_SUBTITLES') and $show_obj.subtitles
-			<th class="col-subtitles tablesorter-no-sort">Subtitles</th>#end if
-			<th class="col-status"><span class="hdr-text">Status</span></th>
-			<th class="col-search tablesorter-no-sort">Search</th>
+			<th class="col-ep tablesorter-ep-scene" style="padding-right:18px"><span class="hdr-text">Scène#if $scene_anime# absolue#end if#</span></th>#end if#
+			<th class="col-name"><span class="hdr-text">Nom</span></th>
+			<th class="col-airdate tablesorter-airdate"><span class="hdr-text">Date de diffusion</span></th>#if $sg_var('USE_SUBTITLES') and $show_obj.subtitles
+			<th class="col-subtitles tablesorter-no-sort">Sous-titres</th>#end if
+			<th class="col-status"><span class="hdr-text">Statut</span></th>
+			<th class="col-search tablesorter-no-sort">Rechercher</th>
+			<th class="col-delete tablesorter-no-sort" style="width:48px; text-align:center;">Supprimer</th>
 		</tr>
 	</thead>
 

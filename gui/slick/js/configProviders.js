@@ -1,5 +1,5 @@
-/** @namespace $.SickGear.Root */
-/** @namespace $.SickGear.anonURL */
+/** @namespace $.SickShift.Root */
+/** @namespace $.SickShift.anonURL */
 $(document).ready(function(){
 
 	$.sgd = !1;
@@ -35,7 +35,7 @@ $(document).ready(function(){
 
 		const params = {url: url, name: name, key: key};
 
-		$.getJSON($.SickGear.Root + '/config/providers/get-newznab-categories', params,
+		$.getJSON($.SickShift.Root + '/config/providers/get-newznab-categories', params,
 			function(data){
 				updateNewznabCaps(data, selectedProvider);
 			});
@@ -62,8 +62,8 @@ $(document).ready(function(){
 		if (0 === $('#provider_order_list > #' + id).length && !1 !== showProvider){
 			var toAdd = '<li class="ui-state-default" id="' + id + '"> '
 				+ '<input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> '
-				+ '<a href="' + $.SickGear.anonURL + url + '" class="imgLink" target="_new">'
-				+ '<img src="' + $.SickGear.Root + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> '
+				+ '<a href="' + $.SickShift.anonURL + url + '" class="imgLink" target="_new">'
+				+ '<img src="' + $.SickShift.Root + '/images/providers/newznab.png" alt="' + name + '" width="16" height="16"></a> '
 				+ name + '</li>', prov$ = $('#provider_order_list');
 
 			prov$.append(toAdd);
@@ -83,8 +83,8 @@ $(document).ready(function(){
 		if (0 === $('#provider_order_list > #' + id).length){
 			var toAdd = '<li class="ui-state-default" id="' + id + '"> '
 				+ '<input type="checkbox" id="enable_' + id + '" class="provider_enabler" CHECKED> '
-				+ '<a href="' + $.SickGear.anonURL + url + '" class="imgLink" target="_new">'
-				+ '<img src="' + $.SickGear.Root + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> '
+				+ '<a href="' + $.SickShift.anonURL + url + '" class="imgLink" target="_new">'
+				+ '<img src="' + $.SickShift.Root + '/images/providers/torrentrss.png" alt="' + name + '" width="16" height="16"></a> '
 				+ name + '</li>', prov$ = $('#provider_order_list');
 
 			prov$.append(toAdd);
@@ -441,7 +441,7 @@ $(document).ready(function(){
 			return;
 
 		// send to the form with ajax, get a return value
-		$.getJSON($.SickGear.Root + '/config/providers/can-add-newznab-provider', {name: name, url: url},
+		$.getJSON($.SickShift.Root + '/config/providers/can-add-newznab-provider', {name: name, url: url},
 			function(data){
 				if (data.error !== undefined){
 					alert(data.error);
@@ -465,7 +465,7 @@ $(document).ready(function(){
 		var params = { name: name, url: url, cookies: cookies};
 
 		// send to the form with ajax, get a return value
-		$.getJSON($.SickGear.Root + '/config/providers/can-add-torrent-rss-provider', params,
+		$.getJSON($.SickShift.Root + '/config/providers/can-add-torrent-rss-provider', params,
 			function(data){
 				if (data.error !== undefined){
 					alert(data.error);

@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 
 $(function(){
 
@@ -12,7 +12,7 @@ $(function(){
 		if (0 === toDo.length)
 			return !1;
 
-		window.location.href = $.SickGear.Root + '/manage/mass-edit?to_edit=' + toDo.join('|');
+		window.location.href = $.SickShift.Root + '/manage/mass-edit?to_edit=' + toDo.join('|');
 	});
 
 	$('#bulk-change-submit').click(function(){
@@ -31,7 +31,7 @@ $(function(){
 
 		var confirmArr = [],
 			command = function(){
-				window.location.href = $.SickGear.Root + '/manage/bulk-change?'
+				window.location.href = $.SickShift.Root + '/manage/bulk-change?'
 					+ 'to_update=' + toDo.update.join('|')
 					+ '&to_refresh=' + toDo.refresh.join('|')
 					+ '&to_rename=' + toDo.rename.join('|')
@@ -123,18 +123,18 @@ $(function(){
 		$(el$).parent().attr('title', 'multiselect = ctrl/shift + left click');
 	})
 
-	$.SickGear.onRefreshSize = !1;
+	$.SickShift.onRefreshSize = !1;
 	function presortTable(table$){
 		var asc = $('.sort-size.tablesorter-headerAsc').length,
 			desc = $('.sort-size.tablesorter-headerDesc').length,
 			value;
 
-		if (!!(asc + desc) || !!$.SickGear.onRefreshSize){
+		if (!!(asc + desc) || !!$.SickShift.onRefreshSize){
 			$('[data-size]').each(function(i, el){
 				value = parseInt($(el).attr('data-size'), 10);
-				$(el).attr('data-size', (!!desc !== !!$.SickGear.onRefreshSize) /* xor */
-					? ((value < 0) ? (-1 * value) + $.SickGear.high : value)
-					: ((value > $.SickGear.high) ? -1 * (value - $.SickGear.high) : value))
+				$(el).attr('data-size', (!!desc !== !!$.SickShift.onRefreshSize) /* xor */
+					? ((value < 0) ? (-1 * value) + $.SickShift.high : value)
+					: ((value > $.SickShift.high) ? -1 * (value - $.SickShift.high) : value))
 			});
 			table$.trigger('updateCache');
 		}
@@ -142,10 +142,10 @@ $(function(){
 
 	$('#bulk-change-table')
 		.bind('refreshComplete', function(){
-			$.SickGear.onRefreshSize = !0;
+			$.SickShift.onRefreshSize = !0;
 		})
 		.bind('sortEnd', function(){
-			$.SickGear.onRefreshSize = !1;
+			$.SickShift.onRefreshSize = !1;
 
 			var el$ = $('.sort-size-type');
 			if (!!($('.sort-size.tablesorter-headerAsc').length + $('.sort-size.tablesorter-headerDesc').length)){
@@ -185,7 +185,7 @@ $(function(){
 			key = 'Smallest';
 		}
 
-		var url = $.SickGear.Root + '/home/media_stats';
+		var url = $.SickShift.Root + '/home/media_stats';
 		$.getJSON(url).then(function(content){
 			// on success...
 			var html, val, el$;

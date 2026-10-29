@@ -39,7 +39,7 @@ from .tracker import Tracker, methods as tracker_methods
 
 __version__ = '0.2.10'
 __author__ = 'Chris Lucas'
-__maintainer__ = 'SickGear'
+__maintainer__ = 'SickShift'
 __contact__ = 'chris@chrisjlucas.com'
 __license__ = 'MIT'
 

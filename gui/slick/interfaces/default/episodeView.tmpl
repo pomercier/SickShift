@@ -1,13 +1,13 @@
-#import sickgear
+#import sickshift
 #import datetime
 #import re
-#from sickgear.common import *
-#from sickgear.helpers import anon_url
-#from sickgear.indexers.indexer_config import TVINFO_TVDB, TVINFO_IMDB
-#from sickgear.sgdatetime import SGDatetime
+#from sickshift.common import *
+#from sickshift.helpers import anon_url
+#from sickshift.indexers.indexer_config import TVINFO_TVDB, TVINFO_IMDB
+#from sickshift.sgdatetime import SGDatetime
 #from _23 import decode_str
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 <% def view_paused(result): return ((int(result['paused']) and sg_var('EPISODE_VIEW_DISPLAY_PAUSED'))
                                     or (not int(result['paused']) and 2 != sg_var('EPISODE_VIEW_DISPLAY_PAUSED'))) %>
 #slurp#
@@ -18,7 +18,7 @@
 #set global $topmenu = 'home'
 #set $css = $getVar('css', '')
 #set $has_art = $getVar('has_art', None)
-#set $restart = 'Restart SickGear for new features on this page'
+#set $restart = 'Restart SickShift for new features on this page'
 #set $show_message = (None, $restart)[not $varExists('fanart')]
 #set global $page_body_attr  = 'episode-view" class="' + $css
 #set theme_suffix = ('', '-dark')['dark' == $sg_str('THEME_NAME', 'dark')]
@@ -139,7 +139,7 @@
 				state = isPortrait ? ['landscape', 'portrait'] : ['portrait', 'landscape'],
 				img = isPortrait ? ['poster', 'banner'] : ['banner', 'poster'],
 				old = img[0] + '_thumb', repl = img[1] + '_thumb',
-				cachedImg = $.SickGear.Root + '/images/' + repl + '.jpg',
+				cachedImg = $.SickShift.Root + '/images/' + repl + '.jpg',
 				tid, interval = 250, timeout = (5 * 1000)/interval;
 
 			states$.addClass(state[0]).removeClass(state[1]);
@@ -156,7 +156,7 @@
 						$(this).attr('src', $(this).attr('data-src-new')).removeAttr('data-src-new');
 					});
 					$.sgUiSortBy($('#sort').val());
-					$.get($.SickGear.Root + '/set_cards_daily_schedule');
+					$.get($.SickShift.Root + '/set_cards_daily_schedule');
 				}
 			}, interval);
 
@@ -393,7 +393,7 @@
 		<tr id="show-${show_id}" class="$show_div" data-rawname="$cur_result['show_name']" data-show-id="$id_sxe">
 			## forced to use a div to wrap airdate, the column sort went crazy with a span
 			<td align="center" class="nowrap">
-				<div class="${fuzzydate}">$decode_str($SGDatetime.sbfdatetime($cur_result['localtime']), $sickgear.SYS_ENCODING)</div><span class="sort-data">$cur_result['localtime'].strftime('%Y%m%d%H%M')</span>
+				<div class="${fuzzydate}">$decode_str($SGDatetime.sbfdatetime($cur_result['localtime']), $sickshift.SYS_ENCODING)</div><span class="sort-data">$cur_result['localtime'].strftime('%Y%m%d%H%M')</span>
 			</td>
 
 			<td class="tvShow"><a href="$sbRoot/home/view-show?tvid_prodid=$cur_result['tvid_prodid']" data-name="$cur_result['data_show_name']">$display_name</a>
@@ -429,9 +429,9 @@
 
 			<td align="center" style="vertical-align:middle">
         #if $sg_var('USE_IMDB_INFO') and $cur_result['imdb_url']
-				<a href="<%= anon_url(cur_result['imdb_url']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${cur_result['imdb_url']}"><img alt="[$sickgear.TVInfoAPI(TVINFO_IMDB).config.get('name')]" height="16" width="16" src="$sbRoot/images/$sickgear.TVInfoAPI(TVINFO_IMDB).config.get('icon')"></a>
+				<a href="<%= anon_url(cur_result['imdb_url']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${cur_result['imdb_url']}"><img alt="[$sickshift.TVInfoAPI(TVINFO_IMDB).config.get('name')]" height="16" width="16" src="$sbRoot/images/$sickshift.TVInfoAPI(TVINFO_IMDB).config.get('icon')"></a>
         #end if
-				<a href="<%= anon_url(sickgear.TVInfoAPI(tvid).config['show_url'] % cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickgear.TVInfoAPI($tvid).config['show_url'] % cur_result['showid']}"><img alt="$sickgear.TVInfoAPI($tvid).name" height="16" width="16" src="$sbRoot/images/$sickgear.TVInfoAPI($tvid).config['icon']"></a>
+				<a href="<%= anon_url(sickshift.TVInfoAPI(tvid).config['show_url'] % cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickshift.TVInfoAPI($tvid).config['show_url'] % cur_result['showid']}"><img alt="$sickshift.TVInfoAPI($tvid).name" height="16" width="16" src="$sbRoot/images/$sickshift.TVInfoAPI($tvid).config['icon']"></a>
 			</td>
 
 			<td align="center">
@@ -545,10 +545,10 @@
                         #set $too_late_header = True
                     #elif $cur_ep_enddate >= $today and $cur_ep_airdate < $next_week.date()
                         #if $cur_ep_airdate == $today.date()
-	<h2 class="day">$decode_str($SGDatetime.sbfdate($cur_ep_airdate, '%A'), $sickgear.SYS_ENCODING).capitalize() <span style="font-size:14px; vertical-align:top">[Today]</span></h2>
+	<h2 class="day">$decode_str($SGDatetime.sbfdate($cur_ep_airdate, '%A'), $sickshift.SYS_ENCODING).capitalize() <span style="font-size:14px; vertical-align:top">[Today]</span></h2>
                             #set $today_header = True
                         #else
-	<h2 class="day">$decode_str($SGDatetime.sbfdate($cur_ep_airdate, '%A'), $sickgear.SYS_ENCODING).capitalize()</h2>
+	<h2 class="day">$decode_str($SGDatetime.sbfdate($cur_ep_airdate, '%A'), $sickshift.SYS_ENCODING).capitalize()</h2>
                         #end if
                     #end if
                 #end if
@@ -556,7 +556,7 @@
             #end if
             ##
             #if $cur_ep_airdate == $today.date() and not $today_header
-	<h2 class="day">$decode_str($SGDatetime.sbfdate($cur_ep_airdate, '%A'), $sickgear.SYS_ENCODING).capitalize() <span style="font-size:14px; vertical-align:top">[Today]</span></h2>
+	<h2 class="day">$decode_str($SGDatetime.sbfdate($cur_ep_airdate, '%A'), $sickshift.SYS_ENCODING).capitalize() <span style="font-size:14px; vertical-align:top">[Today]</span></h2>
                 #set $today_header = True
             #end if
             ##
@@ -619,9 +619,9 @@
 
 							<span class="tvshowTitleIcons">
         #if $sg_var('USE_IMDB_INFO') and $cur_result['imdb_url']
-                				<a href="<%= anon_url(cur_result['imdb_url']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${cur_result['imdb_url']}"><img alt="[$sickgear.TVInfoAPI(TVINFO_IMDB).name]" height="16" width="16" src="$sbRoot/images/$sickgear.TVInfoAPI(TVINFO_IMDB).config.get('icon')"></a>
+				<a href="<%= anon_url(cur_result['imdb_url']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${cur_result['imdb_url']}"><img alt="[$sickshift.TVInfoAPI(TVINFO_IMDB).name]" height="16" width="16" src="$sbRoot/images/$sickshift.TVInfoAPI(TVINFO_IMDB).config.get('icon')"></a>
         #end if
-								<a href="<%= anon_url(sickgear.TVInfoAPI(tvid).config['show_url'] % cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickgear.TVInfoAPI($tvid).config['show_url'] % cur_result['showid']}"><img alt="$sickgear.TVInfoAPI($tvid).name" height="16" width="16" src="$sbRoot/images/$sickgear.TVInfoAPI($tvid).config['icon']"></a>
+								<a href="<%= anon_url(sickshift.TVInfoAPI(tvid).config['show_url'] % cur_result['showid']) %>" rel="noreferrer" onclick="window.open(this.href, '_blank'); return false" title="${sickshift.TVInfoAPI($tvid).config['show_url'] % cur_result['showid']}"><img alt="$sickshift.TVInfoAPI($tvid).name" height="16" width="16" src="$sbRoot/images/$sickshift.TVInfoAPI($tvid).config['icon']"></a>
 								<span><a class="ep-search" href="$sbRoot/home/search-episode?tvid_prodid=$cur_result['tvid_prodid']&amp;season=$cur_result['season']&amp;episode=$cur_result['episode']" title="Manual Search"><img title="[search]" alt="[search]" height="16" width="16" src="$sbRoot/images/search16.png"></a></span>
 							</span>
 						</div>
@@ -629,7 +629,7 @@
 						<span class="title">Next Episode:</span> <span><%= 'S%02iE%02i' % (int(cur_result['season']), int(cur_result['episode'])) %> - $cur_result['name']</span>
 
 						<div class="clearfix">
-							<span class="title">Airdate: </span><span class="${fuzzydate}">$decode_str($SGDatetime.sbfdatetime($cur_result['localtime']), $sickgear.SYS_ENCODING)</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
+							<span class="title">Airdate: </span><span class="${fuzzydate}">$decode_str($SGDatetime.sbfdatetime($cur_result['localtime']), $sickshift.SYS_ENCODING)</span><%= ('', '<span> on %s</span>' % str(cur_result['network']))[None is not cur_result['network']] %>
 						</div>
 
 						<div class="clearfix">
@@ -814,14 +814,14 @@
 
 					<div class="day-of-week $col_class">
 						<div class="day-number">
-							<div class="number">$decode_str($SGDatetime.sbfdate($day, ' %d'), $sickgear.SYS_ENCODING).replace(' 0', ' ')</div>
+							<div class="number">$decode_str($SGDatetime.sbfdate($day, ' %d'), $sickshift.SYS_ENCODING).replace(' 0', ' ')</div>
 							<div class="day">
-								<span class="visible-lg">$decode_str($SGDatetime.sbfdate($day, '%A'), $sickgear.SYS_ENCODING).capitalize()</span>
-								<span class="hidden-lg">$decode_str($SGDatetime.sbfdate($day, '%a'), $sickgear.SYS_ENCODING).capitalize()</span>
+								<span class="visible-lg">$decode_str($SGDatetime.sbfdate($day, '%A'), $sickshift.SYS_ENCODING).capitalize()</span>
+								<span class="hidden-lg">$decode_str($SGDatetime.sbfdate($day, '%a'), $sickshift.SYS_ENCODING).capitalize()</span>
 							</div>
 							<div class="month">
-								<span class="visible-lg">$decode_str($SGDatetime.sbfdate($day, '%B'), $sickgear.SYS_ENCODING).capitalize()</span>
-								<span class="hidden-lg">$decode_str($SGDatetime.sbfdate($day, '%b'), $sickgear.SYS_ENCODING).capitalize()</span>
+								<span class="visible-lg">$decode_str($SGDatetime.sbfdate($day, '%B'), $sickshift.SYS_ENCODING).capitalize()</span>
+								<span class="hidden-lg">$decode_str($SGDatetime.sbfdate($day, '%b'), $sickshift.SYS_ENCODING).capitalize()</span>
 							</div>
 						</div>
 
@@ -831,7 +831,7 @@
                 #for $cur_result in $shows
                     #if $day == $cur_result['localtime'].date()
                         #set $day_has_show = True
-                        #set $airtime = $decode_str($SGDatetime.sbftime($cur_result['localtime'], markup=True), $sickgear.SYS_ENCODING)
+                        #set $airtime = $decode_str($SGDatetime.sbftime($cur_result['localtime'], markup=True), $sickshift.SYS_ENCODING)
                         #set $img_id = ''
                         #set $plot_class = ''
                         #set $title_text = ''
@@ -859,7 +859,7 @@
 								<span class="over-layer0">[paused]</span>
 								<span class="over-layer1">[paused]</span>
                         #elif $state_current == $cur_result['state']
-                            #set $endtime = $decode_str($SGDatetime.sbftime($cur_result['localtime'] + datetime.timedelta(minutes = $cur_result['runtime']), markup=True), $sickgear.SYS_ENCODING)
+                            #set $endtime = $decode_str($SGDatetime.sbftime($cur_result['localtime'] + datetime.timedelta(minutes = $cur_result['runtime']), markup=True), $sickshift.SYS_ENCODING)
 								<span class="over-layer0 on-air0">On Air until<br>$endtime</span>
 								<span class="over-layer1 on-air1">On Air until<br>$endtime</span>
                         #end if
@@ -898,7 +898,7 @@ window.setInterval('location.reload(true)', 30*60000); // Refresh every xx minut
 $('#Carousel').carousel({interval: 0});
 
 $(document).bind('keyup', function(e) {
-	return (/undefined/i.test($.SickGear.PauseCarousel) &&
+	return (/undefined/i.test($.SickShift.PauseCarousel) &&
 		(!('ctrlKey' in e && !!e.ctrlKey) && !('shiftKey' in e && !!e.shiftKey) && !(('altKey' in e && !!e.altKey) || ('metaKey' in e && !!e.metaKey))) && (
 		(!(e.hasOwnProperty('ctrlKey') && e.ctrlKey) && !(e.hasOwnProperty('altKey') && e.altKey)) && (
 		(39 == e.which && $('.carousel').carousel('next')) ||
