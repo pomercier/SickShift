@@ -9,6 +9,7 @@
     if (window._sgEpisodePreviewLoaded) return;
     window._sgEpisodePreviewLoaded = true;
 
+    function initializeEpisodePreview() {
     // Detect system language
     const rawLang = (window.SG_SYS_LANG || navigator.language || navigator.userLanguage || 'fr');
     const systemLang = rawLang.split(/[-_.]/)[0].toLowerCase();
@@ -673,5 +674,22 @@
             showPopupFor(rowOrEl, clientX, clientY);
         }
     };
+
+    }
+
+    // Do not create a popup or intercept row interactions without working tools.
+    const capabilityRoot = (window.sbRoot || '').replace(/\/$/, '');
+    const $previewButtons = $('#hero-preview-btn');
+    $previewButtons.hide();
+    $.ajax({
+        url: capabilityRoot + '/dashboard/api/preview-capabilities',
+        dataType: 'json',
+        timeout: 10000
+    }).done(function (data) {
+        if (data && data.enabled === true) {
+            initializeEpisodePreview();
+            $previewButtons.show();
+        }
+    });
 
 })(jQuery);
