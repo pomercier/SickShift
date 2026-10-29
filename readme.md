@@ -54,4 +54,4 @@ Screenshots of real personal libraries are deliberately excluded. Browser displa
 
 SickShift is an independent fork of SickGear, itself descended from Sick-Beard. It is not an official SickGear release. Original copyright notices and attribution are retained; the code is distributed under [GPL-3.0](COPYING.txt).
 
-See the [technical comparison](docs/COMPARISON.md), [contribution guidelines](CONTRIBUTING.md), and [privacy notes](docs/PRIVACY.md). The detailed supporting guides are currently written in French.
+See the [technical comparison](docs/COMPARISON.md), [contribution guidelines](CONTRIBUTING.md), and [privacy notes](docs/PRIVACY.md).
