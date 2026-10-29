@@ -16,6 +16,6 @@ fi
 git push origin main
 # Branch rules are applied only after the source is actually published.
 gh api --method PUT repos/pomercier/SickShift/branches/main/protection --input - <<'JSON'
-{"required_status_checks":{"strict":true,"contexts":["release (3.11)","release (3.12)","release (3.13)"]},"enforce_admins":true,"required_pull_request_reviews":{"dismiss_stale_reviews":true,"required_approving_review_count":0},"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"required_conversation_resolution":true}
+{"required_status_checks":{"strict":true,"contexts":["release (3.11)","release (3.12)","release (3.13)","bootstrap (ubuntu-24.04)","bootstrap (windows-latest)","bootstrap (macos-latest)"]},"enforce_admins":true,"required_pull_request_reviews":{"dismiss_stale_reviews":true,"required_approving_review_count":0},"restrictions":null,"allow_force_pushes":false,"allow_deletions":false,"required_conversation_resolution":true}
 JSON
 echo 'Published and branch protection configured. Verify Actions and repository settings on GitHub.'

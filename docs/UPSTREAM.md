@@ -25,7 +25,7 @@ The weekly workflow opens an issue for each new upstream revision that has not b
 
 ## GitHub repository protection
 
-Protect `main` with required pull requests, the three `SickShift release checks` matrix jobs, blocked force-pushes and branch deletion, and resolved conversations. These are GitHub settings: this document does not activate them by itself. They were configured and verified at initial publication. Administrators can change repository settings, so periodically check that the intended rules remain enabled.
+Protect `main` with required pull requests, the three `SickShift release checks` Python jobs and the three `Cross-platform Python bootstrap` operating-system jobs, blocked force-pushes and branch deletion, and resolved conversations. These are GitHub settings: this document does not activate them by itself. They were configured and verified at initial publication. Administrators can change repository settings, so periodically check that the intended rules remain enabled.
 
 The inherited in-application code-replacement entry point is disabled in the fork. Show-data and dependency updates are not blocked by that safeguard. Dependency updates still require an isolated environment and backups because a new package version may introduce incompatibilities.
 

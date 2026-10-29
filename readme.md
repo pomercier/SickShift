@@ -99,7 +99,7 @@ python -m unittest tests.preview_clip_tests tests.release_privacy_tests -v
 
 The repository includes publication privacy checks and real FFmpeg conversion tests for SDR, 10-bit SDR, HDR10, and HLG. Fork-specific Linux/Python checks replace the inherited upstream CI configuration. Check the repository's Actions tab for current results; a workflow file alone is not proof that a build has passed. Dolby Vision conversion depends on the host hardware and is not covered by a universal GPU test.
 
-Screenshots of real personal libraries are deliberately excluded. Browser display preferences are local to each browser and are not synchronized across accounts or devices.
+Only the two explicitly authorized showcase screenshots are included; private runtime data and capture scripts remain excluded. Browser display preferences are local to each browser and are not synchronized across accounts or devices.
 
 ## Credits and license
 
