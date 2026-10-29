@@ -22,6 +22,9 @@ for name in filter(None, files):
     p = root / name
     if not p.is_file():
         continue
+    # The unchanged public CA bundle is a dependency, not a user's private key.
+    if name == 'lib/certifi/cacert.pem' and original_public_file(name, p.read_bytes()):
+        continue
     archive = p.name.lower().endswith(('.zip', '.tar', '.tar.gz', '.tgz', '.7z', '.rar'))
     if archive and not original_public_file(name, p.read_bytes()):
         errors.append((name, 'private or unreviewed archive'))
