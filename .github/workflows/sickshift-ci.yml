@@ -23,6 +23,6 @@ jobs:
       - run: python -m pip install -r requirements.txt -r requirements-dashboard.txt
       - run: python scripts/check_release.py
       - run: python -m compileall -q sickshift sickshift_dashboard
-      - run: python -m unittest tests.preview_clip_tests tests.release_privacy_tests tests.bootstrap_dependencies_tests -v
+      - run: python -m unittest tests.preview_clip_tests tests.release_privacy_tests tests.bootstrap_dependencies_tests tests.preview_availability_tests -v
       - name: Verify package imports
         run: PYTHONPATH=lib:. python -c "import sickshift; import sickshift_dashboard"

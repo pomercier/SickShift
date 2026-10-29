@@ -230,6 +230,13 @@ def create_router(app_state: AppState = state) -> APIRouter:
 
         raise HTTPException(status_code=404, detail="Soundtrack not found")
 
+    @router.get("/api/preview-capabilities")
+    async def preview_capabilities() -> JSONResponse:
+        import asyncio
+        from sickshift_dashboard.preview_clip import preview_tools_available
+        enabled = await asyncio.to_thread(preview_tools_available)
+        return JSONResponse({"enabled": enabled}, headers={"Cache-Control": "no-store"})
+
     @router.get("/api/preview-clip-info/{indexer}/{show_id}/{season}/{episode}")
     async def preview_clip_info(
         indexer: int,
@@ -240,7 +247,10 @@ def create_router(app_state: AppState = state) -> APIRouter:
         fresh: bool = False,
     ) -> JSONResponse:
         import asyncio
-        from sickshift_dashboard.preview_clip import resolve_episode_file, get_or_create_preview_clip
+        from sickshift_dashboard.preview_clip import resolve_episode_file, get_or_create_preview_clip, preview_tools_available
+
+        if not await asyncio.to_thread(preview_tools_available):
+            raise HTTPException(status_code=503, detail="Video previews are unavailable")
 
         filepath = await asyncio.to_thread(
             resolve_episode_file, indexer, show_id, season, episode, app_state.config.db_path
@@ -286,7 +296,10 @@ def create_router(app_state: AppState = state) -> APIRouter:
         fresh: bool = False,
     ) -> Response:
         import asyncio
-        from sickshift_dashboard.preview_clip import resolve_episode_file, get_or_create_preview_clip
+        from sickshift_dashboard.preview_clip import resolve_episode_file, get_or_create_preview_clip, preview_tools_available
+
+        if not await asyncio.to_thread(preview_tools_available):
+            raise HTTPException(status_code=503, detail="Video previews are unavailable")
 
         filepath = await asyncio.to_thread(
             resolve_episode_file, indexer, show_id, season, episode, app_state.config.db_path

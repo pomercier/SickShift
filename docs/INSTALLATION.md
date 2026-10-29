@@ -12,7 +12,7 @@ Use `--datadir ./data` to keep runtime state in the ignored default data directo
 
 Python itself, Git, and the native FFmpeg/ffprobe executables are not Python packages. Install them using the official installer or your operating system's package manager. On Debian/Ubuntu, install the matching `python3-venv` package if the interpreter cannot create an environment. Windows Python installations must include pip and venv; the standard Python installer normally provides them. A writable checkout and internet access are required for automatic first-run setup.
 
-FFmpeg is optional for ordinary show management but required for local previews. HDR conversion needs `zscale` and `tonemap`. Dolby Vision Profile 5 also needs `libplacebo` and a usable Vulkan device. Having the Python packages installed does not guarantee those native capabilities.
+FFmpeg is optional for ordinary show management but required for local previews. If FFmpeg or ffprobe is missing or cannot be executed, preview controls and popup interactions stay disabled; no extraction is attempted. Installing working tools and reloading the page enables the preview interface again. HDR conversion needs `zscale` and `tonemap`. Dolby Vision Profile 5 also needs `libplacebo` and a usable Vulkan device. Having the Python packages installed does not guarantee those native capabilities.
 
 ## Managed installations
 

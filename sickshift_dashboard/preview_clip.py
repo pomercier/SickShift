@@ -5,6 +5,7 @@ import logging
 import os
 import random
 import re
+import shutil
 import sqlite3
 import subprocess
 import time
@@ -18,6 +19,37 @@ CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "preview_clips"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 _PROBE_CACHE: dict[str, Tuple[float, dict]] = {}
+
+
+_TOOLS_STATUS = None
+
+
+def preview_tools_available() -> bool:
+    """Require runnable FFmpeg and ffprobe; missing native tools are optional."""
+    global _TOOLS_STATUS
+    paths = tuple(shutil.which(name) for name in ("ffmpeg", "ffprobe"))
+    if not all(paths):
+        return False
+    try:
+        signature = tuple((path, Path(path).stat().st_mtime_ns) for path in paths)
+    except OSError:
+        return False
+    now = time.monotonic()
+    if _TOOLS_STATUS and _TOOLS_STATUS[0] == signature and now - _TOOLS_STATUS[1] < 30:
+        return _TOOLS_STATUS[2]
+    available = True
+    for path in paths:
+        try:
+            result = subprocess.run([path, "-version"], stdout=subprocess.DEVNULL,
+                                    stderr=subprocess.DEVNULL, timeout=3)
+            if result.returncode != 0:
+                available = False
+                break
+        except (OSError, subprocess.TimeoutExpired):
+            available = False
+            break
+    _TOOLS_STATUS = (signature, now, available)
+    return available
 
 
 def get_default_db_path() -> Path:
@@ -265,6 +297,8 @@ def get_or_create_preview_clip(
     clip_len: int = 20,
 ) -> Optional[dict[str, Any]]:
     """Generates or retrieves a cached video preview clip for the given episode."""
+    if not preview_tools_available():
+        return None
     probe = probe_file(filepath)
     if not probe:
         return None
