@@ -46,12 +46,7 @@ if not any(list(map(lambda v: v[0] <= sys.version_info[:3] <= v[1], versions))) 
     sys.exit(1)
 
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
-# Auto-check and repair FastAPI Dashboard integration
-try:
-    from sickshift_dashboard.installer import ensure_dashboard_installed
-    ensure_dashboard_installed(os.path.dirname(os.path.abspath(__file__)))
-except Exception:
-    pass
+# Dashboard integration is maintained as reviewed source; startup never patches Git hooks.
 
 is_win = 'win' == sys.platform[0:3]
 

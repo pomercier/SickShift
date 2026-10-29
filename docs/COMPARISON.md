@@ -30,3 +30,7 @@ git diff --find-renames 60b9dec46e9ffae97a87cad0905a654acc726167 HEAD
 Le renommage global augmente le travail de fusion amont. Un merge Git réussi ne suffit pas : il faut aussi vérifier les nouveaux imports, les noms de modules, les migrations SQL et les parcours utilisateur. Les anciens scripts et intégrations tiers peuvent encore exiger une adaptation. Les URL publiques réelles et les noms de protocoles externes ne doivent pas être renommés arbitrairement.
 
 La page de découverte personnalisée « quoi regarder » reste une évolution future ; le tableau de bord actuel n’est pas présenté comme un moteur de recommandation nouveau.
+
+## Vérifications de l’export préparé
+
+Les contrôles de confidentialité sur 4 170 fichiers indexés, les imports des deux paquets, la compilation Python et les tests de conversion/filtrage ont été exécutés localement. Un démarrage avec un nouveau dossier de données vide sur un port distinct a servi le tableau de bord avec HTTP 200, sans utiliser la bibliothèque personnelle. La matrice GitHub Actions et la protection distante restent à vérifier après publication.
