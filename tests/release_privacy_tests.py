@@ -11,6 +11,10 @@ class ReleasePrivacyTests(unittest.TestCase):
         source = Path(__file__).resolve().parents[1] / 'scripts/check_release.py'
         for name, content in [
             ('settings.db', b'private database'),
+            ('settings.db-wal', b'private journal'),
+            ('episode.mkv', b'private video'),
+            ('private.pem', b'private key'),
+            ('personal-backup.tar.gz', b'private archive'),
             ('.env', b'PASSWORD=private'),
             ('source.py', b'endpoint="https://' + b'account:secret@example.invalid/api"'),
         ]:

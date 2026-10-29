@@ -45,6 +45,9 @@ if not any(list(map(lambda v: v[0] <= sys.version_info[:3] <= v[1], versions))) 
         lambda r: '%s - %s' % tuple(map(lambda v: str(v).replace(', ', '.')[1:-1], r)), versions)))
     sys.exit(1)
 
+from bootstrap_dependencies import ensure_runtime
+ensure_runtime()
+
 sys.path.insert(1, os.path.abspath(os.path.join(os.path.dirname(__file__), 'lib')))
 # Dashboard integration is maintained as reviewed source; startup never patches Git hooks.
 

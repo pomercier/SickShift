@@ -14,12 +14,24 @@ def public_example(name, value):
     original_value = re.sub('sickshift', 'sickgear', value, flags=re.I)
     return result.returncode == 0 and original_value.encode() in result.stdout
 
+def original_public_file(name, content):
+    result = subprocess.run(['git', 'show', public_base + ':' + name], cwd=root, capture_output=True)
+    return result.returncode == 0 and result.stdout == content
+
 for name in filter(None, files):
     p = root / name
     if not p.is_file():
         continue
-    if (p.suffix.lower() in {'.db', '.sqlite', '.sqlite3', '.log'} or
-        name.startswith(('backup/', 'backups/', 'Logs/', '.aws/', '.code' + 'x/', '.agents/', 'venv/')) or
+    # The unchanged public CA bundle is a dependency, not a user's private key.
+    if name == 'lib/certifi/cacert.pem' and original_public_file(name, p.read_bytes()):
+        continue
+    archive = p.name.lower().endswith(('.zip', '.tar', '.tar.gz', '.tgz', '.7z', '.rar'))
+    if archive and not original_public_file(name, p.read_bytes()):
+        errors.append((name, 'private or unreviewed archive'))
+        continue
+    if (re.search(r'\.(?:db|sqlite[0-9]?)(?:[-.].*)?$', p.name, re.I) or
+        p.suffix.lower() in {'.log', '.mkv', '.mp4', '.avi', '.mov', '.mp3', '.flac', '.pem', '.key', '.p12', '.pfx'} or
+        name.startswith(('data/', 'downloads/', 'media/', 'shows/', 'Emissions/', 'emissions/', 'logs/', 'backup/', 'backups/', 'Logs/', '.aws/', '.code' + 'x/', '.agents/', 'venv/')) or
         (p.name.startswith('.env') and p.name != '.env.example') or
         p.name in {'config.ini', 'SICKSHIFT_LOCAL.md', 'SICKSHIFT_MIGRATION.json'}):
         errors.append((name, 'runtime/private file'))

@@ -36,3 +36,15 @@ A personalized "what to watch" discovery page remains a future enhancement. The 
 Local validation covered privacy checks across 4,170 indexed files, imports of both packages, Python compilation, and video-conversion and publication-filtering tests. A fresh startup with an empty data directory on a separate port served the dashboard with HTTP 200 without accessing the personal library.
 
 The first publication exposed CI setup issues, which were corrected in pull request #1: full upstream history is now available to privacy checks, async database dependencies are declared, and current GitHub actions run on Ubuntu 24.04. The required Python 3.11, 3.12, and 3.13 checks passed before that pull request was merged. Branch protection was verified on GitHub. See the Actions tab for the latest results rather than treating these historical checks as a guarantee for future commits.
+
+## More differences in the source
+
+- The main library has cinema-style poster cards, completion bars, network branding, and updated cast/poster hold interactions.
+- The preview player includes random clip selection that avoids common opening/ending regions, an explicit audio preference order, dual-mono audio handling, mute persistence, autoplay fallback, and seek/loop controls.
+- Clip generation runs outside the async request loop. Generation and client timeouts accommodate heavier sources, and UI errors replace silent black playback failures where detected.
+- Preview requests use a sequence guard to prevent stale responses from reopening the wrong episode. Delete-column interactions are excluded from preview activation.
+- The public distribution declares dashboard runtime dependencies, checks private staged content, and separates native video-tool requirements from Python packages.
+- The Python launcher prepares an isolated environment and installs missing requirements, with platform checks for Windows, macOS, and Linux.
+- Showcase screenshots are real application captures, authorized by the owner, with English presentation labels applied only for the images. Capture code is deliberately not shipped.
+
+None of these changes replaces SickGear's existing provider/search engine, downloader support, metadata system, quality rules, or watched-state integrations. A personalized discovery/recommendation engine remains future work.

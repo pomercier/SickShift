@@ -13,22 +13,73 @@
 
 **A proven foundation.** SickShift retains the management, search, metadata, and integration engine from [SickGear](https://github.com/SickGear/SickGear). Inherited features retain their own requirements and configuration.
 
+## Take a look
+
+### Main library
+
+A poster-first view with network logos, episode progress, and quick access to show management.
+
+[![SickShift main library with English interface labels](docs/assets/main-en.png)](docs/assets/main-en.png)
+
+### Dashboard
+
+A focused view of what is ready to watch, with local previews, collapsible sections, and missing-episode tools.
+
+[![SickShift dashboard with English interface labels](docs/assets/dashboard-en.png)](docs/assets/dashboard-en.png)
+
+These screenshots are published with the library owner's permission. Interface labels were translated locally for the images only; they do not change the application's language settings. Show names and poster artwork retain their original branding. Only the final PNGs are included in the repository; the capture tooling is not.
+
+## What SickShift adds
+
+| Improvement | What changes in everyday use |
+|---|---|
+| Cinema styling | Dark surfaces, clear hierarchy, poster cards, transparent branding, and consistent navigation |
+| Library progress | Progress bars and completion styling make the state of each show easier to scan |
+| Dedicated dashboard | Ready-to-watch episodes, missing episodes, ended shows, and upcoming airings in one place |
+| Local video previews | Hover or hold to preview an existing local episode without opening a full player |
+| Browser-friendly preview output | Small 8-bit H.264 clips, with HDR10/HLG conversion and a dedicated Dolby Vision Profile 5 path |
+| Audio track selection | Quebec/Canadian French preference, then standard French, English, and the first available track |
+| Preview playback controls | Play/pause, mute, seeking, looping, remembered mute preference, and muted autoplay fallback |
+| Efficient preview caching | Converted clips are reused; source changes and encoding revisions invalidate stale entries |
+| More reliable interactions | Slow responses from a previous episode cannot replace the current preview; delete controls do not trigger preview navigation |
+| Missing-episode shortcuts | Per-show groups, copy-to-clipboard feedback, and matching typography for single episodes |
+| Remembered section layout | Accessible chevrons, expanded first-visit defaults, and browser-local open/closed preferences |
+| Verified rename reporting | The result shows the actual path and reports failed or incomplete moves |
+| Video-first rename safety | An associated file moving successfully cannot hide a failed video move and produce a false database path |
+| Artwork interactions | Hold-to-zoom treatments for cast and poster images in the show view |
+| Regional presentation | Additional Quebec flags and network-logo handling |
+| Easier first launch | Automatic isolated Python environment and installation of missing application packages |
+| Reviewed upstream integration | Update branches, privacy checks, required CI checks, and protected pull-request merges |
+
+These are changes visible in the compared source tree. SickGear's underlying provider, search, metadata, and downloader capabilities remain upstream features, not new SickShift inventions. [Read the detailed comparison and limitations](docs/COMPARISON.md).
+
 ## Getting started
 
-Python 3.11 through 3.13 are targeted by the CI configuration. FFmpeg and ffprobe are required for video previews; the rest of the application can run without them. Use an isolated Python environment:
+Install Python first, then clone and launch SickShift. The launcher creates a private `.venv`, installs missing Python packages, and starts the application. You do not need to activate an environment or run pip yourself.
+
+**Linux / macOS**
 
 ```sh
 git clone https://github.com/pomercier/SickShift.git
 cd SickShift
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r requirements.txt -r requirements-dashboard.txt
-python sickshift.py --nolaunch --datadir ./data
+python3 sickshift.py --nolaunch --datadir ./data
 ```
+
+**Windows**
+
+```powershell
+git clone https://github.com/pomercier/SickShift.git
+cd SickShift
+py sickshift.py --nolaunch --datadir ./data
+```
+
+If Python is already running inside an isolated environment, the launcher reuses it. Packages are downloaded only when required modules are missing. It never uses `--break-system-packages` or a global `--user` installation. Internet access and a writable installation directory are needed on first launch. On Debian/Ubuntu, `python3-venv` may need to be installed separately. Set `SICKSHIFT_NO_AUTO_INSTALL=1` for a managed environment, or `SICKSHIFT_VENV` to choose another isolated environment location.
+
+FFmpeg and ffprobe are separate native tools: install them through your operating system for video previews. The Python package installer does not install native executables. See [installation details](docs/INSTALLATION.md).
 
 Open the address printed in the logs and configure your own library. **No personal database, library, show list, installation configuration, or service credentials are included.**
 
-On Windows, activate the environment with `.venv\Scripts\activate` and make FFmpeg available on your PATH. For a Linux service, adapt the [systemd example](packaging/sickshift.service.example).
+For a Linux service, adapt the [systemd example](packaging/sickshift.service.example).
 
 Optional TMDB network-logo lookups use your own `SICKSHIFT_TMDB_API_KEY` environment variable. The application does not automatically load a `.env` file.
 
