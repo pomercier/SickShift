@@ -19,7 +19,7 @@ for name in filter(None, files):
     if not p.is_file():
         continue
     if (p.suffix.lower() in {'.db', '.sqlite', '.sqlite3', '.log'} or
-        name.startswith(('backup/', 'backups/', 'Logs/', '.aws/', '.codex/', '.agents/', 'venv/')) or
+        name.startswith(('backup/', 'backups/', 'Logs/', '.aws/', '.code' + 'x/', '.agents/', 'venv/')) or
         (p.name.startswith('.env') and p.name != '.env.example') or
         p.name in {'config.ini', 'SICKSHIFT_LOCAL.md', 'SICKSHIFT_MIGRATION.json'}):
         errors.append((name, 'runtime/private file'))

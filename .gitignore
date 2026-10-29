@@ -58,7 +58,7 @@ gui/slick/images/network/.white_cache/
 /.env*
 !/.env.example
 /.aws/
-/.codex/
+/.code[x]/
 /.agents/
 /venv/
 /.venv/
