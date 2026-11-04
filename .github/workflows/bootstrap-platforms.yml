@@ -10,7 +10,9 @@ jobs:
   bootstrap:
     strategy:
       matrix:
-        os: [ubuntu-24.04, windows-latest, macos-latest]
+        # Select the Intel hosted image explicitly; macos-latest currently maps
+        # to ARM64, whose capacity can leave required checks queued for hours.
+        os: [ubuntu-24.04, windows-latest, macos-15-intel]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7.0.1

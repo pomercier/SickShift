@@ -99,6 +99,19 @@
     user-select: none !important;
 }
 
+/* The poster may glow while held, but it must remain inside its card. */
+#display-show #posterCol {
+    width: 226px;
+    max-width: 226px;
+    overflow: hidden !important;
+    border-radius: 6px;
+}
+#display-show #posterCol .tvshowImg {
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+}
+
 #display-show .cast,
 #display-show .cast .thumb,
 #display-show .cast .thumb .cast-bg,
