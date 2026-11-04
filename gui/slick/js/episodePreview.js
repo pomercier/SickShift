@@ -22,7 +22,9 @@
     const css = `
     .ep-preview-popup {
         position: fixed;
-        width: 390px;
+        width: min(390px, calc(100vw - 24px));
+        max-width: calc(100vw - 24px);
+        max-height: calc(100vh - 24px);
         background: rgba(12, 17, 28, 0.96);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
@@ -67,7 +69,7 @@
     .ep-preview-media-wrap {
         position: relative;
         width: 100%;
-        height: 220px;
+        height: min(220px, 42vh);
         background: #000000;
         display: flex;
         align-items: center;
@@ -273,8 +275,8 @@
 
     function positionPopupNear(elem, clientX, clientY) {
         const rect = elem.getBoundingClientRect();
-        const popupWidth = 390;
-        const popupHeight = 310;
+        const popupWidth = Math.min(390, Math.max(180, window.innerWidth - 24));
+        const popupHeight = Math.min(310, Math.max(160, window.innerHeight - 24));
         const margin = 12;
 
         let left = (clientX !== undefined ? clientX + 16 : rect.right - popupWidth);

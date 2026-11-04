@@ -230,6 +230,41 @@
 			font-size: 13px;
 			color: inherit;
 		}
+		/* Keep the Shows and Settings dropdown triggers aligned with the compact
+		 * action buttons.  Bootstrap's 100% anchor height otherwise makes the
+		 * active trigger grow taller and paints a second blue block below it. */
+		#NAVhome,
+		#NAVconfig {
+			display: flex !important;
+			align-items: center !important;
+			height: 50px !important;
+		}
+		#NAVhome > a.dropdown-toggle,
+		#NAVconfig > a.dropdown-toggle {
+			display: inline-flex !important;
+			align-items: center !important;
+			width: auto !important;
+			height: 32px !important;
+			min-height: 32px !important;
+			margin: 0 !important;
+			padding: 0 12px !important;
+			line-height: 30px !important;
+			box-sizing: border-box !important;
+			border-radius: 8px !important;
+		}
+		/* The active Shows/Séries trigger is one solid dark block. */
+		#NAVhome.active > a.dropdown-toggle,
+		#NAVhome.open > a.dropdown-toggle,
+		#NAVhome.active > a.dropdown-toggle:hover,
+		#NAVhome.open > a.dropdown-toggle:hover,
+		#NAVhome.active > a.dropdown-toggle:focus,
+		#NAVhome.open > a.dropdown-toggle:focus {
+			color: #3dd9eb !important;
+			background: #121826 !important;
+			background-color: #121826 !important;
+			border: 1px solid #121826 !important;
+			box-shadow: none !important;
+		}
 	</style>
 </head>
 #set $tab = 4
@@ -462,24 +497,11 @@
 						</a>
 					</li>
 					<li id="NAVscanrename">
-						<a href="javascript:void(0)" onclick="executeGlobalScanRename(event)" class="scanrename-nav-btn" tabindex="$tab#set $tab += 1#" title="Lancer la recherche de médias et le renommage automatique">
+						<a href="$sbRoot/home/scan-and-rename" class="scanrename-nav-btn" tabindex="$tab#set $tab += 1#" title="Lancer la recherche de médias et le renommage automatique">
 							<i class="sgicon-search"></i>
 							<span>Scan &amp; Renommer</span>
 						</a>
 					</li>
-					<script>
-					function executeGlobalScanRename(e) {
-						if (e) { e.preventDefault(); e.stopPropagation(); }
-						var root = (window.sbRoot || '').replace(/\/$/, '');
-						var params = new URLSearchParams(window.location.search);
-						var tvidProdid = params.get('tvid_prodid') || (window.$ && $('#tvid-prodid').length ? $('#tvid-prodid').val() : '');
-						if (tvidProdid) {
-							window.location.href = root + '/home/scan-and-rename?tvid_prodid=' + encodeURIComponent(tvidProdid);
-						} else {
-							window.location.href = root + '/home/scan-and-rename';
-						}
-					}
-					</script>
 					<li id="NAVhome" class="dropdown$current_menu_home">
 						<a href="$sbRoot/home/" class="dropdown-toggle" data-toggle="dropdown" $hover_dropdown tabindex="$tab#set $tab += 1#">Shows <b class="caret"></b></a>
 #set $showlist_home, $episode_home, $history_home = 3 * ['(<i class="sgicon-home tight"></i>)']
