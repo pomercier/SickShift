@@ -73,7 +73,6 @@
         "Manual Post-Processing": "Post-traitement manuel",
         "Dashboard": "Dashboard",
         "Dashboard (À venir / Manquants)": "Dashboard (À venir / Manquants)",
-        "Dashboard Mini": "Dashboard Mini",
         "Add show...": "Ajouter une série...",
         "Added last...": "Dernières ajoutées...",
         "History new...": "Nouvelles de l'historique...",

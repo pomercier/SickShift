@@ -74,7 +74,6 @@ def build_service_worker(prefix: str = "") -> str:
     manifest_url = f"{prefix}/manifest.webmanifest"
     icon_url = f"{prefix}/app-icon.svg"
     home_url = f"{prefix}/" if prefix else "/"
-    mini_url = f"{prefix}/mini"
     api_prefix = f"{prefix}/api/"
     return (
         f'const CACHE_NAME="sickshift-dashboard-v4";'
@@ -83,7 +82,7 @@ def build_service_worker(prefix: str = "") -> str:
         f'self.addEventListener("activate",e=>{{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k)))));self.clients.claim()}});'
         f'self.addEventListener("fetch",e=>{{const u=new URL(e.request.url);if(u.origin!==self.location.origin||e.request.method!=="GET")return;'
         f'if(u.pathname==="{manifest_url}"||u.pathname==="{icon_url}"){{e.respondWith(caches.match(e.request).then(c=>c||fetch(e.request)));return}}'
-        f'if(u.pathname==="{home_url}"||u.pathname==="{mini_url}"||u.pathname.startsWith("{api_prefix}"))e.respondWith(fetch(e.request))}});'
+        f'if(u.pathname==="{home_url}"||u.pathname.startsWith("{api_prefix}"))e.respondWith(fetch(e.request))}});'
     )
 
 
@@ -94,17 +93,7 @@ def create_router(app_state: AppState = state) -> APIRouter:
     async def home(request: Request) -> Response:
         if not app_state.snapshot_manager or not app_state.template_engine or not app_state.background_cache:
             raise HTTPException(status_code=503, detail="Application not initialized")
-        html, etag, last_modified = await app_state.snapshot_manager.get_rendered_page(mini=False)
-        headers = cache_headers(etag, last_modified, "text/html; charset=utf-8")
-        if not_modified(request, etag, last_modified):
-            return Response(status_code=304, headers=headers)
-        return HTMLResponse(html, headers=headers)
-
-    @router.get("/mini", response_class=HTMLResponse)
-    async def mini(request: Request) -> Response:
-        if not app_state.snapshot_manager or not app_state.template_engine or not app_state.background_cache:
-            raise HTTPException(status_code=503, detail="Application not initialized")
-        html, etag, last_modified = await app_state.snapshot_manager.get_rendered_page(mini=True)
+        html, etag, last_modified = await app_state.snapshot_manager.get_rendered_page()
         headers = cache_headers(etag, last_modified, "text/html; charset=utf-8")
         if not_modified(request, etag, last_modified):
             return Response(status_code=304, headers=headers)

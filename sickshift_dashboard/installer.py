@@ -26,7 +26,6 @@ NAV_ITEM_SNIPPET = '''\t\t\t\t\t<li id="NAVdashboard">
 '''
 
 DROPDOWN_SNIPPET = '''\t\t\t\t\t\t\t<li><a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#"><i class="sgicon-cal"></i>Dashboard (Upcoming / Missing)</a></li>
-\t\t\t\t\t\t\t<li><a href="$sbRoot/dashboard/mini" tabindex="$tab#set $tab += 1#"><i class="sgicon-episodestatus"></i>Dashboard Mini</a></li>
 \t\t\t\t\t\t\t<li class="divider"></li>
 '''
 
