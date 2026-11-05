@@ -36,6 +36,7 @@ These screenshots are published with the library owner's permission. Interface l
 | Cinema styling | Dark surfaces, clear hierarchy, poster cards, transparent branding, and consistent navigation |
 | Library progress | Progress bars and completion styling make the state of each show easier to scan |
 | Dedicated dashboard | Ready-to-watch episodes, missing episodes, ended shows, and upcoming airings in one place |
+| Dashboard artwork | Upcoming posters stay within their card frames, thumbnail hover does not change the row layout, and show-page fanart motion respects reduced-motion settings |
 | Local video previews | Hover or hold to preview an existing local episode without opening a full player |
 | Browser-friendly preview output | Small 8-bit H.264 clips, with HDR10/HLG conversion and a dedicated Dolby Vision Profile 5 path |
 | Audio track selection | Quebec/Canadian French preference, then standard French, English, and the first available track |

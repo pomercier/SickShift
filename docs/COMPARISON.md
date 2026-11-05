@@ -40,6 +40,7 @@ The first publication exposed CI setup issues, which were corrected in pull requ
 ## More differences in the source
 
 - The main library has cinema-style poster cards, completion bars, network branding, and updated cast/poster hold interactions.
+- The dashboard now has one main view; the former mini view and its menu entry have been removed. Upcoming posters stay inside their card frames, and thumbnail hover enlargement does not change the row layout. Show-page fanart uses a slow drift that is disabled for reduced-motion preferences.
 - The preview player includes random clip selection that avoids common opening/ending regions, an explicit audio preference order, dual-mono audio handling, mute persistence, autoplay fallback, and seek/loop controls.
 - Clip generation runs outside the async request loop. Generation and client timeouts accommodate heavier sources, and UI errors replace silent black playback failures where detected.
 - Preview requests use a sequence guard to prevent stale responses from reopening the wrong episode. Delete-column interactions are excluded from preview activation.
