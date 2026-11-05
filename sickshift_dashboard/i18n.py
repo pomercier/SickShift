@@ -14,7 +14,6 @@ from typing import Any
 MESSAGES: dict[str, dict[str, str]] = {
     "fr": {
         "title_main": "Dashboard - Émissions TV à venir",
-        "title_mini": "Dashboard - Épisodes manquants",
         "btn_back": "← Retour à SickShift",
         "btn_home": "Dashboard",
         "btn_oled": "Mode OLED",
@@ -40,7 +39,6 @@ MESSAGES: dict[str, dict[str, str]] = {
     },
     "en": {
         "title_main": "Dashboard - Upcoming TV Shows",
-        "title_mini": "Dashboard - Missing Episodes",
         "btn_back": "← Back to SickShift",
         "btn_home": "Dashboard",
         "btn_oled": "OLED Mode",

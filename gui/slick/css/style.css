@@ -1724,6 +1724,19 @@ body.back-art #background-container li.background-rem{
 	display:block
 }
 
+/* A barely perceptible drift gives show pages the same ambient motion as the dashboard. */
+body.back-art #background-container li.background{
+	animation:sickshift-fanart-drift 42s ease-in-out infinite alternate;
+	will-change:transform;
+}
+@keyframes sickshift-fanart-drift{
+	from{transform:scale(1) translate3d(0,0,0)}
+	to{transform:scale(1.045) translate3d(-0.6%,0.35%,0)}
+}
+@media (prefers-reduced-motion: reduce){
+	body.back-art #background-container li.background{animation:none;will-change:auto}
+}
+
 body.back-art #background-container li.background.first-load{
 	display:none
 }

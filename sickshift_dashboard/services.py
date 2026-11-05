@@ -375,14 +375,12 @@ class SnapshotManager:
         self.condition = asyncio.Condition()
         self.stop_event = asyncio.Event()
         self._home_render_cache = RenderedPageCache()
-        self._mini_render_cache = RenderedPageCache()
 
     def stop(self) -> None:
         self.stop_event.set()
 
     async def _clear_caches(self) -> None:
         self._home_render_cache = RenderedPageCache()
-        self._mini_render_cache = RenderedPageCache()
         await memory_cache.clear()
         if self.state.redis is not None:
             for key in REDIS_CACHE_KEYS:
@@ -460,16 +458,15 @@ class SnapshotManager:
 
             self.snapshot = new_snapshot
             self._home_render_cache = RenderedPageCache()
-            self._mini_render_cache = RenderedPageCache()
             async with self.condition:
                 self.condition.notify_all()
             return self.snapshot
 
-    async def get_rendered_page(self, *, mini: bool = False) -> tuple[str, str, datetime]:
+    async def get_rendered_page(self) -> tuple[str, str, datetime]:
         snapshot = await self.get()
         bg_file = await self.state.background_cache.get()
-        cache_obj = self._mini_render_cache if mini else self._home_render_cache
-        cache_key = f"{snapshot.etag}:{bg_file}:{'mini' if mini else 'home'}"
+        cache_obj = self._home_render_cache
+        cache_key = f"{snapshot.etag}:{bg_file}:home"
 
         last_modified = snapshot.generated_at
         if self.state.background_cache.last_update:
@@ -481,24 +478,15 @@ class SnapshotManager:
         if cache_obj.key == cache_key and cache_obj.html:
             return cache_obj.html, cache_obj.etag, cache_obj.last_modified or last_modified
 
-        if mini:
-            html = self.state.template_engine.render(
-                mini=True,
-                shows=snapshot.shows,
-                missing=snapshot.missing,
-                missing_groups=snapshot.missing_groups,
-                bg_file=bg_file,
-            )
-        else:
-            html = self.state.template_engine.render(
-                shows=snapshot.shows,
-                missing=snapshot.missing,
-                missing_groups=snapshot.missing_groups,
-                image_urls=snapshot.ended["urls"],
-                image_links=snapshot.ended["links"],
-                upcoming=snapshot.upcoming,
-                bg_file=bg_file,
-            )
+        html = self.state.template_engine.render(
+            shows=snapshot.shows,
+            missing=snapshot.missing,
+            missing_groups=snapshot.missing_groups,
+            image_urls=snapshot.ended["urls"],
+            image_links=snapshot.ended["links"],
+            upcoming=snapshot.upcoming,
+            bg_file=bg_file,
+        )
 
         etag = f'"{hashlib.sha256(cache_key.encode("utf-8")).hexdigest()[:32]}"'
         cache_obj.key = cache_key

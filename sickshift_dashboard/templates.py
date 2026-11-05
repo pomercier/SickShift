@@ -357,9 +357,33 @@ body::after{
   transition:transform 250ms cubic-bezier(.4,0,.2,1), border-color 250ms cubic-bezier(.4,0,.2,1), box-shadow 250ms cubic-bezier(.4,0,.2,1);
 }
 .show-thumbnail:hover{
-  transform:scale(1.65);z-index:100;position:relative;
-  border-color:var(--border-light) !important;
-  box-shadow:0 6px 18px rgba(0,0,0,.75) !important;
+  transform:none;z-index:auto;position:relative;
+  border-color:var(--border-subtle) !important;
+  box-shadow:var(--shadow-sm) !important;
+}
+# The upcoming-to-watch grid has its own thumbnail column. Clip it at the cell
+# and override later generic poster hover rules with a section-specific selector.
+# Keep the row column fixed, but allow the hovered thumbnail to grow inside the section.
+#sec-to-watch .grid-item.col-thumb{overflow:visible;contain:none;position:relative;z-index:0}
+#sec-to-watch .grid-item.col-thumb > a{
+  display:block;width:45px;height:68px;max-width:45px;max-height:68px;overflow:visible;
+  flex:0 0 45px;border-radius:5px;
+}
+#sec-to-watch .grid-item.col-thumb .show-thumbnail,
+#sec-to-watch .grid-item.col-thumb > a:hover .show-thumbnail,
+#sec-to-watch .grid-item.col-thumb > a:focus .show-thumbnail,
+#sec-to-watch .grid-item.col-thumb .show-thumbnail:hover,
+#sec-to-watch .grid-item.col-thumb .show-thumbnail:focus,
+#sec-to-watch .grid-item.col-thumb .show-thumbnail:active{
+  width:45px !important;height:68px !important;max-width:45px !important;max-height:68px !important;
+  transform:none !important;transform-origin:center center !important;
+  position:relative !important;z-index:1 !important;zoom:1 !important;
+  transition:transform 180ms ease-out !important;box-shadow:0 2px 8px rgba(0,0,0,.45) !important;
+}
+#sec-to-watch .grid-item.col-thumb > a:hover .show-thumbnail,
+#sec-to-watch .grid-item.col-thumb > a:focus .show-thumbnail,
+#sec-to-watch .grid-item.col-thumb .show-thumbnail:hover{
+  transform:scale(1.3) !important;z-index:5 !important;
 }
 
 .ep-pill-mobile{display:none}
@@ -393,6 +417,10 @@ body::after{
 }
 .missing-header:hover{background-color:var(--bg-hover)}
 .missing-thumb-link{display:flex;align-items:center;flex-shrink:0;text-decoration:none}
+.missing-header .missing-thumb-link{
+  width:40px;height:58px;overflow:hidden;contain:strict;
+  border-radius:5px;flex:0 0 40px;
+}
 .missing-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
 .missing-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .missing-show-title, .missing-info > .missing-title-row > .missing-ep-text{
@@ -482,18 +510,27 @@ body::after{
   border-color:rgba(61, 217, 235, 0.55) !important;
   box-shadow:0 20px 40px -15px rgba(61, 217, 235, 0.3), 0 0 25px rgba(61, 217, 235, 0.15) !important;
 }
-.show-card:hover .show-poster img{transform:scale(1.05)}
+#sec-upcoming .show-card:hover .show-poster img{transform:none}
+# Keep upcoming cards and posters within the section's card frame on hover/focus.
+# The shared dashboard hover rule scales the whole show card, which makes the
+# poster appear to escape its rectangle even though the image itself is clipped.
+#sec-upcoming .show-card:hover,
+#sec-upcoming .show-card:focus-within{
+  transform:none !important;
+}
 .show-card:hover .show-info h3{color:#3dd9eb !important}
 
-.show-poster{
-  position:relative;overflow:hidden;
+#sec-upcoming .show-poster{
+  position:relative;overflow:hidden;contain:paint;
+  width:100%;height:min(320px,48vh);min-height:0;
   border-radius:12px 12px 0 0;
 }
-.show-poster img{
-  width:100%;height:auto;aspect-ratio:2 / 3;display:block;
-  transition:transform 350ms cubic-bezier(.16,1,.3,1);object-fit:cover;
+#sec-upcoming .show-poster > a{position:absolute;inset:0;display:block;overflow:hidden}
+#sec-upcoming .show-poster img{
+  position:absolute;inset:0;width:100%;height:100%;max-width:100%;max-height:100%;
+  display:block;transform:none !important;transition:none !important;object-fit:contain;
 }
-.show-date{
+#sec-upcoming .show-date{
   position:absolute;left:0;right:0;bottom:0;color:#ffffff;
   text-align:center !important;padding:4px 6px;font-size:.78rem;font-weight:700;
   line-height:1.2;white-space:pre-line;z-index:2;
@@ -554,7 +591,7 @@ body::after{
     gap:14px;padding:8px;margin-top:0;
   }
   .show-card{width:100%}
-  .show-poster{aspect-ratio:2 / 3}
+  .show-poster{height:min(320px,48vh)}
   .show-date{font-size:.85rem;padding:.5rem .35rem}
   .image-container{width:100%}
   .image-container img{width:100%;height:auto;aspect-ratio:2 / 3}
@@ -626,6 +663,16 @@ body::after{
   .show-row .grid-item.col-thumb .show-thumbnail{
     width:52px;height:76px;border-radius:6px;transform:none!important;
   }
+  #sec-to-watch .grid-item.col-thumb > a{width:52px;height:76px;max-width:52px;max-height:76px;flex-basis:52px}
+  #sec-to-watch .grid-item.col-thumb .show-thumbnail,
+  #sec-to-watch .grid-item.col-thumb .show-thumbnail:hover,
+  #sec-to-watch .grid-item.col-thumb .show-thumbnail:focus,
+  #sec-to-watch .grid-item.col-thumb .show-thumbnail:active{
+    width:52px !important;height:76px !important;max-width:52px !important;max-height:76px !important;
+  }
+  #sec-to-watch .grid-item.col-thumb > a:hover .show-thumbnail,
+  #sec-to-watch .grid-item.col-thumb > a:focus .show-thumbnail,
+  #sec-to-watch .grid-item.col-thumb .show-thumbnail:hover{transform:scale(1.3) !important}
   .show-row .grid-item.col-title{
     grid-area:title;font-size:.96rem;font-weight:600;
     color:var(--text-primary);line-height:1.25;
@@ -663,7 +710,7 @@ body::after{
     gap:10px;padding:4px;margin-top:0;
   }
   .show-card{width:100%}
-  .show-poster{height:auto;aspect-ratio:2 / 3}
+  .show-poster{height:min(320px,48vh)}
   .show-date{font-size:.78rem;padding:3px 4px}
   .show-info{padding:5px 4px;background:transparent;text-align:center !important}
   .show-info h3{font-size:.74rem;line-height:1.25;min-height:2.5em;max-height:2.5em;text-align:center !important}
@@ -1003,14 +1050,21 @@ body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background-
 .missing-ep-item.copied .copied-pill, .missing-info.copied .copied-pill{display:inline-block}
 
 .show-thumbnail{
-  width:38px;height:56px;border-radius:5px;object-fit:cover;display:block;
+  width:38px !important;height:56px !important;max-width:38px !important;max-height:56px !important;
+  min-width:38px !important;min-height:56px !important;box-sizing:border-box !important;
+  border-radius:5px;object-fit:cover;display:block;
   border:1px solid var(--border-subtle);box-shadow:var(--shadow-sm);
-  transition:transform 250ms cubic-bezier(.4,0,.2,1), border-color 250ms cubic-bezier(.4,0,.2,1), box-shadow 250ms cubic-bezier(.4,0,.2,1);
+  transform:none !important;transition:none !important;position:static !important;zoom:1 !important;
 }
-.show-thumbnail:hover{
-  transform:scale(1.7);z-index:100;position:relative;
-  border-color:var(--border-light) !important;
-  box-shadow:0 4px 14px rgba(0,0,0,.75) !important;
+.show-thumbnail:hover,
+.show-thumbnail:focus,
+.show-thumbnail:active,
+.missing-header:hover .show-thumbnail,
+.missing-header:focus-within .show-thumbnail,
+.missing-header:active .show-thumbnail{
+  transform:none !important;z-index:auto;position:static;
+  border-color:var(--border-subtle) !important;
+  box-shadow:var(--shadow-sm) !important;
 }
 
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-subtle);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--border-light)}
@@ -1216,7 +1270,6 @@ class TemplateEngine:
         self.env.filters["network_fallback"] = self.network_fallback
 
         self.main_template: Template = self.env.from_string(TEMPLATE_STRING)
-        self.mini_template: Template = self.env.from_string(TEMPLATE_STRING_MINI)
 
     def format_date(self, value: Any) -> str:
         dt = safe_parse_datetime(value)
@@ -1245,7 +1298,7 @@ class TemplateEngine:
             return ""
         return urllib.parse.quote(str(value).lower().replace(" ", ""), safe="")
 
-    def render(self, *, mini: bool = False, **context: Any) -> str:
+    def render(self, **context: Any) -> str:
         root = (self.config.web_root or self.config.base_url or "").rstrip("/")
         i18n = get_i18n_context()
         context.setdefault("web_root", root)
@@ -1253,5 +1306,4 @@ class TemplateEngine:
         context.setdefault("mount_prefix", self.config.mount_prefix)
         context.setdefault("lang", i18n["lang"])
         context.setdefault("t", i18n["t"])
-        template = self.mini_template if mini else self.main_template
-        return template.render(**context)
+        return self.main_template.render(**context)
