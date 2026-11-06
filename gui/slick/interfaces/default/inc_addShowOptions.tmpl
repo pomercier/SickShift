@@ -1,12 +1,12 @@
-#import sickgear
-#from sickgear.common import *
-#from sickgear import subtitles
+#import sickshift
+#from sickshift.common import *
+#from sickshift import subtitles
 ##
 #set $checked = ' checked="checked"'
 #set $selected = ' selected="selected"'
 ##
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 		<div class="stepDiv linefix">
 
 			<div style="float:right;margin:-30px 0px 20px 15px;font-size:12px;line-height:27px;">
@@ -53,7 +53,7 @@
 					<span class="component-desc">
 						<select name="tag" id="tag" class="form-control form-control-inline input-sm">
 #for $tag in $sg_var('SHOW_TAGS', []):
-							<option value="$tag"#if $tag == $getattr(sickgear, 'SHOW_TAG_DEFAULT', $getattr(sickgear, 'DEFAULT_SHOW_TAG', None)) then $selected else ''#>$tag</option>
+							<option value="$tag"#if $tag == $getattr(sickshift, 'SHOW_TAG_DEFAULT', $getattr(sickshift, 'DEFAULT_SHOW_TAG', None)) then $selected else ''#>$tag</option>
 #end for
 						</select>
 						<span>and display on the show list page under this section</span>
@@ -145,7 +145,7 @@
 		</div>
 
 #if $enable_anime_options
-#import sickgear.anime
+#import sickshift.anime
 #include $os.path.join($sg_str('PROG_DIR'), 'gui/slick/interfaces/default/inc_anigrouplists.tmpl')
 #else
 		<input type="hidden" name="anime" id="anime" value="0">

@@ -1,0 +1,147 @@
+# coding=utf-8
+#
+# This file is part of SickShift.
+#
+# SickShift is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickShift is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
+
+import sickshift
+from .. import logger
+
+notify_strings = dict(
+    snatch='Started download',
+    download='Download finished',
+    subtitle_download='Subtitle download finished',
+    git_updated='SickShift updated',
+    git_updated_text='SickShift updated to commit#: ',
+    test_title='SickShift notification test',
+    test_body='Success testing %s settings from SickShift ʕ•ᴥ•ʔ',
+)
+
+
+class BaseNotifier(object):
+
+    def __init__(self):
+        self.sg_logo_file = 'apple-touch-icon-precomposed.png'
+        self._testing = False
+
+    @property
+    def _sg_logo_url(self):
+        return f'https://raw.githubusercontent.com/SickGear/SickGear/main/gui/slick/images/ico/{self.sg_logo_file}'
+
+    def _log(self, msg, level=logger.MESSAGE):
+        logger.log(f'{self.name}: {msg}', level)
+
+    def _log_debug(self, msg):
+        self._log(msg, logger.DEBUG)
+
+    def _log_error(self, msg):
+        self._log(msg, logger.ERROR)
+
+    def _log_warning(self, msg):
+        self._log(msg, logger.WARNING)
+
+    @classmethod
+    def id(cls):
+        return cls.__name__.replace('Notifier', '').upper()
+
+    @property
+    def name(self):
+        return self.__class__.__name__.replace('Notifier', '')
+
+    @classmethod
+    def is_enabled_onsnatch(cls):
+        return cls.is_enabled('NOTIFY_ONSNATCH')
+
+    @classmethod
+    def is_enabled_ondownload(cls):
+        return cls.is_enabled('NOTIFY_ONDOWNLOAD')
+
+    @classmethod
+    def is_enabled_onsubtitledownload(cls):
+        return cls.is_enabled('NOTIFY_ONSUBTITLEDOWNLOAD')
+
+    @classmethod
+    def is_enabled_library(cls):
+        return cls.is_enabled('UPDATE_LIBRARY')
+
+    @classmethod
+    def is_enabled(cls, action=None):
+        return getattr(sickshift, action and f'{cls.id()}_{action}' or f'USE_{cls.id()}', False)
+
+    def notify_snatch(self, *args, **kwargs):
+        pass
+
+    def notify_download(self, *args, **kwargs):
+        pass
+
+    def notify_subtitle_download(self, *args, **kwargs):
+        pass
+
+    def notify_git_update(self, *args, **kwargs):
+        pass
+
+    def update_library(self, include_online=True, **kwargs):
+        """
+        note: nmj_notifier fires its library update when the notify_download is issued (inside notifiers)
+
+        :param include_online: Set False if to exclude derived notifiers from library updates.
+        For example, Trakt doesn't need to be updated when renaming the episode name part of a filename,
+        therefore, this is set False for that specific notification use case update.
+        """
+        pass
+
+    def _notify(self, *args, **kwargs):
+        pass
+
+    def _choose(self, current=True, saved=True):
+        if self._testing:
+            return current
+        return saved
+
+    @staticmethod
+    def _body_only(title, body):
+        # don't use title with updates or testing, as only one str is used
+        return body if 'SickShift' in title else f'{title}: {body.replace("#: ", "# ")}'
+
+
+class Notifier(BaseNotifier):
+
+    def test_notify(self, *args, **kwargs):
+        self._testing = True
+        r = self._pre_notify('test_title', notify_strings['test_body'] % (f'{self.name} notifier'), *args, **kwargs)
+        return (r, (('Success, notification sent.', 'Failed to send notification.')[not r]))[r in (True, False)]
+
+    @staticmethod
+    def pretty_name(ep_obj):
+        # noinspection PyProtectedMember
+        return ('%s%s' % (ep_obj.pretty_name(), ep_obj._format_pattern(' - %QN'))).replace(' - N-A', '')
+
+    def notify_snatch(self, ep_obj, **kwargs):
+        self._pre_notify('snatch', self.pretty_name(ep_obj), ep_obj=ep_obj, **kwargs)
+
+    def notify_download(self, ep_obj, **kwargs):
+        self._pre_notify('download', self.pretty_name(ep_obj), ep_obj=ep_obj, **kwargs)
+
+    def notify_subtitle_download(self, ep_obj, lang, **kwargs):
+        self._pre_notify('subtitle_download', f'{ep_obj.pretty_name()} : {lang}', ep_obj=ep_obj, **kwargs)
+
+    def notify_git_update(self, new_version='??', **kwargs):
+        self._pre_notify('git_updated', notify_strings['git_updated_text'] + new_version, **kwargs)
+
+    def _pre_notify(self, notify_string, message, *args, **kwargs):
+        self._log_debug(f'Sending notification "{self._body_only(notify_strings[notify_string], message)}"')
+        try:
+            return self._notify(notify_strings[notify_string], message, *args, **kwargs)
+        except (BaseException, Exception):
+            return False

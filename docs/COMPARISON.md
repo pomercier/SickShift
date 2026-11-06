@@ -1,0 +1,52 @@
+# SickShift compared with SickGear
+
+This comparison was prepared on October 29, 2026 against `SickGear/SickGear`, branch `main`, commit `60b9dec46e9ffae97a87cad0905a654acc726167`. The statements describe the compared sources, not every future release.
+
+| Area | SickGear foundation | SickShift changes |
+|---|---|---|
+| Show management | Tracking, search, metadata, providers, and integrations | Engine retained; modules renamed to `sickshift` |
+| Appearance | Slick interface and its display modes | Cinema-inspired styling, SickShift identity, and a transparent logo |
+| Overview | Native management pages | Integrated dashboard and the `sickshift_dashboard` FastAPI package |
+| Local previews | No equivalent component in the compared base | Local-episode popup, FFmpeg cache, 8-bit output, and HDR conversion |
+| Missing episodes | Native episode-status management | Collapsible groups, copy confirmation, and consistent typography |
+| Dashboard sections | No equivalent component | Accessible chevrons, expanded by default, with browser-local preferences |
+| Renaming | Native file moves and database updates | Verified before/after results; a failed video move stops processing before associated files |
+| Code updates | Built-in upstream updater | Separate integration branches and review; direct replacement blocked |
+| Private data | Created by each installation | Clean source export, exclusions, and indexed-file checks |
+
+## Method and history
+
+The publication repository starts directly from SickGear's **public** history. SickShift sources are introduced in new commits; private development history, backups, and the original installation's databases are not imported. The 31 local development commits are consolidated rather than published without review.
+
+Before the global rename, the local committed changes affected 66 files and added approximately 7,452 lines. Those figures do not include all uncommitted changes or the global rename and are not the final size of the fork. For the exact current source comparison:
+
+```sh
+git diff --stat 60b9dec46e9ffae97a87cad0905a654acc726167 HEAD
+git diff --find-renames 60b9dec46e9ffae97a87cad0905a654acc726167 HEAD
+```
+
+## Known limitations
+
+The global rename increases upstream integration work. A successful Git merge is not sufficient: new imports, module names, SQL migrations, and user flows also need review. Older scripts and third-party integrations may still need adaptation. Real public URLs and external protocol identifiers must not be renamed arbitrarily.
+
+A personalized "what to watch" discovery page remains a future enhancement. The current dashboard is not presented as a new recommendation engine.
+
+## Release verification
+
+Local validation covered privacy checks across 4,170 indexed files, imports of both packages, Python compilation, and video-conversion and publication-filtering tests. A fresh startup with an empty data directory on a separate port served the dashboard with HTTP 200 without accessing the personal library.
+
+The first publication exposed CI setup issues, which were corrected in pull request #1: full upstream history is now available to privacy checks, async database dependencies are declared, and current GitHub actions run on Ubuntu 24.04. The required Python 3.11, 3.12, and 3.13 checks passed before that pull request was merged. Branch protection was verified on GitHub. See the Actions tab for the latest results rather than treating these historical checks as a guarantee for future commits.
+
+## More differences in the source
+
+- The main library has cinema-style poster cards, completion bars, network branding, and cast portraits that stay at their normal size on click and a poster hold-to-zoom effect.
+- The dashboard now has one main view; the former mini view and its menu entry have been removed. Upcoming posters stay inside their card frames, and thumbnail hover enlargement does not change the row layout. Show-page fanart uses a slow drift that is disabled for reduced-motion preferences.
+- Video previews are disabled at viewport widths of 680 px or less and on touch devices without hover support. The root URL opens `/view-shows/`; the former daily schedule page has been removed.
+- The preview player includes random clip selection that avoids common opening/ending regions, an explicit audio preference order, dual-mono audio handling, mute persistence, autoplay fallback, and seek/loop controls.
+- Clip generation runs outside the async request loop. Generation and client timeouts accommodate heavier sources, and UI errors replace silent black playback failures where detected.
+- Preview requests use a sequence guard to prevent stale responses from reopening the wrong episode. Delete-column interactions are excluded from preview activation.
+- The public distribution declares dashboard runtime dependencies, checks private staged content, and separates native video-tool requirements from Python packages.
+- The Python launcher prepares an isolated environment and installs missing requirements, with platform checks for Windows, macOS, and Linux.
+- Showcase screenshots are real application captures, authorized by the owner, with English presentation labels applied only for the images. Capture code is deliberately not shipped.
+
+None of these changes replaces SickGear's existing provider/search engine, downloader support, metadata system, quality rules, or watched-state integrations. A personalized discovery/recommendation engine remains future work.

@@ -1,20 +1,20 @@
 #!/usr/bin/env python
 
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
 from __future__ import with_statement
@@ -31,7 +31,7 @@ versions = [((3, 10, 0), (3, 15, 0))]   # inclusive version ranges
 if not any(list(map(lambda v: v[0] <= sys.version_info[:3] <= v[1], versions))) and not int(os.environ.get('PYT', 0)):
     major, minor, micro = sys.version_info[:3]
     print(f'Python {major}.{minor}.{micro} detected.')
-    print('Sorry, SickGear requires a Python version %s' % ', '.join(map(
+    print('Sorry, SickShift requires a Python version %s' % ', '.join(map(
         lambda r: '%s - %s' % tuple(map(lambda v: str(v).replace(', ', '.')[1:-1], r)), versions)))
     sys.exit(1)
 
@@ -83,7 +83,7 @@ def process_files(dir_to_process, org_nzb_name=None, status=None):
 
             def cfg_get(cfg, option):
                 try:
-                    return cfg.get('SickGear', option)
+                    return cfg.get('SickShift', option)
                 except (configparser.NoOptionError, configparser.NoSectionError):
                     return cfg.get('SickBeard', option)
 
@@ -148,5 +148,5 @@ def process_files(dir_to_process, org_nzb_name=None, status=None):
 
 if '__main__' == __name__:
     print('This module is supposed to be used as import in other scripts and not run standalone.')
-    print('Use sabToSickGear instead.')
+    print('Use sabToSickShift instead.')
     sys.exit(1)

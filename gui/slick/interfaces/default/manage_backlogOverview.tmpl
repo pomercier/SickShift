@@ -1,8 +1,8 @@
-#import sickgear
+#import sickshift
 #import datetime
-#from sickgear import network_timezones
-#from sickgear.common import *
-#from sickgear.sgdatetime import SGDatetime
+#from sickshift import network_timezones
+#from sickshift.common import *
+#from sickshift.sgdatetime import SGDatetime
 ##
 #set global $title = 'Backlog Overview'
 #set global $header = 'Backlog Overview'
@@ -11,7 +11,7 @@
 #set global $page_body_attr = 'backlog'
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script>
 <!--
@@ -25,13 +25,13 @@
     });
 
     #set $fuzzydate = 'airdate'
-    #if $sickgear.FUZZY_DATING
+    #if $sickshift.FUZZY_DATING
     fuzzyMoment({
         containerClass: '.${fuzzydate}',
         dateHasTime: !1,
-        dateFormat: '${sickgear.DATE_PRESET}',
-        timeFormat: '${sickgear.TIME_PRESET}',
-        trimZero: #echo ('!1', '!0')[$sickgear.TRIM_ZERO]#
+        dateFormat: '${sickshift.DATE_PRESET}',
+        timeFormat: '${sickshift.TIME_PRESET}',
+        trimZero: #echo ('!1', '!0')[$sickshift.TRIM_ZERO]#
     });
     #end if
 });
@@ -48,7 +48,7 @@
 ##
 #set $total_wanted = 0
 #set $total_qual = 0
-#for $cur_show_obj in $sickgear.showList
+#for $cur_show_obj in $sickshift.showList
     #set $total_wanted += $show_counts[$cur_show_obj.tvid_prodid][$Overview.WANTED]
     #set $total_qual += $show_counts[$cur_show_obj.tvid_prodid][$Overview.QUAL]
 #end for
@@ -65,7 +65,7 @@
 	<div class="pull-left">
 		Jump to Show
 		<select id="pickShow" class="form-control form-control-inline input-sm">
-    #for $cur_show_obj in sorted($sickgear.showList, key = operator.attrgetter('name'))
+    #for $cur_show_obj in sorted($sickshift.showList, key = operator.attrgetter('name'))
         #if 0 != $show_counts[$cur_show_obj.tvid_prodid][$Overview.QUAL] + $show_counts[$cur_show_obj.tvid_prodid][$Overview.WANTED]
 			<option value="$cur_show_obj.tvid_prodid">$getattr($cur_show_obj, 'unique_name', $cur_show_obj.name)</option>
         #end if
@@ -75,7 +75,7 @@
 #end if
 
 	<table class="sickbeardTable" border="0">
-    #for $cur_show_obj in sorted($sickgear.showList, key = operator.attrgetter('name'))
+    #for $cur_show_obj in sorted($sickshift.showList, key = operator.attrgetter('name'))
         ##
         #if 0 == $show_counts[$cur_show_obj.tvid_prodid][$Overview.QUAL] + $show_counts[$cur_show_obj.tvid_prodid][$Overview.WANTED]
             #continue
@@ -138,4 +138,4 @@
 	</table>
 </div>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

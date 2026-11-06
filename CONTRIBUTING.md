@@ -25,3 +25,7 @@
 > :+1: Do use the [GitHub Gists](https://gist.github.com/) feature instead of Pastebin, but if you must use PB then...  
 <img src="https://raw.githubusercontent.com/wiki/SickGear/SickGear/images/prefer-gists.png">  
 
+
+## SickShift-specific changes
+
+Keep runtime data out of commits. Run `python scripts/check_release.py` before pushing. Upstream changes must use a separate integration branch and a reviewed pull request; see [the integration guide](docs/UPSTREAM.md). Use synthetic data in tests and screenshots. Never use a contributor's real library as a fixture.

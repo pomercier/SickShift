@@ -1,7 +1,7 @@
-name: sickgear
-summary: SickGear
+name: sickshift
+summary: SickShift
 description: |
-  SickGear has proven the most reliable stable TV fork of the great Sick-Beard to fully automate TV enjoyment with innovation.
+  SickShift has proven the most reliable stable TV fork of the great Sick-Beard to fully automate TV enjoyment with innovation.
 
   Typically used with a download client e.g. nzbget, sabnzbd, qBittorrent, transmission, deluge, rtorrent and others.
 
@@ -9,22 +9,22 @@ description: |
   Wiki: https://github.com/SickGear/SickGear/wiki
   Issues: https://github.com/SickGear/SickGear/issues
 
-icon: gui/slick/images/sickgear.png
+icon: gui/slick/images/sickshift.png
 confinement: strict
 grade: stable
-adopt-info: sickgear
+adopt-info: sickshift
 base: core18
 
 apps:
-  sickgear:
+  sickshift:
     environment:
       LC_CTYPE: C.UTF-8
-    command: python "$SNAP/sickgear/sickgear.py" --datadir="$SNAP_COMMON/data"
+    command: python "$SNAP/sickshift/sickshift.py" --datadir="$SNAP_COMMON/data"
     # daemon: simple
     plugs: [network, network-bind, removable-media]
 
 parts:
-  sickgear:
+  sickshift:
     plugin: python
     source: .
     python-version: python2
@@ -58,7 +58,7 @@ parts:
     override-build: |
       snapcraftctl build
 
-      snap_install="$SNAPCRAFT_PART_INSTALL/sickgear"
+      snap_install="$SNAPCRAFT_PART_INSTALL/sickshift"
       mkdir -p "$snap_install"
       cp -R "$SNAPCRAFT_PART_BUILD"/* "$snap_install"
       # unrequired on r/o systems
@@ -71,8 +71,8 @@ parts:
     override-prime: |
       snapcraftctl prime
 
-      snap_current=$(printf "${SNAP_COMMON}" | sed -e "s/common/current/" -e "s/snapcraft/sickgear/")
-      cat > "$SNAPCRAFT_PRIME/sickgear/_SNAP_README.txt" <<EOT
+      snap_current=$(printf "${SNAP_COMMON}" | sed -e "s/common/current/" -e "s/snapcraft/sickshift/")
+      cat > "$SNAPCRAFT_PRIME/sickshift/_SNAP_README.txt" <<EOT
       For ease of use, autoProcessTV scripts for use in third party applications are
       placed in the writable path $snap_current/ so that editable config
       files are copied into latest revision folders created by the snap update system.
@@ -83,7 +83,7 @@ parts:
 
       In clients, when specifying a download completed script location;
       for Sabnzbd, $snap_current/autoProcessTV/sabToSickBeard.py
-      for NzbGet, $snap_current/autoProcessTV/SickGear-NG/SickGear-NG.py
+      for NzbGet, $snap_current/autoProcessTV/SickShift-NG/SickShift-NG.py
       for Torrent (*nix), $snap_current/autoProcessTV/onTxComplete.sh
       for Torrent (Win), $snap_current/autoProcessTV/onTxComplete.bat
       EOT

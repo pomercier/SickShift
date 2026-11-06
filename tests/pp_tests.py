@@ -1,20 +1,20 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import warnings
 warnings.filterwarnings('ignore', module=r'.*fuz.*', message='.*Sequence.*')
@@ -24,13 +24,13 @@ import sys
 import test_lib as test
 import unittest
 
-import sickgear
-from sickgear.helpers import real_path
-from sickgear.name_cache import add_name_to_cache
-from sickgear.postProcessor import PostProcessor
-from sickgear.processTV import ProcessTVShow
-from sickgear.tv import TVEpisode, TVShow, logger
-from sickgear.indexers.indexer_config import TVINFO_TVDB, TVINFO_TVMAZE
+import sickshift
+from sickshift.helpers import real_path
+from sickshift.name_cache import add_name_to_cache
+from sickshift.postProcessor import PostProcessor
+from sickshift.processTV import ProcessTVShow
+from sickshift.tv import TVEpisode, TVShow, logger
+from sickshift.indexers.indexer_config import TVINFO_TVDB, TVINFO_TVMAZE
 
 if 'win32' == sys.platform:
     root_folder_tests = [
@@ -86,15 +86,15 @@ class PPBasicTests(test.SickbeardTestDBCase):
         show_obj.location = test.SHOWDIR
         show_obj.save_to_db()
 
-        sickgear.showList = [show_obj]
-        sickgear.showDict = {show_obj.sid_int: show_obj}
+        sickshift.showList = [show_obj]
+        sickshift.showDict = {show_obj.sid_int: show_obj}
         ep_obj = TVEpisode(show_obj, test.SEASON, test.EPISODE)
         ep_obj.name = 'some ep name'
         ep_obj.release_name = 'test setter'
         ep_obj.save_to_db()
 
         add_name_to_cache('show name', tvid=TVINFO_TVDB, prodid=3)
-        sickgear.PROCESS_METHOD = 'move'
+        sickshift.PROCESS_METHOD = 'move'
 
         pp = PostProcessor(test.FILEPATH)
         self.assertTrue(pp.process())
@@ -104,7 +104,7 @@ class PPFolderTests(test.SickbeardTestDBCase):
 
     def test_root_folder(self):
         for root_dirs, path, expected in root_folder_tests:
-            sickgear.ROOT_DIRS = root_dirs
+            sickshift.ROOT_DIRS = root_dirs
             self.assertEqual(expected and real_path(expected) or expected, ProcessTVShow.find_parent(path))
 
 
@@ -142,8 +142,8 @@ class PPScriptTests(test.SickbeardTestDBCase):
         show_obj.location = test.SHOWDIR
         show_obj.save_to_db()
 
-        sickgear.showList = [show_obj]
-        sickgear.showDict = {show_obj.sid_int: show_obj}
+        sickshift.showList = [show_obj]
+        sickshift.showDict = {show_obj.sid_int: show_obj}
         ep_obj = TVEpisode(show_obj, test.SEASON, test.EPISODE)
         ep_obj.name = 'some ep name'
         ep_obj.location = '/mnt/hdd/folder/the show/season 01/the show - s01e01 - name.mkv'
@@ -162,8 +162,8 @@ class PPScriptTests(test.SickbeardTestDBCase):
             self.has_errors = []
             self.current_script = None
             self.current_script_num = -1
-            sickgear.EXTRA_SCRIPTS = [f'{sys.executable} {os.path.join(base_path, t["EXTRA_SCRIPTS"])}']
-            sickgear.SG_EXTRA_SCRIPTS = [f'{sys.executable} {os.path.join(base_path, t["SG_EXTRA_SCRIPTS"])}']
+            sickshift.EXTRA_SCRIPTS = [f'{sys.executable} {os.path.join(base_path, t["EXTRA_SCRIPTS"])}']
+            sickshift.SG_EXTRA_SCRIPTS = [f'{sys.executable} {os.path.join(base_path, t["SG_EXTRA_SCRIPTS"])}']
             pp = PPTest(t['file_path'])
             ep_obj = self._create_ep(t['tvid'])
             pp._run_extra_scripts(ep_obj)

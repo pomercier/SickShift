@@ -18,8 +18,8 @@ import os.path
 import shutil
 sys.path.insert(1, os.path.abspath('..'))
 
-import sickgear
-from sickgear.indexers.indexer_config import TVINFO_TVDB, TVINFO_TMDB, TVINFO_TVMAZE, TVINFO_TRAKT, TVINFO_IMDB, \
+import sickshift
+from sickshift.indexers.indexer_config import TVINFO_TVDB, TVINFO_TMDB, TVINFO_TVMAZE, TVINFO_TRAKT, TVINFO_IMDB, \
     TVINFO_TVDB_SLUG, TVINFO_TRAKT_SLUG
 from lib.tvinfo_base import TVInfoPerson as TVInfoPerson_lib, TVInfoImage as TVInfoImage_lib, \
     TVInfoSocialIDs as TVInfoSocialIDs_lib, TVInfoCharacter as TVInfoCharacter_lib, TVInfoShow as TVInfoShow_lib, \
@@ -37,8 +37,8 @@ if False:
 NoneType = type(None)
 threading_Lock = (type(threading.Lock()), type(threading.RLock()))
 file_dir = os.path.dirname(__file__)
-sickgear.CACHE_DIR = os.path.join(file_dir, 'cache')
-os.makedirs(sickgear.CACHE_DIR, exist_ok=True)
+sickshift.CACHE_DIR = os.path.join(file_dir, 'cache')
+os.makedirs(sickshift.CACHE_DIR, exist_ok=True)
 
 test_base_name = os.path.splitext(os.path.basename(__file__))[0]
 mock_data_dir = os.path.join(file_dir, 'mock_data', test_base_name)
@@ -604,7 +604,7 @@ class TVInfoTests(test.SickbeardTestDBCase):
         super(TVInfoTests, self).tearDown()
         try:
             gc.collect(2)
-            shutil.rmtree(sickgear.CACHE_DIR)
+            shutil.rmtree(sickshift.CACHE_DIR)
         except (BaseException, Exception):
             pass
 
@@ -628,12 +628,12 @@ class TVInfoTests(test.SickbeardTestDBCase):
         for t_c in person_tests:
             tvid = t_c['tvid']
             p_id = t_c['p_id']
-            print(f'testing person: {sickgear.TVInfoAPI(tvid).name}: {p_id}')
+            print(f'testing person: {sickshift.TVInfoAPI(tvid).name}: {p_id}')
 
-            tvinfo_config = sickgear.TVInfoAPI(tvid).api_params.copy()
+            tvinfo_config = sickshift.TVInfoAPI(tvid).api_params.copy()
             tvinfo_config['cache'] = False
 
-            t = sickgear.TVInfoAPI(tvid).setup(**tvinfo_config)
+            t = sickshift.TVInfoAPI(tvid).setup(**tvinfo_config)
             t.clear_cache()
             person_obj = t.get_person(p_id, get_show_credits=True, get_images=True)
             filename = _make_filename(f'{tvid}_{p_id}_person', '.obj_data')
@@ -660,12 +660,12 @@ class TVInfoTests(test.SickbeardTestDBCase):
         for t_c in show_tests:
             tvid = t_c['tvid']
             prodid = t_c['prodid']
-            print(f'testing show: {sickgear.TVInfoAPI(tvid).name}: {prodid}')
+            print(f'testing show: {sickshift.TVInfoAPI(tvid).name}: {prodid}')
 
-            tvinfo_config = sickgear.TVInfoAPI(tvid).api_params.copy()
+            tvinfo_config = sickshift.TVInfoAPI(tvid).api_params.copy()
             tvinfo_config['cache'] = False
 
-            t = sickgear.TVInfoAPI(tvid).setup(**tvinfo_config)
+            t = sickshift.TVInfoAPI(tvid).setup(**tvinfo_config)
             t.clear_cache()
             show_obj = t.get_show(prodid, load_episodes=True, banners=True, posters=True, seasons=True,
                                   seasonwides=True, fanart=True, actors=True)
@@ -690,12 +690,12 @@ class TVInfoTests(test.SickbeardTestDBCase):
     def test_person_search(self):
         for t_c in person_search_tests:
             search_tvid = t_c['search_tvid']
-            print(f'testing [{sickgear.TVInfoAPI(search_tvid).name}] person search for: {t_c["kwargs"]}')
+            print(f'testing [{sickshift.TVInfoAPI(search_tvid).name}] person search for: {t_c["kwargs"]}')
 
-            tvinfo_config = sickgear.TVInfoAPI(search_tvid).api_params.copy()
+            tvinfo_config = sickshift.TVInfoAPI(search_tvid).api_params.copy()
             tvinfo_config['cache'] = False
 
-            t = sickgear.TVInfoAPI(search_tvid).setup(**tvinfo_config)
+            t = sickshift.TVInfoAPI(search_tvid).setup(**tvinfo_config)
             t.clear_cache()
             search_results = t.search_person(**t_c['kwargs'])
             filename = _make_filename('%s_%s_person_search' % (search_tvid, ','.join(
@@ -722,12 +722,12 @@ class TVInfoTests(test.SickbeardTestDBCase):
     def test_show_search(self):
         for t_c in search_tests:
             search_tvid = t_c['search_tvid']
-            print(f'testing [{sickgear.TVInfoAPI(search_tvid).name}] search for: {t_c["kwargs"]}')
+            print(f'testing [{sickshift.TVInfoAPI(search_tvid).name}] search for: {t_c["kwargs"]}')
 
-            tvinfo_config = sickgear.TVInfoAPI(search_tvid).api_params.copy()
+            tvinfo_config = sickshift.TVInfoAPI(search_tvid).api_params.copy()
             tvinfo_config['cache'] = False
 
-            t = sickgear.TVInfoAPI(search_tvid).setup(**tvinfo_config)
+            t = sickshift.TVInfoAPI(search_tvid).setup(**tvinfo_config)
             t.clear_cache()
             search_results = t.search_show(**t_c['kwargs'])
             filename = _make_filename('%s_%s_search' % (search_tvid, ','.join(
@@ -752,11 +752,11 @@ class TVInfoTests(test.SickbeardTestDBCase):
                     raise e
 
     def test_browse_endpoints(self):
-        for _tvid in sickgear.TVInfoAPI().all_sources:
-            tvinfo_config = sickgear.TVInfoAPI(_tvid).api_params.copy()
+        for _tvid in sickshift.TVInfoAPI().all_sources:
+            tvinfo_config = sickshift.TVInfoAPI(_tvid).api_params.copy()
             tvinfo_config['cache'] = False
 
-            t = sickgear.TVInfoAPI(_tvid).setup(**tvinfo_config)
+            t = sickshift.TVInfoAPI(_tvid).setup(**tvinfo_config)
             t.clear_cache()
             for _m in (('get_premieres', {}), ('get_anticipated', {}),
                        ('get_recommended', {}), ('get_most_collected', {}), ('get_most_watched', {}),
@@ -771,7 +771,7 @@ class TVInfoTests(test.SickbeardTestDBCase):
                 for _e_kw in browser_extra_args.get(_tvid, {}).get(_m[0], [{}]) or [{}]:
                     kw = _m[1].copy()
                     kw.update(_e_kw)
-                    print('testing %s: %s%s' % (sickgear.TVInfoAPI(_tvid).name, _m[0],
+                    print('testing %s: %s%s' % (sickshift.TVInfoAPI(_tvid).name, _m[0],
                                                 ('', ' with parameter: %s' % kw)[0 != len(kw)]))
                     results = _method(**kw)
                     if isinstance(results, tuple):

@@ -4,15 +4,15 @@ import os.path
 import glob
 import unittest
 import test_lib as test
-import sickgear
+import sickshift
 from time import sleep
-from sickgear import db, logger
-from sickgear.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
+from sickshift import db, logger
+from sickshift.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 
 sys.path.insert(1, os.path.abspath('..'))
 sys.path.insert(1, os.path.abspath('../lib'))
 
-sickgear.SYS_ENCODING = 'UTF-8'
+sickshift.SYS_ENCODING = 'UTF-8'
 
 
 class MigrationBasicTests(test.SickbeardTestDBCase):
@@ -24,16 +24,16 @@ class MigrationBasicTests(test.SickbeardTestDBCase):
 
     @staticmethod
     def test_migrations():
-        schema = {0: OldInitialSchema,  # sickgear.mainDB.InitialSchema,
-                  31: sickgear.mainDB.AddAnimeTVShow,
-                  32: sickgear.mainDB.AddAbsoluteNumbering,
-                  33: sickgear.mainDB.AddSceneAbsoluteNumbering,
-                  34: sickgear.mainDB.AddAnimeAllowlistBlocklist,
-                  35: sickgear.mainDB.AddSceneAbsoluteNumbering2,
-                  36: sickgear.mainDB.AddXemRefresh,
-                  37: sickgear.mainDB.AddSceneToTvShows,
-                  38: sickgear.mainDB.AddIndexerMapping,
-                  39: sickgear.mainDB.AddVersionToTvEpisodes,
+        schema = {0: OldInitialSchema,  # sickshift.mainDB.InitialSchema,
+                  31: sickshift.mainDB.AddAnimeTVShow,
+                  32: sickshift.mainDB.AddAbsoluteNumbering,
+                  33: sickshift.mainDB.AddSceneAbsoluteNumbering,
+                  34: sickshift.mainDB.AddAnimeAllowlistBlocklist,
+                  35: sickshift.mainDB.AddSceneAbsoluteNumbering2,
+                  36: sickshift.mainDB.AddXemRefresh,
+                  37: sickshift.mainDB.AddSceneToTvShows,
+                  38: sickshift.mainDB.AddIndexerMapping,
+                  39: sickshift.mainDB.AddVersionToTvEpisodes,
                   41: AddDefaultEpStatusToTvShows
                   }
 
@@ -107,16 +107,16 @@ class OldInitialSchema(db.SchemaUpgrade):
             if cur_db_version < MIN_DB_VERSION:
                 logger.log_error_and_exit(
                     f'Your database version ({str(cur_db_version)}) is too old to migrate from what'
-                    f' this version of SickGear supports ({str(MIN_DB_VERSION)}).\n'
-                    f'Upgrade using a previous version (tag) build 496 to build 501 of SickGear first'
+                    f' this version of SickShift supports ({str(MIN_DB_VERSION)}).\n'
+                    f'Upgrade using a previous version (tag) build 496 to build 501 of SickShift first'
                     f' or remove database file to begin fresh.'
                 )
 
             if cur_db_version > MAX_DB_VERSION:
                 logger.log_error_and_exit(
                     f'Your database version ({str(cur_db_version)}) has been incremented past what'
-                    f' this version of SickGear supports ({str(MAX_DB_VERSION)}).\n'
-                    f'If you have used other forks of SickGear,'
+                    f' this version of SickShift supports ({str(MAX_DB_VERSION)}).\n'
+                    f'If you have used other forks of SickShift,'
                     f' your database may be unusable due to their modifications.'
                 )
 

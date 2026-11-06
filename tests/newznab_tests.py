@@ -16,13 +16,13 @@ sys.path.insert(1, os.path.abspath('../lib'))
 
 from lxml_etree import etree
 from lib.dateutil import parser
-from sickgear.indexers.indexer_config import *
-from sickgear.network_timezones import SG_TIMEZONE
-from sickgear.providers import newznab
+from sickshift.indexers.indexer_config import *
+from sickshift.network_timezones import SG_TIMEZONE
+from sickshift.providers import newznab
 
-import sickgear
+import sickshift
 
-sickgear.SYS_ENCODING = 'UTF-8'
+sickshift.SYS_ENCODING = 'UTF-8'
 
 DEBUG = VERBOSE = False
 

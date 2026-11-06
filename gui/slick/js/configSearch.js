@@ -1,8 +1,8 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 /** @namespace config.defaultHost */
 $(document).ready(function(){
 
-	var loading = '<img src="' + $.SickGear.Root + '/images/loading16' + themeSpinner + '.gif" height="16" width="16">',
+	var loading = '<img src="' + $.SickShift.Root + '/images/loading16' + themeSpinner + '.gif" height="16" width="16">',
 		handleSCGI = function() {
 			var opts$ = $('#torrent-username-option,#torrent-password-option');
 			$('#torrent_username,#torrent_password').each(function() {$(this).val(

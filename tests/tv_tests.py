@@ -1,20 +1,20 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
 import test_lib as test
@@ -22,14 +22,14 @@ from random import randint
 
 import datetime
 import copy
-import sickgear
-from sickgear.tv import TVEpisode, TVShow, TVidProdid, prodid_bitshift
+import sickshift
+from sickshift.tv import TVEpisode, TVShow, TVidProdid, prodid_bitshift
 from exceptions_helper import MultipleShowObjectsException
-from sickgear.helpers import find_show_by_id
-from sickgear import indexermapper
-from sickgear.indexers.indexer_api import TVInfoAPI
-from sickgear.indexers.indexer_config import TVINFO_IMDB, TVINFO_TMDB, TVINFO_TVDB, TVINFO_TVMAZE, TVINFO_TVRAGE
-from sickgear.scene_exceptions import ReleaseMap
+from sickshift.helpers import find_show_by_id
+from sickshift import indexermapper
+from sickshift.indexers.indexer_api import TVInfoAPI
+from sickshift.indexers.indexer_config import TVINFO_IMDB, TVINFO_TMDB, TVINFO_TVDB, TVINFO_TVMAZE, TVINFO_TVRAGE
+from sickshift.scene_exceptions import ReleaseMap
 
 # noinspection PyUnreachableCode
 if False:
@@ -40,8 +40,8 @@ class TVShowTests(test.SickbeardTestDBCase):
 
     def setUp(self):
         super(TVShowTests, self).setUp()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         _ = ReleaseMap()
 
     def test_init_indexerid(self):
@@ -80,8 +80,8 @@ class TVEpisodeTests(test.SickbeardTestDBCase):
 
     def setUp(self):
         super(TVEpisodeTests, self).setUp()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         _ = ReleaseMap()
 
     def test_init_empty_db(self):
@@ -97,8 +97,8 @@ class TVTests(test.SickbeardTestDBCase):
 
     def setUp(self):
         super(TVTests, self).setUp()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
 
     @staticmethod
     def test_getEpisode():
@@ -112,16 +112,16 @@ class TVTests(test.SickbeardTestDBCase):
         show_obj.airs = 'monday'
         show_obj.startyear = 1987
         show_obj.save_to_db()
-        sickgear.showList = [show_obj]
-        sickgear.showDict = {show_obj.sid_int: show_obj}
+        sickshift.showList = [show_obj]
+        sickshift.showDict = {show_obj.sid_int: show_obj}
 
 
 class TVFormatPatternTests(test.SickbeardTestDBCase):
 
     def setUp(self):
         super(TVFormatPatternTests, self).setUp()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
 
     def test_getEpisode(self):
         show_obj = TVShow(1, 1, 'en')
@@ -133,8 +133,8 @@ class TVFormatPatternTests(test.SickbeardTestDBCase):
         show_obj.status = '5'
         show_obj.airs = 'monday'
         show_obj.startyear = 1987
-        sickgear.showList = [show_obj]
-        sickgear.showDict = {show_obj.sid_int: show_obj}
+        sickshift.showList = [show_obj]
+        sickshift.showDict = {show_obj.sid_int: show_obj}
         show_obj.sxe_ep_obj[1] = {}
         show_obj.sxe_ep_obj[1][1] = TVEpisode(show_obj, 1, 1, '16)')
         show_obj.sxe_ep_obj[1][1].dirty = False
@@ -237,9 +237,9 @@ find_tests = [
 class TVFindTests(test.SickbeardTestDBCase):
     def setUp(self):
         super(TVFindTests, self).setUp()
-        sickgear.showList = []
-        sickgear.showDict = {}
-        sickgear.indexermapper.indexer_list = [i for i in TVInfoAPI().all_sources]
+        sickshift.showList = []
+        sickshift.showDict = {}
+        sickshift.indexermapper.indexer_list = [i for i in TVInfoAPI().all_sources]
         for show in shows:
             sh = TVShow(show['tvid'], show['prodid'])
             ids = copy.deepcopy(ids_base)
@@ -249,8 +249,8 @@ class TVFindTests(test.SickbeardTestDBCase):
             ids[show['tvid']]['status'] = indexermapper.MapStatus.SOURCE
             ids[show['tvid']]['id'] = show['prodid']
             sh.ids = ids
-            sickgear.showList.append(sh)
-            sickgear.showDict[sh.sid_int] = sh
+            sickshift.showList.append(sh)
+            sickshift.showDict[sh.sid_int] = sh
 
     def test_find_show_by_id(self):
         result = None  # type: Optional[TVShow]

@@ -1,0 +1,39 @@
+# Author: Nyaran <nyayukko@gmail.com>
+#
+# This file is part of SickShift.
+#
+# SickShift is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickShift is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+
+from .generic import Notifier
+from exceptions_helper import ex
+from sg_helpers import cmdline_runner
+
+
+class SynologyNotifier(Notifier):
+
+    def _notify(self, title, body, **kwargs):
+
+        synodsmnotify_cmd = ['/usr/syno/bin/synodsmnotify', '@administrators', title, body]
+        self._log(f'Executing command {synodsmnotify_cmd}')
+        self._log_debug(f'Absolute path to command: {os.path.abspath(synodsmnotify_cmd[0])}')
+        try:
+            output, err, exit_status = cmdline_runner(synodsmnotify_cmd)
+            self._log_debug(f'Script result: {output}')
+        except (BaseException, Exception) as e:
+            self._log(f'Unable to run synodsmnotify: {ex(e)}')
+
+
+notifier = SynologyNotifier

@@ -6,9 +6,9 @@ import sys
 import os.path
 sys.path.insert(1, os.path.abspath('..'))
 
-from sickgear import common
-from sickgear.common import Quality, WantedQualities
-from sickgear.name_parser.parser import NameParser
+from sickshift import common
+from sickshift.common import Quality, WantedQualities
+from sickshift.name_parser.parser import NameParser
 
 
 quality_tests = {
@@ -136,7 +136,7 @@ quality_tests = {
             'Test.Show.S01E02.2160p.UHD.BluRay.x264-GROUP',
             'Test.Show.S01E02.2160p.UHD.BluRay.x265-GROUP',
             'Test.Show.S01E02.2160p.UHD.BluRay.vp9-GROUP'],
-    common.Quality.UNKNOWN: ['Test.Show.S01E02-SiCKGEAR']
+    common.Quality.UNKNOWN: ['Test.Show.S01E02-SickShift']
 }
 
 
@@ -204,7 +204,7 @@ class QualityTests(unittest.TestCase):
         self.check_quality_names(common.Quality.FULLHDWEBDL, ['Test Show - S01E02 - 1080p WEB-DL - GROUP'])
         self.check_quality_names(common.Quality.HDBLURAY, ['Test Show - S01E02 - 720p BluRay - GROUP'])
         self.check_quality_names(common.Quality.FULLHDBLURAY, ['Test Show - S01E02 - 1080p BluRay - GROUP'])
-        self.check_quality_names(common.Quality.UNKNOWN, ['Test Show - S01E02 - Unknown - SiCKGEAR'])
+        self.check_quality_names(common.Quality.UNKNOWN, ['Test Show - S01E02 - Unknown - SickShift'])
 
     def test_get_proper_level(self):
         # release_name, expected level

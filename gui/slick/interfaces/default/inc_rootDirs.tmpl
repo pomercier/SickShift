@@ -1,8 +1,8 @@
-#import sickgear
+#import sickshift
 <span id="sampleRootDir"></span>
 
-#if $sickgear.ROOT_DIRS:
-#set $backend_pieces = $sickgear.ROOT_DIRS.split('|')
+#if $sickshift.ROOT_DIRS:
+#set $backend_pieces = $sickshift.ROOT_DIRS.split('|')
 #set $backend_default = 'rd-' + $backend_pieces[0]
 #set $backend_dirs = $backend_pieces[1:]
 #else:

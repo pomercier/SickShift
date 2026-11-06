@@ -1,7 +1,7 @@
-#import sickgear
-#from sickgear import subtitles
-#from sickgear.helpers import anon_url
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift import subtitles
+#from sickshift.helpers import anon_url
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Config - Subtitles'
 #set global $header = 'Subtitles'
@@ -9,7 +9,7 @@
 #set global $topmenu = 'config'
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <script src="$sbRoot/js/configSubtitles.js?v=$sbPID"></script>
 <script src="$sbRoot/js/config.js"></script>
@@ -28,7 +28,7 @@
 				prePopulate:
 					[
 						<%=
-							',\r\n'.join('{id: "' + lang + '", name: "' + subtitles.get_language_name(lang) + '"}' for lang in sickgear.SUBTITLES_LANGUAGES) if sickgear.SUBTITLES_LANGUAGES != '' else ''
+							',\r\n'.join('{id: "' + lang + '", name: "' + subtitles.get_language_name(lang) + '"}' for lang in sickshift.SUBTITLES_LANGUAGES) if sickshift.SUBTITLES_LANGUAGES != '' else ''
 						%>
 					],
 					resultsFormatter: function(item){ return '<li><img src="$sbRoot/images/flags/svg/lang/' + item['id'] + '.svg"> ' + item[this.propertyToSearch] + '</li>' },
@@ -64,12 +64,12 @@
 
 					<div class="component-group-desc">
 						<h3>Subtitles Search</h3>
-						<p>Settings that dictate how SickGear handles subtitles search results.</p>
+						<p>Settings that dictate how SickShift handles subtitles search results.</p>
 					</div>
 
 					<fieldset class="component-group-list">
 						<div class="field-pair">
-							<input type="checkbox" class="enabler" #if $sickgear.USE_SUBTITLES then ' checked="checked"' else ''# id="use_subtitles" name="use_subtitles">
+							<input type="checkbox" class="enabler" #if $sickshift.USE_SUBTITLES then ' checked="checked"' else ''# id="use_subtitles" name="use_subtitles">
 							<label for="use_subtitles" class="clearfix">
 								<span class="component-title">Search Subtitles</span>
 							</label>
@@ -84,11 +84,11 @@
 								<div class="field-pair">
 									<label class="nocheck">
 										<span class="component-title">Subtitle Directory</span>
-										<input type="text" value="$sickgear.SUBTITLES_DIR" id="subtitles_dir" name="subtitles_dir" class="form-control input-sm input350">
+										<input type="text" value="$sickshift.SUBTITLES_DIR" id="subtitles_dir" name="subtitles_dir" class="form-control input-sm input350">
 									</label>
 									<label class="nocheck">
 										<span class="component-title">&nbsp;</span>
-										<span class="component-desc">The directory where SickGear should store your <i>Subtitles</i> files.</span>
+										<span class="component-desc">The directory where SickShift should store your <i>Subtitles</i> files.</span>
 									</label>
 									<label class="nocheck">
 										<span class="component-title">&nbsp;</span>
@@ -98,7 +98,7 @@
 								<div class="field-pair">
 									<label class="nocheck">
 										<span class="component-title">Subtitle Find Interval</span>
-										<input type="number" name="subtitles_finder_interval" value="$sickgear.SUBTITLES_FINDER_INTERVAL" hours="1" class="form-control input-sm input75">
+										<input type="number" name="subtitles_finder_interval" value="$sickshift.SUBTITLES_FINDER_INTERVAL" hours="1" class="form-control input-sm input75">
 									</label>
 									<label class="nocheck">
 										<span class="component-title">&nbsp;</span>
@@ -106,7 +106,7 @@
 									</label>
 								</div>
 								<div class="field-pair">
-									<input type="checkbox" name="subtitles_history" id="subtitles_history" #if $sickgear.SUBTITLES_HISTORY then ' checked="checked"' else ''#>
+									<input type="checkbox" name="subtitles_history" id="subtitles_history" #if $sickshift.SUBTITLES_HISTORY then ' checked="checked"' else ''#>
 									<label class="clearfix" for="subtitles_history">
 										<span class="component-title">Subtitles History</span>
 										<span class="component-desc">Log downloaded Subtitle on History page?</span>
@@ -128,7 +128,7 @@
 
 					<fieldset class="component-group-list" style="margin-left:50px;margin-top:36px">
 						<ul id="service_order_list">
-#for $curService in $sickgear.subtitles.sorted_service_list():
+#for $curService in $sickshift.subtitles.sorted_service_list():
     #set $curName = $curService.id
 							<li class="ui-state-default" id="$curName">
 								<span class="pull-left">
@@ -151,8 +151,8 @@
 										<br>Password
 									</span>
 									<span class="pull-right" style="margin-left:6px">
-										<input name="os_user" value="$sickgear.SUBTITLES_SERVICES_AUTH[0][0]" type="text" placeholder="optional" class="form-control form-control-inline input-sm">
-										<br><input name="os_pass" value="$sickgear.SUBTITLES_SERVICES_AUTH[0][1]" type="text" placeholder="optional" class="form-control form-control-inline input-sm">
+										<input name="os_user" value="$sickshift.SUBTITLES_SERVICES_AUTH[0][0]" type="text" placeholder="optional" class="form-control form-control-inline input-sm">
+										<br><input name="os_pass" value="$sickshift.SUBTITLES_SERVICES_AUTH[0][1]" type="text" placeholder="optional" class="form-control form-control-inline input-sm">
 									</span>
     #end if
 								</span>
@@ -160,7 +160,7 @@
 							</li>
 #end for
 						</ul>
-						<input type="hidden" name="service_order" id="service_order" value="<%=" ".join([x.get('id')+':'+str(int(x.get('enabled'))) for x in sickgear.subtitles.sorted_service_list()])%>">
+						<input type="hidden" name="service_order" id="service_order" value="<%=" ".join([x.get('id')+':'+str(int(x.get('enabled'))) for x in sickshift.subtitles.sorted_service_list()])%>">
 
 						<br><input type="submit" class="btn config_submitter" value="Save Changes"><br>
 					</fieldset>
@@ -182,4 +182,4 @@ jQuery('#subtitles_dir').fileBrowser({title:'Select Subtitles Download Directory
 //-->
 </script>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

@@ -31,7 +31,7 @@ import zipfile
 import guessit
 from six import StringIO
 
-from sickgear.common import Quality
+from sickshift.common import Quality
 
 logger = logging.getLogger("subliminal")
 

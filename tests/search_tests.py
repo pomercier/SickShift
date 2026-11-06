@@ -9,12 +9,12 @@ import unittest
 sys.path.insert(1, os.path.abspath('..'))
 sys.path.insert(1, os.path.abspath('../lib'))
 
-from sickgear import properFinder
+from sickshift import properFinder
 
-import sickgear
+import sickshift
 import test_lib as test
 
-sickgear.SYS_ENCODING = 'UTF-8'
+sickshift.SYS_ENCODING = 'UTF-8'
 
 
 class ProperTests(test.SickbeardTestDBCase):

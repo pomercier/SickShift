@@ -7,13 +7,13 @@ import unittest
 sys.path.insert(1, os.path.abspath('..'))
 sys.path.insert(1, os.path.abspath('../lib'))
 
-import sickgear
-from sickgear import db, name_cache, tv
-from sickgear.classes import OrderedDefaultdict
-from sickgear.name_parser import parser
-from sickgear.scene_exceptions import ReleaseMap
+import sickshift
+from sickshift import db, name_cache, tv
+from sickshift.classes import OrderedDefaultdict
+from sickshift.name_parser import parser
+from sickshift.scene_exceptions import ReleaseMap
 
-sickgear.SYS_ENCODING = 'UTF-8'
+sickshift.SYS_ENCODING = 'UTF-8'
 
 DEBUG = VERBOSE = False
 
@@ -479,14 +479,14 @@ class MultiSceneNumbering(test.SickbeardTestDBCase):
     def test_multi_ep_numbering(self):
         _ = ReleaseMap()
         for e_t in scene_numbering_test:
-            sickgear.showList = []
-            sickgear.showDict = {}
+            sickshift.showList = []
+            sickshift.showDict = {}
             name_cache.nameCache = {}
             sql_l = []
             for s in [TVShowTest(name=e_t['show_obj']['name'], prodid=e_t['show_obj']['prodid'],
                                  tvid=e_t['show_obj']['tvid'], scene=1)]:
-                sickgear.showList.append(s)
-                sickgear.showDict[s.sid_int] = s
+                sickshift.showList.append(s)
+                sickshift.showDict[s.sid_int] = s
                 for _i, e_o in enumerate(e_t['show_obj']['episodes']):
                     e_obj = TVEpisodeTest(e_o['name'])
                     e_obj.season = e_o['season']
@@ -524,13 +524,13 @@ class MultiSceneNumbering(test.SickbeardTestDBCase):
 class EpisodeNameCases(unittest.TestCase):
     def test_ep_numbering(self):
         for e_t in ep_name_test:
-            sickgear.showList = []
-            sickgear.showDict = {}
+            sickshift.showList = []
+            sickshift.showDict = {}
             name_cache.nameCache = {}
             for s in [TVShowTest(name=e_t['show_obj']['name'], prodid=e_t['show_obj']['prodid'],
                                  tvid=e_t['show_obj']['tvid'])]:
-                sickgear.showList.append(s)
-                sickgear.showDict[s.sid_int] = s
+                sickshift.showList.append(s)
+                sickshift.showDict[s.sid_int] = s
                 for e_o in e_t['show_obj']['episodes']:
                     e_obj = TVEpisodeTest(e_o['name'])
                     e_obj.season = e_o['season']
@@ -548,11 +548,11 @@ class EpisodeNameCases(unittest.TestCase):
 class InvalidCases(unittest.TestCase):
 
     def _test_invalid(self, rls_name, show_name, prodid, tvid, is_anime):
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         for s in [TVShowTest(name=rls_name, prodid=prodid, tvid=tvid, is_anime=is_anime)]:
-            sickgear.showList.append(s)
-            sickgear.showDict[s.sid_int] = s
+            sickshift.showList.append(s)
+            sickshift.showDict[s.sid_int] = s
         name_cache.add_name_to_cache(show_name, tvid=tvid, prodid=prodid)
         invalidexception = False
         try:
@@ -882,34 +882,34 @@ class DupeNameTests(test.SickbeardTestDBCase):
 
     def tearDown(self):
         super(DupeNameTests, self).tearDown()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         name_cache.nameCache = {}
 
     def test_dupe_names(self):
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         name_cache.nameCache = {}
         for case in dupe_shows:
             tvs = TVShowTest(False, case[0], case[1][1], case[1][0], case[2])
             for e in case[3]:
                 tvs.sxe_ep_obj.setdefault(e[1], {}).update({e[2]: TVEpisodeTest(e[0])})
 
-            sickgear.showList.append(tvs)
-            sickgear.showDict[tvs.sid_int] = tvs
-        sickgear.webserve.Home.make_showlist_unique_names()
+            sickshift.showList.append(tvs)
+            sickshift.showDict[tvs.sid_int] = tvs
+        sickshift.webserve.Home.make_showlist_unique_names()
 
         for case in dupe_shows_test:
             for cache_check in range(6):
                 should_get_show = cache_check in (1, 3, 4)
                 should_find = cache_check in (1, 3, 4)
-                show_obj = should_get_show and sickgear.helpers.find_show_by_id({case[1][0]: case[1][1]})
+                show_obj = should_get_show and sickshift.helpers.find_show_by_id({case[1][0]: case[1][1]})
                 if 3 == cache_check:
-                    show_obj = [so for so in sickgear.showList if so != show_obj][0]
+                    show_obj = [so for so in sickshift.showList if so != show_obj][0]
                 np = parser.NameParser(show_obj=show_obj)
                 try:
                     result = np.parse(case[0])
-                except sickgear.name_parser.parser.InvalidShowException:
+                except sickshift.name_parser.parser.InvalidShowException:
                     if not should_find:
                         continue
                     self.assertTrue(False, msg='Failed to find show')
@@ -939,8 +939,8 @@ class ExtraInfoNoNameTests(test.SickbeardTestDBCase):
                 for e in case[1]:
                     tvs.sxe_ep_obj.setdefault(e[1], {}).update({e[2]: TVEpisodeTest(e[0])})
 
-                sickgear.showList = [tvs]
-                sickgear.showDict = {tvs.sid_int: tvs}
+                sickshift.showList = [tvs]
+                sickshift.showDict = {tvs.sid_int: tvs}
                 name_cache.nameCache = {}
                 name_cache.build_name_cache()
 

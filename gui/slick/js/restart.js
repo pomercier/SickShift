@@ -1,17 +1,17 @@
-/** @namespace $.SickGear.Root */
-/** @namespace $.SickGear.Host */
-/** @namespace $.SickGear.Port */
-/** @namespace $.SickGear.UseHttps */
-/** @namespace $.SickGear.PID */
+/** @namespace $.SickShift.Root */
+/** @namespace $.SickShift.Host */
+/** @namespace $.SickShift.Port */
+/** @namespace $.SickShift.UseHttps */
+/** @namespace $.SickShift.PID */
 /** @namespace data.msg */
 
-var sgRoot = $.SickGear.Root,
+var sgRoot = $.SickShift.Root,
 	browserUrl = window.location.protocol + '//' + window.location.host + sgRoot,
-	baseUrl = 'http' + ($.SickGear.UseHttps ? 's' : '') + '://' + $.SickGear.Host + ':'
-		+ (('' == sgRoot) ? $.SickGear.Port : location.port) + sgRoot,
+	baseUrl = 'http' + ($.SickShift.UseHttps ? 's' : '') + '://' + $.SickShift.Host + ':'
+		+ (('' == sgRoot) ? $.SickShift.Port : location.port) + sgRoot,
 	isAliveUrl = sgRoot + '/home/is-alive/',
 	timeoutId;
-$.SickGear.numRestartWaits = 0;
+$.SickShift.numRestartWaits = 0;
 
 function is_alive() {
 	timeoutId = 0;
@@ -30,7 +30,7 @@ function is_alive() {
 				$('#restart_message').removeClass();
 				setTimeout(is_alive, 100);
 
-			} else if (/undefined/i.test($.SickGear.PID) || $.SickGear.PID == resp) {
+			} else if (/undefined/i.test($.SickShift.PID) || $.SickShift.PID == resp) {
 				// if this is before we've even shut down then just try again later
 
 				setTimeout(is_alive, 100);
@@ -55,7 +55,7 @@ $(document).ready(function() {
 
 	//noinspection JSUnusedLocalSymbols
 	$('#shut_down_message').ajaxError(function(e, jqxhr, settings, exception) {
-		$.SickGear.numRestartWaits += 1;
+		$.SickShift.numRestartWaits += 1;
 
 		$('#shut_down_message').find('.spinner,.hide-yes').removeClass();
 
@@ -66,7 +66,7 @@ $(document).ready(function() {
 
 		// If using https and the port or protocol changed, then wait 5 seconds before redirect because ajax calls will
 		// fail with untrusted certs or when a http ajax request is made from https with a mixed content error.
-		if ($.SickGear.UseHttps || 'https:' == window.location.protocol) {
+		if ($.SickShift.UseHttps || 'https:' == window.location.protocol) {
 			if (browserUrl != baseUrl) {
 
 				timeoutId = 1;
@@ -81,7 +81,7 @@ $(document).ready(function() {
 		}
 
 		// if it is taking forever just give up
-		if (90 < $.SickGear.numRestartWaits) {
+		if (90 < $.SickShift.numRestartWaits) {
 
 			restart$.find('.spinner,.yes,.hide-no').removeClass();
 			$('#restart_fail_message').removeClass();

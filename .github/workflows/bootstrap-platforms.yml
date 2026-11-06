@@ -1,0 +1,23 @@
+name: Cross-platform Python bootstrap
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bootstrap:
+    strategy:
+      matrix:
+        # Select the Intel hosted image explicitly; macos-latest currently maps
+        # to ARM64, whose capacity can leave required checks queued for hours.
+        os: [ubuntu-24.04, windows-latest, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - run: python sickshift.py --help
+      - run: python -m unittest tests.bootstrap_dependencies_tests -v

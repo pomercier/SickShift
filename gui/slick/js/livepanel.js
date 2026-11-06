@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 /** @namespace config.hasArt */
 /** @namespace config.panelTitles */
 $(document).ready(function() {
@@ -241,7 +241,7 @@ $(document).ready(function() {
 	function isSet(name) {return liveStates$.hasClass(name)}
 
 	function send(value) {
-		return $.get($.SickGear.Root + '/live_panel/?' + value + '&pg=' + (isEpisodeView ? 'ev' : 'ds'))}
+		return $.get($.SickShift.Root + '/live_panel/?' + value + '&pg=' + (isEpisodeView ? 'ev' : 'ds'))}
 
 	if (jqTooltipUsed) {
 		panel$.find('a[title]').tooltip({placement: 'top', html: !0});

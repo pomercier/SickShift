@@ -1,13 +1,13 @@
 #import datetime
 #import re
-#import sickgear
-#from sickgear import TVInfoAPI
-#from sickgear.indexers.indexer_config import TVINFO_TMDB, TVINFO_TVDB, TVINFO_TRAKT, TVINFO_TVMAZE, TVINFO_IMDB
-#from sickgear.helpers import anon_url
-#from sickgear.tv import PersonGenders
+#import sickshift
+#from sickshift import TVInfoAPI
+#from sickshift.indexers.indexer_config import TVINFO_TMDB, TVINFO_TVDB, TVINFO_TRAKT, TVINFO_TVMAZE, TVINFO_IMDB
+#from sickshift.helpers import anon_url
+#from sickshift.tv import PersonGenders
 #from sg_helpers import spoken_height
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #if $person.name
 #set global $title = $person.name + ' (Person)'
@@ -191,13 +191,13 @@ def param(visible=True, rid=None, cache_person=None, cache_char=None, person=Non
 				<div><span class="details-title">Height</span><span class="details-info">$spoken_height($person.height) ... ($round($person.height, 1) cm, $inches inches)</span></div>
 #end if
 #if $person.birthday
-				<div><span class="details-title">Birthdate</span><span class="details-info">$sickgear.sgdatetime.SGDatetime.sbfdate($person.birthday)</span></div>
+				<div><span class="details-title">Birthdate</span><span class="details-info">$sickshift.sgdatetime.SGDatetime.sbfdate($person.birthday)</span></div>
 #end if
 #if $person.birthplace
 				<div><span class="details-title">Birthplace</span><span class="details-info">$person.birthplace</span></div>
 #end if
 #if $person.deathday
-				<div><span class="details-title">Deathdate</span><span class="details-info">$sickgear.sgdatetime.SGDatetime.sbfdate($person.deathday)</span></div>
+				<div><span class="details-title">Deathdate</span><span class="details-info">$sickshift.sgdatetime.SGDatetime.sbfdate($person.deathday)</span></div>
 #end if
 #if $person.deathplace
 				<div><span class="details-title">Deathplace</span><span class="details-info">$person.deathplace</span></div>

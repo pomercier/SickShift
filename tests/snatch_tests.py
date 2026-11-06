@@ -1,20 +1,20 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 # import random
 import unittest
@@ -23,10 +23,10 @@ import test_lib as test
 
 # import sys, os.path
 
-import sickgear.search as search
-import sickgear
-from sickgear.tv import TVEpisode, TVShow
-import sickgear.common as c
+import sickshift.search as search
+import sickshift
+from sickshift.tv import TVEpisode, TVShow
+import sickshift.common as c
 
 tests = {'Dexter': {'a': 1, 'q': c.HD, 's': 5, 'e': [7], 'b': 'Dexter.S05E07.720p.BluRay.X264-REWARD', 'i': ['Dexter.S05E07.720p.BluRay.X264-REWARD', 'Dexter.S05E07.720p.X264-REWARD']},
          'House': {'a': 1, 'q': c.HD, 's': 4, 'e': [5], 'b': 'House.4x5.720p.BluRay.X264-REWARD', 'i': ['Dexter.S05E04.720p.X264-REWARD', 'House.4x5.720p.BluRay.X264-REWARD']},
@@ -56,7 +56,7 @@ class SearchTest(test.SickbeardTestDBCase):
         return True
 
     def __init__(self, something):
-        for provider in sickgear.providers.sorted_sources():
+        for provider in sickshift.providers.sorted_sources():
             provider.get_url = self._fake_getURL
             #provider.isActive = self._fake_isActive
 
@@ -72,8 +72,8 @@ def test_generator(tvdbdid, show_name, curData, forceSearch):
         show_obj.name = show_name
         show_obj.quality = curData['q']
         show_obj.save_to_db()
-        sickgear.showList.append(show_obj)
-        sickgear.showDict[show_obj.sid_int] = show_obj
+        sickshift.showList.append(show_obj)
+        sickshift.showDict[show_obj.sid_int] = show_obj
         episode = None
 
         for epNumber in curData['e']:

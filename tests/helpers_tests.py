@@ -5,8 +5,8 @@ import os.path
 sys.path.insert(1, os.path.abspath('..'))
 sys.path.insert(1, os.path.abspath('../lib'))
 
-from sickgear import helpers
-from sickgear.common import ARCHIVED, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER, \
+from sickshift import helpers
+from sickshift.common import ARCHIVED, SNATCHED, SNATCHED_BEST, SNATCHED_PROPER, \
     DOWNLOADED, SKIPPED, IGNORED, UNAIRED, UNKNOWN, WANTED, Quality
 
 

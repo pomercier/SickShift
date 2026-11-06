@@ -40,8 +40,8 @@ $(function(){
 
 	var updateOptions = function(that$, oldlink, newlink){
 		that$.html(that$.html().replace(oldlink, newlink));
-		if (!(/undefined/i.test(typeof $.SickGear.myform))){
-			$.SickGear.myform.loadsection(2);
+		if (!(/undefined/i.test(typeof $.SickShift.myform))){
+			$.SickShift.myform.loadsection(2);
 		}
 	};
 	$('#moreless-options-addshow').on('click', function(e){

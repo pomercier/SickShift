@@ -77,7 +77,7 @@ def generate_key(key_size=4096, output_file='server.key'):
 # Ported from cryptography docs/x509/tutorial.rst
 def generate_local_cert(private_key, days_valid=3650, output_file='server.crt', loc_name=None, org_name=None):
 
-    def_name = 'SickGear'
+    def_name = 'SickShift'
 
     # Various details about who we are. For a self-signed certificate the
     # subject and issuer are always the same.

@@ -1,7 +1,7 @@
-#import sickgear
-#from sickgear.common import *
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift.common import *
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Import' if not $kwargs.get('hash_dir') else 'Path conflict'
 #set global $header = $title
@@ -79,7 +79,7 @@ var config = { sortArticle: #echo ['!1','!0'][$sg_var('SORT_ARTICLE')]# }
 	</ul>
 
 #if not $kwargs.get('hash_dir', None)
-	<p>shows <span class="boldest">not known</span> to SickGear are listed below...</p>
+	<p>shows <span class="boldest">not known</span> to SickShift are listed below...</p>
 #end if
 
 	<div id="tableDiv"></div>

@@ -1,4 +1,4 @@
-/** @namespace $.SickGear.Root */
+/** @namespace $.SickShift.Root */
 /** @namespace config.showLang */
 /** @namespace config.showIsAnime */
 /** @namespace config.expandIds */
@@ -13,14 +13,14 @@ $(document).ready(function () {
 	};
 
 	function htmlFlag(lang) {
-		return ' class="flag" style="background-image:url(' + $.SickGear.Root + '/images/flags/svg/lang/' + lang + '.png)"'
+		return ' class="flag" style="background-image:url(' + $.SickShift.Root + '/images/flags/svg/lang/' + lang + '.png)"'
 	}
 
 	function uriFlag(lang) {
-		return $.SickGear.Root + '/images/flags/svg/lang/' + lang + '.png'
+		return $.SickShift.Root + '/images/flags/svg/lang/' + lang + '.png'
 	}
 
-	$.getJSON($.SickGear.Root + '/add-shows/get-infosrc-languages', {}, function (data) {
+	$.getJSON($.SickShift.Root + '/add-shows/get-infosrc-languages', {}, function (data) {
 		var htmlText = '', currentLangAdded = '',
 			selected = ' selected="selected"', htmlSelected = '',
 			elInfosrcLang = $('#infosrc-lang-select'),

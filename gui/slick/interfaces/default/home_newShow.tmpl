@@ -1,13 +1,13 @@
-#import sickgear
-#from sickgear.helpers import anon_url
+#import sickshift
+#from sickshift.helpers import anon_url
 ##
 #set global $header = ('Add from TV info source', '<span class="grey-text">%s::</span>%s' % ($kwargs.get('action'), $default_show_name))[any([$kwargs.get('action')])]
 #set global $title = ('Add from TV info source', '%s::%s' % ($kwargs.get('action'), $default_show_name))[any([$kwargs.get('action')])]
 #set global $sbPath = '../..'
 #set global $statpath = '../..'
 #set global $topmenu = 'home'
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##########
 ## legacy
 #set $provided_tvid = $getVar('provided_tvid', $getVar('provided_indexer', 1))
@@ -17,7 +17,7 @@
 #import os.path
 #include $os.path.join($sg_str('PROG_DIR'), 'gui/slick/interfaces/default/inc_top.tmpl')
 
-#set indexer_count = len([$i for $i in $sickgear.TVInfoAPI().sources if $sickgear.TVInfoAPI(i).config.get('active', False) and not $sickgear.TVInfoAPI(i).config.get('defunct', False)]) + 1
+#set indexer_count = len([$i for $i in $sickshift.TVInfoAPI().sources if $sickshift.TVInfoAPI(i).config.get('active', False) and not $sickshift.TVInfoAPI(i).config.get('defunct', False)]) + 1
 
 <script>
 	var showSceneMaps = ${show_scene_maps},
@@ -92,7 +92,7 @@
 #if $use_provided_info
     #set $provided_tvid_local = $provided_tvid
     #set $provided_prodid_local = $provided_prodid
-				Show: <a href="<%= anon_url(sickgear.TVInfoAPI(provided_tvid_local).config['show_url'] % provided_prodid_local) %>">$provided_show_name</a>
+				Show: <a href="<%= anon_url(sickshift.TVInfoAPI(provided_tvid_local).config['show_url'] % provided_prodid_local) %>">$provided_show_name</a>
 				<input type="hidden" name="tvinfo_lang" value="en">
 				<input type="hidden" name="which_series" value="#echo '|'.join([str($provided_tvid), '', str($provided_prodid), $provided_show_name])#">
 				<input type="hidden" id="provided-tvid" value="$provided_tvid">
@@ -122,7 +122,7 @@
 					<input class="btn btn-inline" type="button" id="searchName" value="Search">
 				</span>
 				<br>
-##				<p style="margin:5px 0 15px"><span class="add-tip">Show name and/or ([imdb, tmdb, trakt, tvdb, tvmaze]: + id) or URL.&nbsp;&nbsp;</span><b>*</b>SickGear supports english, language is used for show/episode data</p>
+##				<p style="margin:5px 0 15px"><span class="add-tip">Show name and/or ([imdb, tmdb, trakt, tvdb, tvmaze]: + id) or URL.&nbsp;&nbsp;</span><b>*</b>SickShift supports english, language is used for show/episode data</p>
 <style>.divy{margin:0 5px; font-style:normal}</style>
 				<p style="margin:5px 0 15px;font-size:smaller">
 	#set $try_num = 2
@@ -131,7 +131,7 @@
 #for $cur_idx, $cur_tip in enumerate($try_id)#<span id="try-$try_num-id"#if $cur_idx# class="hide"#end if#>#set $try_num += 1#<i class="divy">|</i><a id="try-$try_num" href="click to try me!">$next(iter($cur_tip))</a></span>#end for##slurp
 #for $cur_idx, $cur_tip in enumerate($try_id_name)#<span id="try-$try_num-id-name"#if $cur_idx# class="hide"#end if#>#set $try_num += 1#<i class="divy">|</i><a id="try-$try_num" href="click to try me!">$next(iter($cur_tip))</a></span>#end for##slurp
 #for $cur_idx, $cur_tip in enumerate($try_url)#<span id="try-$try_num-url"#if $cur_idx# class="hide"#end if#>#set $try_num += 1#<i class="divy">|</i><a id="try-$try_num" href="click to try me!">$next(iter($cur_tip))</a></span>#end for#</span>
-					<span class="pull-right grey-text" style="font-size:smaller"><b>*</b>SickGear is en, language is used for show/episode lists</span>
+					<span class="pull-right grey-text" style="font-size:smaller"><b>*</b>SickShift is en, language is used for show/episode lists</span>
 				</p>
 
 				<div id="search-results" class="collapsed" style="height: 100%"></div>

@@ -1,0 +1,12 @@
+[Unit]
+Description=SickShift
+After=network-online.target
+[Service]
+# Adapter ces chemins et l’utilisateur à votre installation.
+User=sickshift
+WorkingDirectory=/opt/sickshift
+ExecStart=/opt/sickshift/.venv/bin/python /opt/sickshift/sickshift.py --nolaunch --datadir /var/lib/sickshift
+Restart=on-failure
+RestartSec=5
+[Install]
+WantedBy=multi-user.target

@@ -1,15 +1,15 @@
 #!/bin/sh
 #
 ### BEGIN INIT INFO
-# Provides:          sickgear
+# Provides:          sickshift
 # Required-Start:    $local_fs $network $remote_fs
 # Required-Stop:     $local_fs $network $remote_fs
 # Should-Start:      $NetworkManager
 # Should-Stop:       $NetworkManager
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: starts instance of SickGear
-# Description:       starts instance of SickGear using start-stop-daemon
+# Short-Description: starts instance of SickShift
+# Description:       starts instance of SickShift using start-stop-daemon
 ### END INIT INFO
 
 # Load the VERBOSE setting and other rcS variables
@@ -19,56 +19,56 @@
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
-# Source SickGear configuration
-if [ -f /etc/default/sickgear ]; then
-    . /etc/default/sickgear
+# Source SickShift configuration
+if [ -f /etc/default/sickshift ]; then
+    . /etc/default/sickshift
 else
-    [ "${VERBOSE}" != no ] && echo "/etc/default/sickgear not found. Using default settings.";
+    [ "${VERBOSE}" != no ] && echo "/etc/default/sickshift not found. Using default settings.";
 fi
 
 ## Don't set -e
 ## Don't edit this file!
-## Edit user configuration in /etc/default/sickgear to change
+## Edit user configuration in /etc/default/sickshift to change
 ##
-## SG_USER=         #$RUN_AS, username to run sickgear under, the default is sickgear
-## SG_GROUP=        #$RUN_GROUP, group to run sickgear under, the default is sickgear
-## SG_HOME=         #$APP_PATH, the location of sickgear.py, the default is /opt/sickgear
-## SG_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickgear
-## SG_PIDFILE=      #$PID_FILE, the location of sickgear.pid, the default is /var/run/sickgear/sickgear.pid
+## SG_USER=         #$RUN_AS, username to run sickshift under, the default is sickshift
+## SG_GROUP=        #$RUN_GROUP, group to run sickshift under, the default is sickshift
+## SG_HOME=         #$APP_PATH, the location of sickshift.py, the default is /opt/sickshift
+## SG_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickshift
+## SG_PIDFILE=      #$PID_FILE, the location of sickshift.pid, the default is /var/run/sickshift/sickshift.pid
 ## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python
-## SG_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickgear, i.e. " --config=/home/sickgear/config.ini"
+## SG_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickshift, i.e. " --config=/home/sickshift/config.ini"
 ## SSD_OPTS=        #$EXTRA_SSD_OPTS, extra start-stop-daemon option like " --group=users"
 ##
 ## EXAMPLE if want to run as different user
-## add SG_USER=username to /etc/default/sickgear
-## otherwise default sickgear is used
+## add SG_USER=username to /etc/default/sickshift
+## otherwise default sickshift is used
 
 # Script name
 NAME=$(basename "$0")
 
 # App name
-DESC=SickGear
+DESC=SickShift
 
 ## The defaults
 # Run as username
-RUN_AS=${SG_USER-sickgear}
+RUN_AS=${SG_USER-sickshift}
 
 # Run as group
-RUN_GROUP=${SG_GROUP-sickgear}
+RUN_GROUP=${SG_GROUP-sickshift}
 
-# Path to app SG_HOME=path_to_app_sickgear.py
-APP_PATH=${SG_HOME-/opt/sickgear}
+# Path to app SG_HOME=path_to_app_sickshift.py
+APP_PATH=${SG_HOME-/opt/sickshift}
 
 # Data directory where sickbeard.db, cache and logs are stored
-DATA_DIR=${SG_DATA-/opt/sickgear}
+DATA_DIR=${SG_DATA-/opt/sickshift}
 
 # Path to store PID file
-PID_FILE=${SG_PIDFILE-/var/run/sickgear/sickgear.pid}
+PID_FILE=${SG_PIDFILE-/var/run/sickshift/sickshift.pid}
 
 # path to python bin
 DAEMON=${PYTHON_BIN-/usr/bin/python}
 
-# Extra daemon option like: SG_OPTS=" --config=/home/sickgear/config.ini"
+# Extra daemon option like: SG_OPTS=" --config=/home/sickshift/config.ini"
 EXTRA_DAEMON_OPTS=${SG_OPTS-}
 
 # Extra start-stop-daemon option like START_OPTS=" --group=users"
@@ -76,13 +76,13 @@ EXTRA_SSD_OPTS=${SSD_OPTS-}
 ##
 
 PID_PATH=$(dirname $PID_FILE)
-DAEMON_OPTS=" sickgear.py -q --daemon --nolaunch --pidfile=${PID_FILE} --datadir=${DATA_DIR} ${EXTRA_DAEMON_OPTS}"
+DAEMON_OPTS=" sickshift.py -q --daemon --nolaunch --pidfile=${PID_FILE} --datadir=${DATA_DIR} ${EXTRA_DAEMON_OPTS}"
 
 ##
 
 test -x $DAEMON || exit 0
 
-# Create PID directory if not exist and ensure the SickGear user can write to it
+# Create PID directory if not exist and ensure the SickShift user can write to it
 if [ ! -d $PID_PATH ]; then
     mkdir -p $PID_PATH
     chown $RUN_AS $PID_PATH
@@ -101,7 +101,7 @@ if [ -e $PID_FILE ]; then
     fi
 fi
 
-start_sickgear() {
+start_sickshift() {
     [ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
     start-stop-daemon -d $APP_PATH -c $RUN_AS --group=${RUN_GROUP} $EXTRA_SSD_OPTS --start --quiet --pidfile $PID_FILE --exec $DAEMON -- $DAEMON_OPTS
     RETVAL="$?"
@@ -115,7 +115,7 @@ start_sickgear() {
     return 0
 }
 
-stop_sickgear() {
+stop_sickshift() {
     [ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
     start-stop-daemon --stop --pidfile $PID_FILE --quiet --retry TERM/30/KILL/5
     RETVAL="$?"
@@ -132,18 +132,18 @@ stop_sickgear() {
 
 case "$1" in
     start)
-        start_sickgear
+        start_sickshift
         exit $?
         ;;
     stop)
-        stop_sickgear
+        stop_sickshift
         exit $?
         ;;
 
     restart|force-reload)
-        stop_sickgear
+        stop_sickshift
         sleep 2
-        start_sickgear
+        start_sickshift
         return $?
         ;;
     status)

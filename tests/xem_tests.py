@@ -1,20 +1,20 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import os.path
 import re
@@ -25,8 +25,8 @@ sys.path.insert(1, os.path.abspath('..'))
 sys.path.insert(1, os.path.abspath('../lib'))
 
 import test_lib as test
-import sickgear
-from sickgear.tv import TVShow
+import sickshift
+from sickshift.tv import TVShow
 
 
 class XEMBasicTests(test.SickbeardTestDBCase):
@@ -42,8 +42,8 @@ class XEMBasicTests(test.SickbeardTestDBCase):
         for cur_result in sql_result:
             try:
                 show_obj = TVShow(int(cur_result['tvid']), int(cur_result['prodid']))
-                sickgear.showList.append(show_obj)
-                sickgear.showDict[show_obj.sid_int] = show_obj
+                sickshift.showList.append(show_obj)
+                sickshift.showDict[show_obj.sid_int] = show_obj
             except (BaseException, Exception):
                 pass
 

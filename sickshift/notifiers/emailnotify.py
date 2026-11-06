@@ -1,0 +1,187 @@
+# Authors:
+# Derek Battams <derek@battams.ca>
+# Pedro Jose Pereira Vieito (@pvieito) <pvieito@gmail.com>
+#
+# URL: https://github.com/sickgear/sickgear
+#
+# This file is part of SickShift.
+#
+# SickShift is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# SickShift is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
+
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formatdate
+import re
+import smtplib
+
+from .generic import Notifier, notify_strings
+from .. import db
+import sickshift
+from exceptions_helper import ex
+
+from six import text_type
+
+
+class EmailNotifier(Notifier):
+
+    def __init__(self):
+        super(EmailNotifier, self).__init__()
+
+        self.last_err = None
+
+    def _sendmail(self, host, port, smtp_from, use_tls, user, pwd, to, msg, smtp_debug=False):
+
+        use_tls = 1 == sickshift.helpers.try_int(use_tls)
+        login = any(user) and any(pwd)
+        self._log_debug(f'Sendmail HOST: {host}; PORT: {port};'
+                        f' LOGIN: {login}, TLS: {use_tls}, USER: {user}, FROM: {smtp_from}, TO: {to}')
+
+        try:
+            srv = smtplib.SMTP(host, int(port))
+            if smtp_debug:
+                srv.set_debuglevel(1)
+
+            if use_tls or login:
+                srv.ehlo()
+                self._log_debug('Sent initial EHLO command')
+
+                if use_tls:
+                    srv.starttls()
+                    srv.ehlo()
+                    self._log_debug('Sent STARTTLS and EHLO command')
+
+                if login:
+                    srv.login(user, pwd)
+                    self._log_debug('Sent LOGIN command')
+
+            srv.sendmail(smtp_from, to, msg.as_string())
+            srv.quit()
+
+        except (BaseException, Exception) as e:
+            self.last_err = f'{ex(e)}'
+            return False
+
+        return True
+
+    @staticmethod
+    def _get_recipients(show_name=None):
+
+        email_list = []
+
+        # Grab the global recipients
+        if sickshift.EMAIL_LIST:
+            for email_address in sickshift.EMAIL_LIST.split(','):
+                if any(email_address.strip()):
+                    email_list.append(email_address)
+
+        # Grab the recipients for the show
+        if None is not show_name:
+            with db.DBConnection() as sg_db:
+                for result in sg_db.select('SELECT notify_list FROM tv_shows WHERE show_name = ?', (show_name,)):
+                    if result['notify_list']:
+                        for email_address in result['notify_list'].split(','):
+                            if any(email_address.strip()):
+                                email_list.append(email_address)
+
+        return list(set(email_list))
+
+    def _notify(self, title, body, lang='', extra='', **kwargs):
+
+        show_name = body.split(' - ')[0]
+        to = self._get_recipients(show_name)
+        if not any(to):
+            self._log_warning('No email recipients to notify, skipping')
+            return
+
+        self._log_debug(f'Email recipients to notify: {to}')
+
+        try:
+            msg = MIMEMultipart('alternative')
+            msg.attach(MIMEText(
+                '<body style="font-family:Helvetica, Arial, sans-serif;">' +
+                f'<h3>SickShift Notification - {title}</h3>\n' +
+                '<p>Show: <b>' + show_name.encode('ascii', 'xmlcharrefreplace') +
+                '</b></p>\n<p>Episode: <b>' +
+                text_type(re.search('.+ - (.+?-.+) -.+', body).group(1)).encode('ascii', 'xmlcharrefreplace') +
+                extra +
+                '</b></p>\n\n' +
+                '<footer style="margin-top:2.5em;padding:.7em 0;color:#777;border-top:#BBB solid 1px;">' +
+                'Powered by SickShift.</footer></body>',
+                'html'))
+        except (BaseException, Exception):
+            try:
+                msg = MIMEText(body)
+            except (BaseException, Exception):
+                msg = MIMEText(f'Episode {title}')
+
+        msg['Subject'] = f'{lang}{title}: {body}'
+        msg['From'] = sickshift.EMAIL_FROM
+        msg['To'] = ','.join(to)
+        msg['Date'] = formatdate(localtime=True)
+        if self._sendmail(sickshift.EMAIL_HOST, sickshift.EMAIL_PORT, sickshift.EMAIL_FROM, sickshift.EMAIL_TLS,
+                          sickshift.EMAIL_USER, sickshift.EMAIL_PASSWORD, to, msg):
+            self._log_debug(f'{title} notification sent to [{to}] for "{body}"')
+        else:
+            self._log_error(f'{title} notification ERROR: {self.last_err}')
+
+    def test_notify(self, host, port, smtp_from, use_tls, user, pwd, to):
+        self._testing = True
+
+        msg = MIMEText(f'Success.  This is a SickShift test message. Typically sent on, {notify_strings["download"]}')
+        msg['Subject'] = 'SickShift: Test message'
+        msg['From'] = smtp_from
+        msg['To'] = to
+        msg['Date'] = formatdate(localtime=True)
+
+        r = self._sendmail(host, port, smtp_from, use_tls, user, pwd, [to], msg, True)
+        return self._choose(('Success, notification sent.',
+                             f'Failed to send notification: {self.last_err}')[not r], r)
+
+    def notify_snatch(self, ep_obj, title=None, **kwargs):
+        """
+        Send a notification that an episode was snatched
+
+        :param ep_obj: The snatched episode
+        :param title: The title of the notification (optional)
+        """
+
+        title = sickshift.EMAIL_OLD_SUBJECTS and 'Snatched' or title or notify_strings['snatch']
+        # noinspection PyProtectedMember
+        self._notify(title, self.pretty_name(ep_obj))
+
+    def notify_download(self, ep_obj, title=None, **kwargs):
+        """
+        Send a notification that an episode was downloaded
+
+        :param ep_obj: The downloaded episode
+        :param title: The title of the notification (optional)
+        """
+
+        title = sickshift.EMAIL_OLD_SUBJECTS and 'Downloaded' or title or notify_strings['download']
+        self._notify(title, self.pretty_name(ep_obj))
+
+    def notify_subtitle_download(self, ep_obj, lang, title=None, **kwargs):
+        """
+        Send a notification that a subtitle was downloaded
+
+        :param ep_obj: The downloaded episode
+        :param lang: Subtitle language
+        :param title: The title of the notification (optional)
+        """
+
+        title = sickshift.EMAIL_OLD_SUBJECTS and 'Subtitle Downloaded' or title or notify_strings['subtitle_download']
+        self._notify(title, ep_obj.pretty_name(), f'{lang} ', f'</b></p>\n<p>Language: <b>{lang}')
+
+
+notifier = EmailNotifier

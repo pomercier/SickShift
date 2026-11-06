@@ -1,10 +1,10 @@
 #import datetime
-#import sickgear
-#from sickgear import TVInfoAPI
-#from sickgear.helpers import anon_url
-#from sickgear.tv import PersonGenders
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift import TVInfoAPI
+#from sickshift.helpers import anon_url
+#from sickshift.tv import PersonGenders
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title = 'Show Switch Changes'
 #set global $header = 'Show Switch Changes'
@@ -12,7 +12,7 @@
 #set global $topmenu = 'show'
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 <h4>$show_obj.name - Changes</h4>
 #for $episode in $ep_list
@@ -23,4 +23,4 @@
     #end if
 #end for
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

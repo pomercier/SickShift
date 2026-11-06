@@ -167,7 +167,7 @@ function init_buttons(){
 	if (persistent_tag_button_states[browse_cat]['names'] === undefined) {
 		persistent_tag_button_states[browse_cat]['names'] = {}
 	}
-	$.get($.SickGear.Root + '/add-shows/get-btn-profile-states',
+	$.get($.SickShift.Root + '/add-shows/get-btn-profile-states',
 	{'browse_cat': browse_cat}).done(
 		function (data) {
 			if (data) {
@@ -375,7 +375,7 @@ function init_buttons(){
 	}
 	function save_profile (profile_nb, force_save, save_msg) {
 		if (set_tag_filters(profile_nb) || force_save) {
-			$.post($.SickGear.Root + '/add-shows/set-persistent-btn-status',
+			$.post($.SickShift.Root + '/add-shows/set-persistent-btn-status',
 				{
 					_xsrf: Cookies.get('_xsrf'),
 					'browse_cat': browse_cat,

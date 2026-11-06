@@ -10,12 +10,12 @@ import sys
 import os.path
 sys.path.insert(1, os.path.abspath('..'))
 
-from sickgear import show_name_helpers, scene_exceptions, common, name_cache
-from sickgear.indexers.indexer_config import TVINFO_TVDB
+from sickshift import show_name_helpers, scene_exceptions, common, name_cache
+from sickshift.indexers.indexer_config import TVINFO_TVDB
 
-import sickgear
-from sickgear import db
-from sickgear.tv import TVShow
+import sickshift
+from sickshift import db
+from sickshift.tv import TVShow
 
 
 class SceneTests(test.SickbeardTestDBCase):
@@ -68,12 +68,12 @@ class SceneExceptionTestCase(test.SickbeardTestDBCase):
     def setUp(self):
         super(SceneExceptionTestCase, self).setUp()
 
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         for s in [TVShow(TVINFO_TVDB, 79604), TVShow(TVINFO_TVDB, 251085), TVShow(TVINFO_TVDB, 78744)]:
-            sickgear.showList.append(s)
-            sickgear.showDict[s.sid_int] = s
-        sickgear.webserve.Home.make_showlist_unique_names()
+            sickshift.showList.append(s)
+            sickshift.showDict[s.sid_int] = s
+        sickshift.webserve.Home.make_showlist_unique_names()
         scene_exceptions.ReleaseMap().fetch_exceptions()
         name_cache.build_name_cache()
 
@@ -93,12 +93,12 @@ class SceneExceptionTestCase(test.SickbeardTestDBCase):
             'Rokka no Yuusha'), [None, None, None])
 
     def test_sceneExceptionByNameAnime(self):
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         for s in [TVShow(TVINFO_TVDB, 79604), TVShow(TVINFO_TVDB, 295243)]:
             s.anime = 1
-            sickgear.showList.append(s)
-            sickgear.showDict[s.sid_int] = s
+            sickshift.showList.append(s)
+            sickshift.showDict[s.sid_int] = s
         scene_exceptions.ReleaseMap().fetch_exceptions()
         name_cache.build_name_cache()
         self.assertEqual(scene_exceptions.get_scene_exception_by_name(

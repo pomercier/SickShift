@@ -1,9 +1,9 @@
 #import re
-#import sickgear
-#from sickgear.helpers import anon_url
-#from sickgear.tv import TVidProdid
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift.helpers import anon_url
+#from sickshift.tv import TVidProdid
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 #set $state_checked = ('', ' checked=checked')[any([sg_var('IMPORT_DEFAULT_CHECKED_SHOWS')])]
 
 <table id="addRootDirTable" class="sickbeardTable tablesorter#if $kwargs.get('hash_dir')# existing-highlight#end if#">
@@ -31,8 +31,8 @@
     (_i, _i['existing_info'][0], _i['existing_info'][1], _i['existing_info'][2])
     for _i in $dir_list if not (_i['added_already'] and not $kwargs.get('hash_dir'))]
 
-    #set $tvid = (0, $sickgear.TVINFO_DEFAULT)[0 < $sickgear.TVINFO_DEFAULT]
-    #if $cur_prodid and $sickgear.TVInfoAPI($cur_tvid).config.get('active')
+    #set $tvid = (0, $sickshift.TVINFO_DEFAULT)[0 < $sickshift.TVINFO_DEFAULT]
+    #if $cur_prodid and $sickshift.TVInfoAPI($cur_tvid).config.get('active')
         #set $tvid = $cur_tvid
     #end if
 
@@ -48,7 +48,7 @@
 			</td>
 			<td>
 				<label for="$item_id">
-    #set $display_name = (re.sub(r'^((?:A(?!\s+to)n?)|The)\s(\w)', r'<span class="article">\1</span> \2', $cur_item['name']), $cur_item['name'])[$sickgear.SORT_ARTICLE]
+    #set $display_name = (re.sub(r'^((?:A(?!\s+to)n?)|The)\s(\w)', r'<span class="article">\1</span> \2', $cur_item['name']), $cur_item['name'])[$sickshift.SORT_ARTICLE]
 					<span class="filepath#if $cur_item['highlight']# red-text#end if#">$cur_item['rootpath']</span>#if not $kwargs.get('hash_dir')#$display_name#else#<input value="$cur_item['name']" data-name="$cur_item['name']" class="new-folder form-control form-control-inline input-sm" type="text" placeholder="New name for folder" style="margin:0 0 0 4px; height:20px; padding:2px 3px">#end if#
     #if $cur_item.get('rename_suggest')
 <script>
@@ -71,7 +71,7 @@ $(function(){
     #if $cur_show_name and $tvid > 0
 			<td>
         #if $cur_prodid
-				<a href="$anon_url($sickgear.TVInfoAPI($tvid).config['show_url'] % $cur_prodid)" target="_new">$cur_show_name</a>
+				<a href="$anon_url($sickshift.TVInfoAPI($tvid).config['show_url'] % $cur_prodid)" target="_new">$cur_show_name</a>
         #else
 				$cur_show_name
         #end if
@@ -81,8 +81,8 @@ $(function(){
     #end if
 			<td align="center">
 				<select name="indexer">
-    #for ($cur_source_id, $cur_source_name) in $sickgear.TVInfoAPI().sources.items()
-        #if $sickgear.TVInfoAPI($cur_source_id).config.get('active')
+    #for ($cur_source_id, $cur_source_name) in $sickshift.TVInfoAPI().sources.items()
+        #if $sickshift.TVInfoAPI($cur_source_id).config.get('active')
 					<option value="$cur_source_id" #if $cur_source_id == $tvid then 'selected="selected"' else ''#>$cur_source_name</option>
         #end if
     #end for

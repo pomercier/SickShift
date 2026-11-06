@@ -1,5 +1,5 @@
 ##
-#from sickgear import WEB_PORT, WEB_ROOT, PID, ENABLE_HTTPS, THEME_NAME
+#from sickshift import WEB_PORT, WEB_ROOT, PID, ENABLE_HTTPS, THEME_NAME
 ##set $sg_host = $getVar('sbHost', 'localhost')
 #set $sg_port = str($getVar('sbHttpPort', WEB_PORT))
 #set $sg_root = $getVar('sbRoot', WEB_ROOT)
@@ -42,7 +42,7 @@
 		th{padding-top:6px;padding-bottom:6px;background-color:#000;color:white;white-space:nowrap}
 		td, th{text-align:left;padding:10px}
 		td ul{padding-left:15px}
-		.sglogo{position:absolute;top:20px;right:20px;display:block;width:138px;height:74px;background:url(${sg_root}/images/sickgear.png) no-repeat 0 0}
+		.sglogo{position:absolute;top:20px;right:20px;display:block;width:138px;height:74px;background:url(${sg_root}/images/sickshift.png) no-repeat 0 0}
 	</style>
 	<body style="font-family:Romboto,Arial,sans-serif">
 		<h1>Index of $basepath</h1>
@@ -59,7 +59,7 @@
 	</body>
 #set $lt = '&lt;'
 #set $gt = '&gt;'
-#set $ip = '%ssickgear ip address%s' % ($lt, $gt)
+#set $ip = '%ssickshift ip address%s' % ($lt, $gt)
 #set $port = '%sport%s' % ($lt, $gt)
 #set $ip_port = '%sip address:port%s' % ($lt, $gt)
 #set $endpoint = 'kodi%s/' % ('', '-legacy')[$kodi_is_legacy]
@@ -71,7 +71,7 @@
 		<span class="sglogo"></span>
 
 		<h2 style="margin-top:40px">Add-ons for Kodi <span class="grey-text">$release</span></h2>
-		<p>SickGear add-on allows integration with Kodi.</p>
+		<p>SickShift add-on allows integration with Kodi.</p>
 
 
 		<h2>Installing</h2>
@@ -82,13 +82,13 @@
 		</ul>
 
 
-		<h2>Step One: Install SickGear Add-on Repository</h2>
+		<h2>Step One: Install SickShift Add-on Repository</h2>
 		<p>There are two options for installing the repository. Option two can be done entirely inside Kodi
 		and is best suited for situations where Kodi is installed on a device with no access to download or copy files.</p>
 
 		<h4>Option One - Direct download and install for Kodi <strong>$release</strong> (<a href="$endpoint_alt"><em class="highlight-text">continue here</em></a> for $release_alt)</h4>
 		<ul>
-			<li>Download the <a href="/${endpoint}repository.sickgear/${repo}"><em class="highlight-text">$repo</em></a> repository file to a local hard drive</li>
+			<li>Download the <a href="/${endpoint}repository.sickshift/${repo}"><em class="highlight-text">$repo</em></a> repository file to a local hard drive</li>
 			<li>Save the downloaded repo zip file to somewhere Kodi has access</li>
 			<li>In Kodi navigate to "<em>Add-ons</em>" and select "<em>Install from zip file</em>"</li>
 			<li>If prompted with a security warning about unknown add-ons select the settings button and then enable "<em>Unknown sources</em>"</li>
@@ -97,7 +97,7 @@
 
 		<h4>Option Two - Sideload from a source</h4>
 		<p>This is the best and sometimes the only option for standalone devices. This approach requires adding a source
-		that points to the address where SickGear is running and then using that source to install the repo.</p>
+		that points to the address where SickShift is running and then using that source to install the repo.</p>
 
 		<p>First, set up the source</p>
 		<ul>
@@ -106,8 +106,8 @@
 			<li>On the "Add network location" dialog enter:
 				<table border="0" style="margin-top:10px">
 				<tr><th>Setting</th><th>Value</th><th>Description</th></tr>
-					<tr><th>Protocol</th><td style="white-space:nowrap">Web server directory (<em>type</em>)</td><td><p><em>type</em> is typically HTTP.</p><p>Can use HTTPS if SSL is enabled in SickGear config. <a href="https://github.com/SickGear/SickGear/wiki/Install-SickGear-%5B81%5D-Media-Apps">See SSL guide</a>.</p></td></tr>
-					<tr><th>Server address</th><td>$ip</td><td>ip address of the machine running SickGear (e.g. 192.168.0.10)</td></tr>
+					<tr><th>Protocol</th><td style="white-space:nowrap">Web server directory (<em>type</em>)</td><td><p><em>type</em> is typically HTTP.</p><p>Can use HTTPS if SSL is enabled in SickShift config. <a href="https://github.com/SickGear/SickGear/wiki/Install-SickGear-%5B81%5D-Media-Apps">See SSL guide</a>.</p></td></tr>
+					<tr><th>Server address</th><td>$ip</td><td>ip address of the machine running SickShift (e.g. 192.168.0.10)</td></tr>
 					<tr><th>Remote path</th><td>/$endpoint</td><td><p>for Kodi <strong>$release</strong>.</p><p>(for Kodi <strong>$release_alt</strong>, <a href="$endpoint_alt"><em class="highlight-text">continue here</em></a>)</p></td></tr>
 					<tr><th>Port</th><td>$port</td><td>For example, $sg_port</td></tr>
 				</table>
@@ -128,7 +128,7 @@
 		<ul>
 			<li>In Kodi, open the settings and select "<em>Add-ons</em>"</li>
 			<li>Select "<em>Install from repository</em>"</li>
-			<li>Select "<em>SickGear Add-on repository</em>"</li>
+			<li>Select "<em>SickShift Add-on repository</em>"</li>
 			<li>Select "<em>Services</em>"</li>
 			<li>Select the "<em>$addon</em>" and then "<em>Install</em>"</li>
 		</ul>
@@ -136,7 +136,7 @@
 		<p>After a brief pause, a popup will confirm the add-on is running. Edit the add-on settings.</p>
 
 		<hr>
-		<em>Tornado Server for SickGear $version</em>
+		<em>Tornado Server for SickShift $version</em>
 	</body>
 	</html>
 </body>

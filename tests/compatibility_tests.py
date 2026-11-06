@@ -9,13 +9,13 @@ class CompatibilityTests(unittest.TestCase):
     def test_except(self):
         path = os.path.abspath('..')
         pyfiles = []
-        for rootdir in ['sickgear', 'tests']:
+        for rootdir in ['sickshift', 'tests']:
             for dirpath, subdirs, files in os.walk(os.path.join(path, rootdir)):
                 for x in files:
                     if x.endswith('.py'):
                         pyfiles.append(os.path.join(dirpath, x))
 
-        pyfiles.append(os.path.join(path, 'sickgear.py'))
+        pyfiles.append(os.path.join(path, 'sickshift.py'))
 
         output = subprocess.Popen('2to3'
                                   ' -f except'

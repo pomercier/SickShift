@@ -1,9 +1,9 @@
-#import sickgear
-#from sickgear.clients import get_client_instance
-#from sickgear.providers.generic import GenericProvider
-#from sickgear.providers import thepiratebay
-#from sickgear.providers.newznab import NewznabConstants
-#from sickgear.helpers import anon_url, maybe_plural, starify
+#import sickshift
+#from sickshift.clients import get_client_instance
+#from sickshift.providers.generic import GenericProvider
+#from sickshift.providers import thepiratebay
+#from sickshift.providers.newznab import NewznabConstants
+#from sickshift.helpers import anon_url, maybe_plural, starify
 ##
 #set global $title = 'Config - Providers'
 #set global $header = 'Media Providers'
@@ -11,7 +11,7 @@
 #set global $topmenu = 'config'
 ##
 #import os.path
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_top.tmpl')
 
 #if $varExists('header')
 	<h1 class="header">$header</h1>
@@ -23,24 +23,24 @@
 <script src="$sbRoot/js/config.js?v=$sbPID"></script>
 
 #set $methods_notused = []
-#if not $sickgear.USE_NZBS
+#if not $sickshift.USE_NZBS
     $methods_notused.append('Newznab')
 #end if
-#if not $sickgear.USE_TORRENTS
+#if not $sickshift.USE_TORRENTS
     $methods_notused.append('Torrent')
 #end if
 #slurp
-#if $sickgear.USE_NZBS or $sickgear.USE_TORRENTS
+#if $sickshift.USE_NZBS or $sickshift.USE_TORRENTS
 <script charset="utf-8">
 <!--
 \$(document).ready(function(){
-    #if $sickgear.USE_NZBS
-        #for $cur_newznab_provider in $sickgear.newznab_providers:
+    #if $sickshift.USE_NZBS
+        #for $cur_newznab_provider in $sickshift.newznab_providers:
 	\$(this).addProvider('$cur_newznab_provider.get_id()', '$cur_newznab_provider.name', '$cur_newznab_provider.url', '<%= starify(cur_newznab_provider.key) %>', '$cur_newznab_provider.cat_ids', $int($cur_newznab_provider.default), !0);
         #end for
     #end if
-    #if $sickgear.USE_TORRENTS
-        #for $cur_torrent_rss_provider in $sickgear.torrent_rss_providers:
+    #if $sickshift.USE_TORRENTS
+        #for $cur_torrent_rss_provider in $sickshift.torrent_rss_providers:
 	\$(this).addTorrentRssProvider('$cur_torrent_rss_provider.get_id()', '$cur_torrent_rss_provider.name', '$cur_torrent_rss_provider.url', '<%= starify(cur_torrent_rss_provider.cookies) %>');
         #end for
     #end if
@@ -64,10 +64,10 @@
 					<li><a href="#core-component-group1">Priorities</a></li>
 					<li><a href="#core-component-group2">Options</a></li>
 
-#if $sickgear.USE_NZBS
+#if $sickshift.USE_NZBS
 					<li><a href="#core-component-group3">Custom Newznab</a></li>
 #end if
-#if $sickgear.USE_TORRENTS
+#if $sickshift.USE_TORRENTS
 					<li><a href="#core-component-group4">Custom Torrent</a></li>
 #end if
 				</ul>
@@ -100,19 +100,19 @@
 
 
 						<ul id="provider_order_list" class="provider_order_panel">
-#for $cur_provider in [$x for $x in $sickgear.providers.sorted_sources()
-    if $x.providerType == $GenericProvider.NZB and $sickgear.USE_NZBS or
-       $x.providerType == $GenericProvider.TORRENT and $sickgear.USE_TORRENTS]
+#for $cur_provider in [$x for $x in $sickshift.providers.sorted_sources()
+    if $x.providerType == $GenericProvider.NZB and $sickshift.USE_NZBS or
+       $x.providerType == $GenericProvider.TORRENT and $sickshift.USE_TORRENTS]
     #set $cur_name = $cur_provider.get_id()
     #set $cur_url = $cur_provider.url
-    #set $show_type = $sickgear.USE_NZBS and $sickgear.USE_TORRENTS and $GenericProvider.NZB == $cur_provider.providerType
+    #set $show_type = $sickshift.USE_NZBS and $sickshift.USE_TORRENTS and $GenericProvider.NZB == $cur_provider.providerType
     #set $spotweb = ('', 'sw ')[$getattr($cur_provider, 'server_type', None) == $NewznabConstants.SERVER_SPOTWEB and type($cur_provider).__name__ not in ['TorrentRssProvider']]
     #set $is_hydra = $getattr($cur_provider, 'server_type', None) in ($NewznabConstants.SERVER_HYDRA1, $NewznabConstants.SERVER_HYDRA2)
     #set $bad_url = not $cur_url and cur_provider.is_enabled()
     #set $tip = ($cur_provider.name + ('', ' (enable for link)')[not $cur_url and not cur_provider.is_enabled()],
         'Site Down')[$bad_url]
     #set $state = ('', ' <span class="red-text">(Site Down?)</span>')[$bad_url]
-							<li class="ui-state-default row-#echo ('odd', 'even')[$show_type or not $sickgear.USE_TORRENTS]##echo ('', ' provider-enabled')[$cur_provider.is_enabled()]#" id="$cur_name">
+							<li class="ui-state-default row-#echo ('odd', 'even')[$show_type or not $sickshift.USE_TORRENTS]##echo ('', ' provider-enabled')[$cur_provider.is_enabled()]#" id="$cur_name">
 								<input type="checkbox" id="enable_$cur_name" class="provider_enabler" <%= html_checked if cur_provider.is_enabled() else '' %>/>
 								<a class="imgLink" #if $cur_url#href="<%= anon_url(cur_url) %>" onclick="window.open(this.href,'_blank');return false;"#else#name=""#end if# rel="noreferrer"><img src="$sbRoot/images/providers/$cur_provider.image_name()" alt="$tip" title="$tip" width="16" height="16" style="vertical-align:middle"></a>
 								<span style="vertical-align:middle">$cur_provider.name$state</span>
@@ -121,21 +121,21 @@
     #end if##if $show_type##slurp
 								<span style="font-size:10px;vertical-align:top;font-weight:normal">($spotweb$cur_provider.providerType)</span>
     #end if##if $is_hydra##slurp
-								(<a href="https://github.com/SickGear/SickGear/wiki/%5BWarning%5D-Using-External-Search-Tools" target="_blank" title="This tool degrades SickGear"><span class="red-text">read this</span></a>)
+								(<a href="https://github.com/SickGear/SickGear/wiki/%5BWarning%5D-Using-External-Search-Tools" target="_blank" title="This tool degrades SickShift"><span class="red-text">read this</span></a>)
     #end if##if not $cur_provider.supports_backlog#*#set $backlog_only_tip=True##end if##slurp
 								<span class="ui-icon ui-icon-arrowthick-2-n-s pull-right" style="margin-top:3px"></span>
 							</li>
 #end for
 						</ul>
 
-						<input type="hidden" name="provider_order" id="provider_order" value="<%=' '.join([x.get_id()+':'+str(int(x.is_enabled())) for x in sickgear.providers.sorted_sources()])%>"/>
-#if $sickgear.USE_NZBS or $sickgear.USE_TORRENTS
+						<input type="hidden" name="provider_order" id="provider_order" value="<%=' '.join([x.get_id()+':'+str(int(x.is_enabled())) for x in sickshift.providers.sorted_sources()])%>"/>
+#if $sickshift.USE_NZBS or $sickshift.USE_TORRENTS
 						<div id="provider_key">
 							<span style="float:left;font-size:10px;vertical-align:top;font-weight:normal">(PA)</span><p class="note">Public access, no account required</p>
 #if $backlog_only_tip
 							<h4 class="note">*</h4><p class="note">No backlog, latest releases only</p>
 #end if
-## #if $sickgear.USE_TORRENTS
+## #if $sickshift.USE_TORRENTS
 ##							<h4 class="note">**</h4><p class="note">Supports <b>limited</b> backlog searches, some episodes/qualities may not be available</p>
 ## #end if
 							##<h4 class="note">!</h4><p class="note">Provider is <b>NOT WORKING</b></p>
@@ -167,9 +167,9 @@
 								<span class="component-desc">
 #set $provider_config_list_enabled = []
 #set $provider_config_list = []
-#for $cur_provider in [$x for $x in $sickgear.providers.sorted_sources()
-    if $x.providerType == $GenericProvider.NZB and $sickgear.USE_NZBS or
-        $x.providerType == $GenericProvider.TORRENT and $sickgear.USE_TORRENTS]
+#for $cur_provider in [$x for $x in $sickshift.providers.sorted_sources()
+    if $x.providerType == $GenericProvider.NZB and $sickshift.USE_NZBS or
+        $x.providerType == $GenericProvider.TORRENT and $sickshift.USE_TORRENTS]
     #if $cur_provider.is_enabled()
         #set void = $provider_config_list_enabled.append($cur_provider)
     #else
@@ -212,7 +212,7 @@
 #set $filter_scene_rej_nuked_desc = 'not scene nuked'
 #set $filter_scene_nuked_active_desc = 'nuked if no active search results'
 #set $filter_tip = 'nothing selected allows everything (i.e. no filtering, default)'
-#for $cur_newznab_provider in [$cur_provider for $cur_provider in $sickgear.newznab_providers]
+#for $cur_newznab_provider in [$cur_provider for $cur_provider in $sickshift.newznab_providers]
 					<div class="providerDiv" id="${cur_newznab_provider.get_id()}Div">
     #if callable(getattr(cur_newznab_provider, 'ui_string', None))
         #set $field_name = cur_newznab_provider.get_id() + '_tip'
@@ -355,8 +355,8 @@
 ##
 
 ##
-#for $cur_nzb_provider in [$cur_provider for $cur_provider in $sickgear.providers.sorted_sources()
-    if $cur_provider.providerType == $GenericProvider.NZB and $cur_provider not in $sickgear.newznab_providers]:
+#for $cur_nzb_provider in [$cur_provider for $cur_provider in $sickshift.providers.sorted_sources()
+    if $cur_provider.providerType == $GenericProvider.NZB and $cur_provider not in $sickshift.newznab_providers]:
 					<div class="providerDiv" id="${cur_nzb_provider.get_id()}Div">
     #set $can_recent = $hasattr($cur_nzb_provider, 'enable_recentsearch')
     #set $can_backlog = $hasattr($cur_nzb_provider, 'enable_backlog')
@@ -498,7 +498,7 @@
 ##
 
 ##
-#for $cur_torrent_provider in $sickgear.USE_TORRENTS and [$cur_provider for $cur_provider in $sickgear.providers.sorted_sources()
+#for $cur_torrent_provider in $sickshift.USE_TORRENTS and [$cur_provider for $cur_provider in $sickshift.providers.sorted_sources()
     if $cur_provider.providerType == $GenericProvider.TORRENT] or []:
 					<div class="providerDiv" id="${cur_torrent_provider.get_id()}Div">
     #if callable(getattr(cur_torrent_provider, 'ui_string', None))
@@ -633,8 +633,8 @@
 						</div>
     #end if
 <%
-client = {} if 'blackhole' == sickgear.TORRENT_METHOD else get_client_instance(sickgear.TORRENT_METHOD)().__class__.__dict__
-name = '' if not client else get_client_instance(sickgear.TORRENT_METHOD)().name
+client = {} if 'blackhole' == sickshift.TORRENT_METHOD else get_client_instance(sickshift.TORRENT_METHOD)().__class__.__dict__
+name = '' if not client else get_client_instance(sickshift.TORRENT_METHOD)().name
 %>
     #if ($hasattr($cur_torrent_provider, '_seed_ratio') and '_set_torrent_ratio' in $client)
 						<div class="field-pair">
@@ -643,13 +643,13 @@ name = '' if not client else get_client_instance(sickgear.TORRENT_METHOD)().name
 								<span class="component-desc">
 									<input type="number" name="${cur_torrent_provider.get_id()}_ratio" id="${cur_torrent_provider.get_id()}_ratio" value="$cur_torrent_provider._seed_ratio" class="form-control input-sm input75">
 									<p>this ratio is requested of each item sent to $name</p>
-									<div class="clear-left"><p>(#if 'transmission' == $sickgear.TORRENT_METHOD#set -1 to seed forever, or #end if#leave blank for the $name setting)</p></div>
+									<div class="clear-left"><p>(#if 'transmission' == $sickshift.TORRENT_METHOD#set -1 to seed forever, or #end if#leave blank for the $name setting)</p></div>
 								</span>
 							</label>
 						</div>
     #end if
     #if ($hasattr($cur_torrent_provider, 'seed_time') and '_set_torrent_seed_time' in $client)
-        #set $use_default = 'to use the %s min <a href="%s/config/search/#core-component-group3">torrent search setting minimum default</a>' % ($sickgear.TORRENT_SEED_TIME, $sbRoot) if $sickgear.TORRENT_SEED_TIME else 'for the %s setting' % $name
+        #set $use_default = 'to use the %s min <a href="%s/config/search/#core-component-group3">torrent search setting minimum default</a>' % ($sickshift.TORRENT_SEED_TIME, $sbRoot) if $sickshift.TORRENT_SEED_TIME else 'for the %s setting' % $name
 						<div class="field-pair">
 							<label for="${cur_torrent_provider.get_id()}_seed_time">
 								<span class="component-title" id="${cur_torrent_provider.get_id()}_seed_time_desc">Seed time (provider default)</span>
@@ -823,7 +823,7 @@ name = '' if not client else get_client_instance(sickgear.TORRENT_METHOD)().name
 
 
 
-#if $sickgear.USE_NZBS
+#if $sickshift.USE_NZBS
 
 				<div id="core-component-group3" class="component-group">
 
@@ -923,7 +923,7 @@ name = '' if not client else get_client_instance(sickgear.TORRENT_METHOD)().name
 
 
 
-#if $sickgear.USE_TORRENTS
+#if $sickshift.USE_TORRENTS
 
 				<div id="core-component-group4" class="component-group">
 
@@ -1001,4 +1001,4 @@ name = '' if not client else get_client_instance(sickgear.TORRENT_METHOD)().name
 //-->
 </script>
 
-#include $os.path.join($sickgear.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')
+#include $os.path.join($sickshift.PROG_DIR, 'gui/slick/interfaces/default/inc_bottom.tmpl')

@@ -1,20 +1,20 @@
 # coding=UTF-8
 # Author: Dennis Lutter <lad1337@gmail.com>
 #
-# This file is part of SickGear.
+# This file is part of SickShift.
 #
-# SickGear is free software: you can redistribute it and/or modify
+# SickShift is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# SickGear is distributed in the hope that it will be useful,
+# SickShift is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with SickGear.  If not, see <http://www.gnu.org/licenses/>.
+# along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import gc
 import glob
@@ -27,9 +27,9 @@ import unittest
 sys.path.insert(1, os.path.abspath('..'))
 sys.path.insert(1, os.path.abspath('../lib'))
 
-import sickgear
-from sickgear import db, providers, tvcache
-from sickgear.databases import cache_db, failed_db, mainDB
+import sickshift
+from sickshift import db, providers, tvcache
+from sickshift.databases import cache_db, failed_db, mainDB
 
 # =================
 # test globals
@@ -48,61 +48,61 @@ FILEPATH = os.path.join(FILEDIR, FILENAME)
 
 SHOWDIR = os.path.join(TESTDIR, f'{SHOWNAME} final')
 
-# sickgear.logger.sb_log_instance = sickgear.logger.SBRotatingLogHandler(
-#     os.path.join(TESTDIR, 'sickgear.log'), sickgear.logger.NUM_LOGS, sickgear.logger.LOG_SIZE)
-sickgear.logger.SBRotatingLogHandler.log_file = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickgear.log')
+# sickshift.logger.sb_log_instance = sickshift.logger.SBRotatingLogHandler(
+#     os.path.join(TESTDIR, 'sickshift.log'), sickshift.logger.NUM_LOGS, sickshift.logger.LOG_SIZE)
+sickshift.logger.SBRotatingLogHandler.log_file = os.path.join(os.path.join(TESTDIR, 'Logs'), 'test_sickshift.log')
 
 
 # =================
 # prepare env functions
 # =================
 def create_test_log_folder():
-    if not os.path.isdir(sickgear.LOG_DIR):
-        os.mkdir(sickgear.LOG_DIR)
+    if not os.path.isdir(sickshift.LOG_DIR):
+        os.mkdir(sickshift.LOG_DIR)
 
 
 def create_test_cache_folder():
-    if not os.path.isdir(sickgear.CACHE_DIR):
-        os.mkdir(sickgear.CACHE_DIR)
+    if not os.path.isdir(sickshift.CACHE_DIR):
+        os.mkdir(sickshift.CACHE_DIR)
 
 
 def remove_test_cache_folder():
-    if os.path.isdir(sickgear.CACHE_DIR):
-        shutil.rmtree(sickgear.CACHE_DIR, ignore_errors=True)
+    if os.path.isdir(sickshift.CACHE_DIR):
+        shutil.rmtree(sickshift.CACHE_DIR, ignore_errors=True)
 
 
-# call env functions at appropriate time during sickgear var setup
+# call env functions at appropriate time during sickshift var setup
 
 # =================
-# sickgear globals
+# sickshift globals
 # =================
-sickgear.SYS_ENCODING = 'UTF-8'
-sickgear.showList = []
-sickgear.showDict = {}
-sickgear.QUALITY_DEFAULT = 4  # hdtv
-sickgear.FLATTEN_FOLDERS_DEFAULT = 0
+sickshift.SYS_ENCODING = 'UTF-8'
+sickshift.showList = []
+sickshift.showDict = {}
+sickshift.QUALITY_DEFAULT = 4  # hdtv
+sickshift.FLATTEN_FOLDERS_DEFAULT = 0
 
-sickgear.NAMING_PATTERN = ''
-sickgear.NAMING_ABD_PATTERN = ''
-sickgear.NAMING_SPORTS_PATTERN = ''
-sickgear.NAMING_MULTI_EP = 1
+sickshift.NAMING_PATTERN = ''
+sickshift.NAMING_ABD_PATTERN = ''
+sickshift.NAMING_SPORTS_PATTERN = ''
+sickshift.NAMING_MULTI_EP = 1
 
-sickgear.PROVIDER_ORDER = []
-sickgear.newznab_providers = providers.newznab_source_list('')
-sickgear.provider_list = providers.provider_modules()
+sickshift.PROVIDER_ORDER = []
+sickshift.newznab_providers = providers.newznab_source_list('')
+sickshift.provider_list = providers.provider_modules()
 
-sickgear.PROG_DIR = os.path.abspath('..')
-# sickgear.DATA_DIR = os.path.join(sickgear.PROG_DIR, 'tests')
-sickgear.DATA_DIR = os.path.join(TESTDIR, 'data')
-sickgear.LOG_DIR = os.path.join(TESTDIR, 'Logs')
+sickshift.PROG_DIR = os.path.abspath('..')
+# sickshift.DATA_DIR = os.path.join(sickshift.PROG_DIR, 'tests')
+sickshift.DATA_DIR = os.path.join(TESTDIR, 'data')
+sickshift.LOG_DIR = os.path.join(TESTDIR, 'Logs')
 create_test_log_folder()
-sickgear.logger.sb_log_instance.init_logging(False)
+sickshift.logger.sb_log_instance.init_logging(False)
 
-sickgear.CACHE_DIR = os.path.join(TESTDIR, 'cache')
-sickgear.ZONEINFO_DIR = os.path.join(TESTDIR, 'cache', 'zoneinfo')
+sickshift.CACHE_DIR = os.path.join(TESTDIR, 'cache')
+sickshift.ZONEINFO_DIR = os.path.join(TESTDIR, 'cache', 'zoneinfo')
 create_test_cache_folder()
-sickgear.GUI_NAME = 'slick'
-sickgear.MEMCACHE = {'history_tab_limit': 10, 'history_tab': []}
+sickshift.GUI_NAME = 'slick'
+sickshift.MEMCACHE = {'history_tab_limit': 10, 'history_tab': []}
 
 
 # =================
@@ -114,7 +114,7 @@ def _dummy_save_config():
 
 # this overrides the save_config which gets called during a db upgrade
 # this might be considered a hack
-mainDB.sickgear.save_config = _dummy_save_config
+mainDB.sickshift.save_config = _dummy_save_config
 
 
 # the real one tries to contact tvdb just stop it from getting more info on the ep
@@ -123,7 +123,7 @@ def _fake_specify_ep(self, season, episode, show_sql=None, existing_only=False, 
     pass
 
 
-sickgear.tv.TVEpisode.specify_episode = _fake_specify_ep
+sickshift.tv.TVEpisode.specify_episode = _fake_specify_ep
 
 
 # =================
@@ -132,16 +132,16 @@ sickgear.tv.TVEpisode.specify_episode = _fake_specify_ep
 class SickbeardTestDBCase(unittest.TestCase):
     def setUp(self):
         create_test_cache_folder()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         setup_test_db()
         setup_test_episode_file()
         setup_test_show_dir()
 
     def tearDown(self):
         remove_test_cache_folder()
-        sickgear.showList = []
-        sickgear.showDict = {}
+        sickshift.showList = []
+        sickshift.showDict = {}
         teardown_test_db()
         teardown_test_episode_file()
         teardown_test_show_dir()
@@ -189,8 +189,8 @@ class TestCacheDBConnection(TestDBConnection, object):
 
 
 # this will override the normal db connection
-sickgear.db.DBConnection = TestDBConnection
-sickgear.tvcache.CacheDBConnection = TestCacheDBConnection
+sickshift.db.DBConnection = TestDBConnection
+sickshift.tvcache.CacheDBConnection = TestCacheDBConnection
 
 
 # =================
@@ -222,11 +222,11 @@ def teardown_test_db():
     # uncomment next line so leave the db intact between test and at the end
     # return False
     try:
-        sickgear.db.DBConnection().close()
+        sickshift.db.DBConnection().close()
     except (BaseException, Exception):
         pass
     try:
-        sickgear.tvcache.CacheDBConnection().close()
+        sickshift.tvcache.CacheDBConnection().close()
     except (BaseException, Exception):
         pass
 

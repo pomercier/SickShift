@@ -23,9 +23,9 @@ function bindConfirm(selector, title, text, funcParams){
 $(document).ready(function () {
 	const nav$ = $('nav'), menu$ = $('#SubMenu'), sure = 'Are you sure you want to ';
 
-	bindConfirm(nav$.find('a.logout'), 'Logout', sure + 'logout SickGear ?');
-	bindConfirm(nav$.find('a.restart'), 'Restart', sure + 'restart SickGear ?');
-	bindConfirm(nav$.find('a.shutdown'), 'Shutdown', sure + 'shutdown SickGear ?');
+	bindConfirm(nav$.find('a.logout'), 'Logout', sure + 'logout SickShift ?');
+	bindConfirm(nav$.find('a.restart'), 'Restart', sure + 'restart SickShift ?');
+	bindConfirm(nav$.find('a.shutdown'), 'Shutdown', sure + 'shutdown SickShift ?');
 
 	bindConfirm(menu$.find('a[href$="/clear-history/"]'), 'Clear History', sure + 'clear all download history ?');
 	bindConfirm(menu$.find('a[href$="/trim-history/"]'), 'Trim History', sure + 'trim all download history<br>older than 30 days ?');
@@ -55,8 +55,8 @@ $(document).ready(function () {
 
 				delArr.push(thisId.replace('del-', ''));
 
-				/** @namespace $.SickGear.history.isCompact */
-				if ($.SickGear.history.isCompact) {
+				/** @namespace $.SickShift.history.isCompact */
+				if ($.SickShift.history.isCompact) {
 					// then select all related episode checkboxes
 					const tvepId = $(this).closest('tr').attr('data-tvep-id');
 					$('tr[data-tvep-id="' + tvepId + '"] input.del-check:not("#' + thisId + '")')
@@ -69,17 +69,17 @@ $(document).ready(function () {
 		if (0 === delArr.length)
 			return !1;
 
-		/** @namespace $.SickGear.history.isTrashit */
-		/** @namespace $.SickGear.history.lastDeleteFiles */
-		/** @namespace $.SickGear.history.lastDeleteRecords */
-		const action = $.SickGear.history.isTrashit ? 'Trash' : 'Delete',
+		/** @namespace $.SickShift.history.isTrashit */
+		/** @namespace $.SickShift.history.lastDeleteFiles */
+		/** @namespace $.SickShift.history.lastDeleteRecords */
+		const action = $.SickShift.history.isTrashit ? 'Trash' : 'Delete',
 			onConfirm = function () {
 				const deleteFiles = !!$('#delete-files:checked').length,
 					deleteRecords = !!$('#delete-records:checked').length,
 					checked = ' checked="checked"';
-				$.SickGear.history.lastDeleteFiles = deleteFiles ? checked : '';
-				$.SickGear.history.lastDeleteRecords = deleteRecords ? checked : '';
-				$.post($.SickGear.Root + '/history/watched',
+				$.SickShift.history.lastDeleteFiles = deleteFiles ? checked : '';
+				$.SickShift.history.lastDeleteRecords = deleteRecords ? checked : '';
+				$.post($.SickShift.Root + '/history/watched',
 					{
 						_xsrf: Cookies.get('_xsrf'),
 						tvew_id: delArr.join('|'),
@@ -100,7 +100,7 @@ $(document).ready(function () {
 								function(){
 									$('.delete-me').html('');
 									t.trigger('update');
-									$.SickGear.sumChecked();
+									$.SickShift.sumChecked();
 								});
 						});*/
 					});
@@ -110,18 +110,18 @@ $(document).ready(function () {
 			title: (`${action} ${0 < mFiles ? 'media' : 'records'}` +
 				`<span style="float:right;font-size:12px">(<a class="highlight-text contrast-text" href="/config/general/">"Send to trash" options</a>)</span>`),
 			text: (0 < mFiles
-				? `<input id="delete-files" style="margin-right:6px"${$.SickGear.history.lastDeleteFiles} type="checkbox">`
+				? `<input id="delete-files" style="margin-right:6px"${$.SickShift.history.lastDeleteFiles} type="checkbox">`
 				+ `<span>${action} <span class="footerhighlight">${mFiles}</span> media file ${1 === mFiles ? '' : 's'} from disk</span>`
 				: ``
 			)
 			+ '<span style="display:block;margin-top:20px">'
-			+ '<input id="delete-records" style="margin-right:6px"' + $.SickGear.history.lastDeleteRecords + ' type="checkbox">'
+			+ '<input id="delete-records" style="margin-right:6px"' + $.SickShift.history.lastDeleteRecords + ' type="checkbox">'
 			+ `Remove <span class="footerhighlight">${delArr.length}</span> history record${(1 === delArr.length ? '' : 's')}</span>`
 			+ `<span class="red-text" style="display:block;margin-top:20px">Are you sure ?</span>`,
 			dialogClass: 'modal-dialog red',
 			confirmButton: 'Yes',
 			confirmButtonClass: 'green', confirm: onConfirm,
-			cancelButton: 'No' + (0 < mFiles ? ', abort ' + ($.SickGear.history.isTrashit ? 'trash' : 'permanent delete') : ''),
+			cancelButton: 'No' + (0 < mFiles ? ', abort ' + ($.SickShift.history.isTrashit ? 'trash' : 'permanent delete') : ''),
 			cancelButtonClass: 'red', cancel: function(){}
 		});
 	});

@@ -219,7 +219,7 @@ class TraktIndexer(TVInfoBase):
         if None is not self.config['sleep_retry']:
             kwargs['sleep_retry'] = self.config['sleep_retry']
         try:
-            from sickgear.helpers import clean_data
+            from sickshift.helpers import clean_data
             resp = TraktAPI().trakt_request(url, **kwargs)
             if len(resp):
                 if isinstance(resp, dict):

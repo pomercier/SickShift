@@ -2,17 +2,17 @@
 #import datetime
 #import locale
 #import operator
-#import sickgear
-#from sickgear import config,  metadata
-#from sickgear.metadata.generic import GenericMetadata
-#from sickgear.common import *
-#from sickgear.db import db_supports_backup
-#from sickgear.helpers import anon_url, maybe_plural
-#from sickgear.logger import reverseNames as file_logging_presets
-#from sickgear.piper import check_pip_env
-#from sickgear.sgdatetime import *
-<% def sg_var(varname, default=False): return getattr(sickgear, varname, default) %>#slurp#
-<% def sg_str(varname, default=''): return getattr(sickgear, varname, default) %>#slurp#
+#import sickshift
+#from sickshift import config,  metadata
+#from sickshift.metadata.generic import GenericMetadata
+#from sickshift.common import *
+#from sickshift.db import db_supports_backup
+#from sickshift.helpers import anon_url, maybe_plural
+#from sickshift.logger import reverseNames as file_logging_presets
+#from sickshift.piper import check_pip_env
+#from sickshift.sgdatetime import *
+<% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
+<% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#
 ##
 #set global $title  = 'Config - General'
 #set global $header = 'General Settings'
@@ -65,7 +65,7 @@
 								<span class="component-title">Launch browser</span>
 								<span class="component-desc">
 									<input type="checkbox" name="launch_browser" id="launch_browser"#echo ('', $checked)[$sg_var('LAUNCH_BROWSER')]#>
-									<p>open the SickGear home page on startup</p>
+									<p>open the SickShift home page on startup</p>
 								</span>
 							</label>
 						</div>
@@ -125,7 +125,7 @@
 									<select id="indexer_default" name="indexer_default" class="form-control input-sm">
 										<option value="0"#echo ('', $selected)[0 == $def_isrc]#>All Sources</option>
     #for $isrc in $infosrc
-										<option value="$isrc"#echo ('', $selected)[$isrc == $sg_var('TVINFO_DEFAULT', 0)]#>$sickgear.TVInfoAPI().sources[$isrc]</option>
+										<option value="$isrc"#echo ('', $selected)[$isrc == $sg_var('TVINFO_DEFAULT', 0)]#>$sickshift.TVInfoAPI().sources[$isrc]</option>
     #end for
 									</select>
 									<span>as the default selection when adding new shows</span>
@@ -173,11 +173,11 @@
 						<p>Options for software, package and alternative shownames/numbers.</p>
 					</div>
 					<fieldset class="component-group-list">
-#set $git_unsafe = 'git' == $sickgear.update_software_scheduler.action.install_type and $sickgear.update_software_scheduler.action.updater.unsafe
+#set $git_unsafe = 'git' == $sickshift.update_software_scheduler.action.install_type and $sickshift.update_software_scheduler.action.updater.unsafe
 #if $git_unsafe
 						<div class="field-pair">
 							<span class="component-title">Built-in updates disabled</span>
-							<span class="component-desc"><p>SickGear directory is not marked as safe in git settings.
+							<span class="component-desc"><p>SickShift directory is not marked as safe in git settings.
 								Tip: Use 'install-path' <code>$sg_str('PROG_DIR').replace('\\', '/')</code> to enable git updates in...</p>
 								<code>git config --global --add safe.directory install-path</code>
 							</span>
@@ -211,7 +211,7 @@
 							<span class="component-desc">
 								<label class="nextline-block show-if-interval1"#if $hide_interval1# style="display:none"#end if#>
 									<input type="checkbox" name="notify_on_update"#echo ('', $checked)[$sg_var('NOTIFY_ON_UPDATE')]#>
-									<p>send a message to all enabled notifiers when SickGear is updated</p>
+									<p>send a message to all enabled notifiers when SickShift is updated</p>
 								</label>
 							</span>
 						</div>
@@ -345,7 +345,7 @@
 							</label>
 						</div>
 
-#if not hasattr($sickgear, 'FANART_LIMIT')#<span class="red-text">Restart SickGear to reveal new options here</span>#else#
+#if not hasattr($sickshift, 'FANART_LIMIT')#<span class="red-text">Restart SickShift to reveal new options here</span>#else#
 						<div class="field-pair">
 							<label for="fanart_limit">
 								<span class="component-title">Maximum fanart image files</span>
@@ -407,7 +407,7 @@
 						<div class="field-pair">
 							<label for="imdb-accounts">
 								<span class="component-title">Public IMDb watchlists:</span>
-#if not hasattr($sickgear, 'IMDB_ACCOUNTS')#<span class="red-text">Restart SickGear to reveal new options here</span>#else#
+#if not hasattr($sickshift, 'IMDB_ACCOUNTS')#<span class="red-text">Restart SickShift to reveal new options here</span>#else#
 								<span class="component-desc">
 									<select id="imdb-accounts" class="pull-left form-control input-sm">
 										<option value="new" selected="selected">Add watchlist ...</option>
@@ -435,7 +435,7 @@
 							</label>
 						</div>
 
-#if not hasattr($sickgear, 'DISPLAY_FREESPACE')#<span class="red-text">Restart SickGear to reveal new option here</span>#else#
+#if not hasattr($sickshift, 'DISPLAY_FREESPACE')#<span class="red-text">Restart SickShift to reveal new option here</span>#else#
 						<div class="field-pair">
 							<label for="display-freespace">
 								<span class="component-title">Display freespace</span>
@@ -537,7 +537,7 @@
 
 					<div class="component-group-desc">
 						<h3>Web Interface</h3>
-						<p>It is recommended that you enable a username and password to secure SickGear from being tampered with remotely.</p>
+						<p>It is recommended that you enable a username and password to secure SickShift from being tampered with remotely.</p>
 						<p><b>These options require a manual restart to take effect.</b></p>
 					</div>
 
@@ -581,7 +581,7 @@
 								<span class="component-title">API enable</span>
 								<span class="component-desc">
 									<input type="checkbox" name="use_api" class="enabler" id="use_api"#echo ('', $checked)[$sg_var('USE_API')]#>
-									<p>permit the use of the SickGear (and legacy sickgear) API</p>
+									<p>permit the use of the SickShift (and legacy sickshift) API</p>
 								</span>
 							</label>
 						</div>
@@ -593,7 +593,7 @@
 										<input id="app-name" type="text" placeholder="enter app name" class="form-control input-sm input150" autocorrect="off" autocapitalize="off" spellcheck="false">
 										<input id="generate-api-key" value="Generate" type="button" class="btn btn-inline">
 										<span id="generate-result">&nbsp;</span>
-										<p class="clear-left">apps using SickGear API calls gain full access, legacy sickgear endpoints are limited to thetvdb.com shows</p>
+										<p class="clear-left">apps using SickShift API calls gain full access, legacy sickshift endpoints are limited to thetvdb.com shows</p>
 										<div id="api-keys" class="clear-left">
 											<div class="new-key highlight-text" style="display:none"><span class="qr-btn"><a data-src="#qr-body" rel="" name="qr" title="API key QR code"><span class="glyphicon glyphicon-qrcode"></span></a></span><span class="api-key"></span><span class="app-name"></span><input value="Revoke" type="button" class="revoke btn btn-inline"></div>
 											<div id="qr-body"></div>
@@ -604,7 +604,7 @@
         #set $tip_addkeys = ' style="display:none"'
     #end if
 #end for
-											<div id="tip-addkeys"$tip_addkeys>Keys used by 3rd party programs to access SickGear will list here when generated</div>
+											<div id="tip-addkeys"$tip_addkeys>Keys used by 3rd party programs to access SickShift will list here when generated</div>
 										</div>
 									</span>
 								</label>
@@ -616,7 +616,7 @@
 								<span class="component-title">HTTP port</span>
 								<span class="component-desc">
 									<input type="text" name="web_port" id="web_port" value="$sg_var('WEB_PORT', 8081)" class="form-control input-sm input100" autocorrect="off" autocapitalize="off" spellcheck="false">
-									<p>web port to access and browse SickGear (default:8081)</p>
+									<p>web port to access and browse SickShift (default:8081)</p>
 								</span>
 							</label>
 						</div>
