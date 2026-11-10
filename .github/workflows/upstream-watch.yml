@@ -1,26 +1,65 @@
-name: Review upstream changes
+name: SickShift - Sync SickGear (alerte conflits seulement)
+
 on:
   schedule:
-    - cron: '21 9 * * 1'
+    - cron: '37 5 * * *'  # Tous les jours, 05:37 UTC
   workflow_dispatch:
+
+concurrency:
+  group: sickshift-upstream-main
+  cancel-in-progress: false
+
 permissions:
   contents: read
-  issues: write
+
 jobs:
-  compare:
+  prepare:
+    name: Fusion + controles (sans jeton de publication)
     runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    outputs:
+      ready: ${{ steps.merge.outputs.ready }}
+      conflict: ${{ steps.merge.outputs.conflict }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Notify only when upstream has new commits
+          persist-credentials: false
+      - name: Recuperer et fusionner toutes les modifications SickGear
+        id: merge
         env:
           GH_TOKEN: ${{ github.token }}
-        run: |
-          git fetch https://github.com/SickGear/SickGear.git main
-          revision=$(git rev-parse FETCH_HEAD)
-          if git merge-base --is-ancestor "$revision" HEAD; then exit 0; fi
-          title="Upstream update available: ${revision:0:12}"
-          existing=$(gh issue list --search "$title in:title" --state all --json title --jq '.[].title')
-          if printf '%s\n' "$existing" | grep -Fxq "$title"; then exit 0; fi
-          gh issue create --title "$title" --body "New SickGear changes are available. Run scripts/integrate_upstream.sh in a clean development clone, resolve conflicts, run the release checks and submit a pull request. This workflow never modifies main or your installation."
+        run: python3 scripts/auto_sync_sickgear.py prepare
+      - name: Exporter le commit valide (sans code execute apres)
+        if: steps.merge.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sickshift-integration-bundle
+          path: ${{ runner.temp }}/sickshift-merge/
+          retention-days: 1
+          if-no-files-found: error
+
+  publish:
+    name: Publication protegee de main
+    needs: prepare
+    if: needs.prepare.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: sickshift-integration-bundle
+          path: ${{ runner.temp }}/sickshift-merge/
+      - name: Publier exactement le commit teste, sans force-push
+        env:
+          SICKSHIFT_PUSH_TOKEN: ${{ secrets.SICKSHIFT_SYNC_TOKEN }}
+        run: python3 scripts/auto_sync_sickgear.py publish
