@@ -1,5 +1,6 @@
 """Fail closed if staged/tracked release files contain private runtime state."""
 from pathlib import Path
+import hashlib
 import re
 import subprocess
 import sys
@@ -18,15 +19,25 @@ def original_public_file(name, content):
     result = subprocess.run(['git', 'show', public_base + ':' + name], cwd=root, capture_output=True)
     return result.returncode == 0 and result.stdout == content
 
+# sickshift-sync: PUBLIC-UPSTREAM-SHA256-BEGIN
+# Empreintes des fichiers publics exactement identiques au dernier upstream fusionne.
+PUBLIC_UPSTREAM_SHA256 = {
+    'lib/certifi/cacert.pem': '2ef52ad56b4803e264045c915e55c236cbfa045b84b81efefc218a19eb44bd2b',
+    'lib/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz': '729a51d18bac966961465d7591c9aaba3c471ee8d66da60a84144a83ebbd0e53',
+}
+def trusted_public_upstream_blob(name, content):
+    expected = PUBLIC_UPSTREAM_SHA256.get(name)
+    return expected is not None and hashlib.sha256(content).hexdigest() == expected
+# sickshift-sync: PUBLIC-UPSTREAM-SHA256-END
 for name in filter(None, files):
     p = root / name
     if not p.is_file():
         continue
     # The unchanged public CA bundle is a dependency, not a user's private key.
-    if name == 'lib/certifi/cacert.pem' and original_public_file(name, p.read_bytes()):
+    if name == 'lib/certifi/cacert.pem' and (original_public_file(name, p.read_bytes()) or trusted_public_upstream_blob(name, p.read_bytes())):
         continue
     archive = p.name.lower().endswith(('.zip', '.tar', '.tar.gz', '.tgz', '.7z', '.rar'))
-    if archive and not original_public_file(name, p.read_bytes()):
+    if archive and not (original_public_file(name, p.read_bytes()) or trusted_public_upstream_blob(name, p.read_bytes())):
         errors.append((name, 'private or unreviewed archive'))
         continue
     if (re.search(r'\.(?:db|sqlite[0-9]?)(?:[-.].*)?$', p.name, re.I) or
