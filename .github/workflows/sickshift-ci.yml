@@ -9,6 +9,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-24.04
+    timeout-minutes: 25
     strategy:
       matrix:
         python: ['3.11', '3.12', '3.13']
@@ -19,7 +20,21 @@ jobs:
       - uses: actions/setup-python@v7.1.0
         with:
           python-version: ${{ matrix.python }}
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Verifier FFmpeg (installation seulement si absent)
+        timeout-minutes: 8
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            # Evite le miroir Azure qui peut bloquer apt sur les runners Ubuntu.
+            if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
+              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
+            fi
+            sudo timeout 180s apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=15 -o Acquire::https::Timeout=15 -o Acquire::ForceIPv4=true update
+            sudo timeout 180s env DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=1 -o Acquire::http::Timeout=15 -o Acquire::https::Timeout=15 -o Acquire::ForceIPv4=true install -y --no-install-recommends ffmpeg
+          fi
+          command -v ffmpeg
+          ffmpeg -version
       - run: python -m pip install -r requirements.txt -r requirements-dashboard.txt
       - run: python scripts/check_release.py
       - run: python -m compileall -q sickshift sickshift_dashboard
