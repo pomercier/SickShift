@@ -1,0 +1,70 @@
+name: Publish SickShift release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-release.yml
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag, for example v1.0.2'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    if: github.repository == 'pomercier/SickShift'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Publish verified v1.0.1 patch release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view v1.0.1 --repo pomercier/SickShift >/dev/null 2>&1; then
+            echo 'Release v1.0.1 already exists; no changes made.'
+            exit 0
+          fi
+          cat > "$RUNNER_TEMP/release-notes.md" <<'EOF'
+          ## What's changed
+
+          - Refreshed the README to focus on SickShift's features, screenshots and installation steps, with internal maintenance guidance moved out of the main presentation.
+          - Improved the upstream integration automation and development checks.
+          - Added compatibility fixes and additional test coverage.
+
+          This is a patch release following v1.0.0. No new major feature set is claimed.
+
+          **Full changelog:** https://github.com/pomercier/SickShift/compare/v1.0.0...v1.0.1
+          EOF
+          gh release create v1.0.1 \
+            --repo pomercier/SickShift \
+            --target aafb4c7fd974517d1cbcc67b1b8eb31d48cec41d \
+            --title "SickShift v1.0.1" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
+            --latest
+
+      - name: Publish a manually requested version
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version: $VERSION" >&2
+            exit 1
+          fi
+          gh release create "$VERSION" \
+            --repo pomercier/SickShift \
+            --target "${{ github.sha }}" \
+            --title "SickShift $VERSION" \
+            --generate-notes \
+            --latest
