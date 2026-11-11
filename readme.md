@@ -1,60 +1,45 @@
 <p align="center"><img src="docs/assets/sickshift-logo.png" width="420" alt="SickShift"></p>
+
 <h1 align="center">Your next great night in starts here.</h1>
-<p align="center"><strong>The SickGear engine. The SickShift experience.</strong><br>An independent fork that brings a cinema-inspired interface, a clearer view of your shows, and local episode previews to your TV library.</p>
-<p align="center"><a href="#getting-started">Get started</a> · <a href="docs/COMPARISON.md">Compared with SickGear</a> · <a href="docs/UPSTREAM.md">Protected upstream updates</a> · <a href="docs/PRIVACY.md">Privacy</a></p>
 
-## Put your shows in the spotlight
+<p align="center"><strong>Your TV library, in a whole new light.</strong><br>
+SickShift is an independent fork of <a href="https://github.com/SickGear/SickGear">SickGear</a>, combining its TV-show management engine with a cinema-inspired interface, a dedicated dashboard, and local video previews.</p>
 
-**A cinema-inspired dashboard.** See episodes ready to watch, missing episodes, completed shows, and upcoming airings in one consistent view. Collapse sections when you need less detail; your browser remembers your preferences.
+<p align="center"><a href="#features">Features</a> · <a href="#screenshots">Screenshots</a> · <a href="#getting-started">Get started</a> · <a href="docs/COMPARISON.md">Compare with SickGear</a></p>
 
-**Preview before you choose.** On a desktop with a mouse, hover over a local episode to play a short clip generated with FFmpeg. Previews are disabled at viewport widths of 680 px or less and on touch devices without hover support. Previews use browser-friendly 8-bit H.264. HDR10 and HLG are converted to SDR; Dolby Vision Profile 5 conversion uses libplacebo and requires a compatible Vulkan device.
+## Your shows, front and center
 
-**Less friction, more watching.** Copy missing-episode references with clear confirmation, browse episodes grouped by show, and see consistent typography throughout. Scan-and-rename results report actual file paths rather than treating a proposed filename as a successful move.
+Track your series, find missing episodes, discover what's coming next, and browse the episodes you already have — all from an interface designed to make your library easier to explore.
 
-**A proven foundation.** SickShift retains the management, search, metadata, and integration engine from [SickGear](https://github.com/SickGear/SickGear). Inherited features retain their own requirements and configuration.
+## Features
 
-## Take a look
+- **A cinematic library.** Poster-focused cards, network branding, progress indicators, and a refined dark interface make it easy to find your next episode.
+- **One dashboard for your collection.** See episodes ready to watch, missing episodes, finished series, and upcoming airings together.
+- **Instant local previews.** Preview episodes from your own files by hovering over them on supported desktop devices. Playback controls and reusable clips make browsing smoother. FFmpeg is required.
+- **A clearer view of what's missing.** Group missing episodes by series and copy episode references with immediate feedback.
+- **A layout that remembers you.** Expand or collapse dashboard sections; your browser keeps your preferences.
+- **More dependable file handling.** Scan-and-rename results reflect actual file moves, rather than reporting a move as successful before it happens.
+- **The SickGear foundation.** Keep the established show tracking, metadata, search, and integration capabilities of the underlying project.
 
-### Main library
+For a technical breakdown of what is new, inherited, or limited, see [SickShift compared with SickGear](docs/COMPARISON.md). Local previews are intended for supported desktop layouts; mobile and touch-only layouts do not offer hover previews.
 
-A poster-first view with network logos, episode progress, and quick access to show management.
+## Screenshots
 
-[![SickShift main library with English interface labels](docs/assets/main-en.png)](docs/assets/main-en.png)
+### Your library
 
-### Dashboard
+Browse series with poster artwork, progress indicators, and quick access to show management.
 
-A focused view of what is ready to watch, with local previews, collapsible sections, and missing-episode tools.
+[![SickShift main library](docs/assets/main-en.png)](docs/assets/main-en.png)
 
-[![SickShift dashboard with English interface labels](docs/assets/dashboard-en.png)](docs/assets/dashboard-en.png)
+### Your dashboard
 
-## What SickShift adds
+See what's available, what's missing, and what's coming next.
 
-| Improvement | What changes in everyday use |
-|---|---|
-| Cinema styling | Dark surfaces, clear hierarchy, poster cards, transparent branding, and consistent navigation |
-| Library progress | Progress bars and completion styling make the state of each show easier to scan |
-| Dedicated dashboard | Ready-to-watch episodes, missing episodes, ended shows, and upcoming airings in one place |
-| Dashboard artwork | Upcoming posters stay within their card frames, thumbnail hover does not change the row layout, and show-page fanart motion respects reduced-motion settings |
-| Local video previews | Hover or hold with a mouse to preview a local episode; disabled on mobile layouts and touch devices without hover support |
-| Browser-friendly preview output | Small 8-bit H.264 clips, with HDR10/HLG conversion and a dedicated Dolby Vision Profile 5 path |
-| Audio track selection | Quebec/Canadian French preference, then standard French, English, and the first available track |
-| Preview playback controls | Play/pause, mute, seeking, looping, remembered mute preference, and muted autoplay fallback |
-| Efficient preview caching | Converted clips are reused; source changes and encoding revisions invalidate stale entries |
-| More reliable interactions | Slow responses from a previous episode cannot replace the current preview; delete controls do not trigger preview navigation |
-| Missing-episode shortcuts | Per-show groups, copy-to-clipboard feedback, and matching typography for single episodes |
-| Remembered section layout | Accessible chevrons, expanded first-visit defaults, and browser-local open/closed preferences |
-| Verified rename reporting | The result shows the actual path and reports failed or incomplete moves |
-| Video-first rename safety | An associated file moving successfully cannot hide a failed video move and produce a false database path |
-| Artwork interactions | Cast portraits keep their size during clicks; the show poster retains its hold-to-zoom effect |
-| Regional presentation | Additional Quebec flags and network-logo handling |
-| Easier first launch | Automatic isolated Python environment and installation of missing application packages |
-| Reviewed upstream integration | Update branches, privacy checks, required CI checks, and protected pull-request merges |
-
-These are changes visible in the compared source tree. SickGear's underlying provider, search, metadata, and downloader capabilities remain upstream features, not new SickShift inventions. [Read the detailed comparison and limitations](docs/COMPARISON.md).
+[![SickShift dashboard](docs/assets/dashboard-en.png)](docs/assets/dashboard-en.png)
 
 ## Getting started
 
-Install Python first, then clone and launch SickShift. The launcher creates a private `.venv`, installs missing Python packages, and starts the application. You do not need to activate an environment or run pip yourself.
+Install **Python** and **Git**, then clone and launch SickShift. On first launch, the application prepares an isolated Python environment and installs missing Python dependencies when needed.
 
 **Linux / macOS**
 
@@ -72,36 +57,22 @@ cd SickShift
 py sickshift.py --nolaunch --datadir ./data
 ```
 
-If Python is already running inside an isolated environment, the launcher reuses it. Packages are downloaded only when required modules are missing. It never uses `--break-system-packages` or a global `--user` installation. Internet access and a writable installation directory are needed on first launch. On Debian/Ubuntu, `python3-venv` may need to be installed separately. Set `SICKSHIFT_NO_AUTO_INSTALL=1` for a managed environment, or `SICKSHIFT_VENV` to choose another isolated environment location.
+Open the local address shown in the startup logs to set up your TV library.
 
-FFmpeg and ffprobe are separate native tools: install them through your operating system for video previews. The Python package installer does not install native executables. See [installation details](docs/INSTALLATION.md).
+**Want video previews?** Install the native **FFmpeg** and **ffprobe** executables separately. Ordinary show management does not require them. First launch needs internet access to download missing Python packages, and the installation directory must be writable.
 
-Open the address printed in the logs and configure your own library. The root URL opens the global show list at `/view-shows/`; the former `/daily-schedule/` page has been removed. **No personal database, library, show list, installation configuration, or service credentials are included.**
+For supported Python versions, video-format requirements, configuration options, managed environments, and service setup, follow the [installation guide](docs/INSTALLATION.md). A [systemd service example](packaging/sickshift.service.example) is also available.
 
-For a Linux service, adapt the [systemd example](packaging/sickshift.service.example).
+## Documentation
 
-Optional TMDB network-logo lookups use your own `SICKSHIFT_TMDB_API_KEY` environment variable. The application does not automatically load a `.env` file.
-
-## Keep upstream improvements. Protect your changes.
-
-Show-data and dependency updates retain their usual mechanisms. Direct application code replacement is blocked: upstream changes go through an integration branch, tests, and a pull request. A weekly workflow flags new upstream commits without modifying your code.
-
-This prevents automatic overwrites; **it does not promise conflict-free merges**. Renamed modules and interface changes sometimes need manual adaptation. Read the [integration guide](docs/UPSTREAM.md) before updating an installation.
-
-## Development and project status
-
-```sh
-python scripts/check_release.py
-python -m compileall -q sickshift sickshift_dashboard
-python -m unittest tests.preview_clip_tests tests.release_privacy_tests -v
-```
-
-The repository includes publication privacy checks and real FFmpeg conversion tests for SDR, 10-bit SDR, HDR10, and HLG. Fork-specific Linux/Python checks replace the inherited upstream CI configuration. Check the repository's Actions tab for current results; a workflow file alone is not proof that a build has passed. Dolby Vision conversion depends on the host hardware and is not covered by a universal GPU test.
-
-Only the two explicitly authorized showcase screenshots are included; private runtime data and capture scripts remain excluded. Browser display preferences are local to each browser and are not synchronized across accounts or devices.
+- [Installation and configuration](docs/INSTALLATION.md)
+- [SickShift vs. SickGear: changes and limitations](docs/COMPARISON.md)
+- [Contributing and reporting issues](CONTRIBUTING.md)
+- [Upstream integration and updates](docs/UPSTREAM.md)
+- [Privacy and publication notes](docs/PRIVACY.md)
 
 ## Credits and license
 
-SickShift is an independent fork of SickGear, itself descended from Sick-Beard. It is not an official SickGear release. Original copyright notices and attribution are retained; the code is distributed under [GPL-3.0](COPYING.txt).
+SickShift is an independent, unofficial fork of [SickGear](https://github.com/SickGear/SickGear), which traces its origins to Sick-Beard. The project retains upstream attribution and original copyright notices.
 
-See the [technical comparison](docs/COMPARISON.md), [contribution guidelines](CONTRIBUTING.md), and [privacy notes](docs/PRIVACY.md).
+Licensed under [GPL-3.0](COPYING.txt).
