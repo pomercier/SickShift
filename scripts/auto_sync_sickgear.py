@@ -174,7 +174,7 @@ def prepare():
     run(sys.executable, "-m", "compileall", "-q", "sickshift", "sickshift_dashboard")
     print("Tests de non-régression...")
     run(sys.executable, "-m", "unittest", "tests.preview_clip_tests", "tests.release_privacy_tests", "-v")
-    git("commit", "-m", f"Integrer SickGear upstream {upstream_sha[:12]} dans SickShift")
+    git("commit", "-m", f"Merge upstream SickGear {upstream_sha[:12]} into SickShift")
     target = revparse("HEAD")
     if not unchanged():
         raise RuntimeError("Modifications inattendues après préparation")
