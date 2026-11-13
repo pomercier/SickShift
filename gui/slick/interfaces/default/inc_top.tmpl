@@ -252,7 +252,18 @@
 			box-sizing: border-box !important;
 			border-radius: 8px !important;
 		}
-		/* The active Shows/Séries trigger is one solid dark block. */
+		#NAVhome {
+			margin-right: 8px !important;
+		}
+		/* Give Shows and Settings the same solid compact appearance on every page. */
+		#NAVhome > a.dropdown-toggle,
+		#NAVconfig > a.dropdown-toggle,
+		#NAVconfig.active > a.dropdown-toggle,
+		#NAVconfig.open > a.dropdown-toggle,
+		#NAVconfig.active > a.dropdown-toggle:hover,
+		#NAVconfig.open > a.dropdown-toggle:hover,
+		#NAVconfig.active > a.dropdown-toggle:focus,
+		#NAVconfig.open > a.dropdown-toggle:focus,
 		#NAVhome.active > a.dropdown-toggle,
 		#NAVhome.open > a.dropdown-toggle,
 		#NAVhome.active > a.dropdown-toggle:hover,
