@@ -4,10 +4,62 @@ import asyncio
 import os
 import urllib.parse
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 from sickshift_dashboard.config import Settings, load_config
 from sickshift_dashboard.state import AppState, state
+
+
+
+def resolve_network_logo(path_arg: str, search_dirs: Sequence[Path]) -> Optional[Path]:
+    """Serve only a PNG inside an approved logo directory.
+
+    Reject path traversal, URL-encoded separators, absolute paths, control
+    characters and symlinks resolving outside the configured logo directory.
+    Keep the historical case-insensitive filename fallback.
+    """
+    try:
+        filename = urllib.parse.unquote(path_arg or "", errors="strict")
+    except UnicodeDecodeError:
+        return None
+    if (
+        not filename
+        or "/" in filename
+        or "\\" in filename
+        or filename in (".", "..")
+        or any(ord(char) < 32 or ord(char) == 127 for char in filename)
+        or len(filename.encode("utf-8")) > 255
+        or not filename.lower().endswith(".png")
+    ):
+        return None
+
+    for directory in search_dirs:
+        if not directory.is_dir():
+            continue
+        try:
+            approved_root = directory.resolve(strict=True)
+        except OSError:
+            continue
+        exact = directory / filename
+        lowercase = directory / filename.lower()
+        # Restrict the fallback scan to PNG files in the selected directory.
+        candidates = [exact, lowercase]
+        if not any(candidate.is_file() for candidate in candidates):
+            stem = Path(filename).stem.casefold()
+            candidates.extend(
+                candidate for candidate in directory.glob("*.png")
+                if candidate.stem.casefold() == stem
+            )
+        for candidate in candidates:
+            try:
+                if (
+                    candidate.is_file()
+                    and candidate.resolve(strict=True).is_relative_to(approved_root)
+                ):
+                    return candidate
+            except (OSError, RuntimeError):
+                continue
+    return None
 
 
 def create_sub_app(
@@ -176,13 +228,7 @@ def register_tornado_bridge(
             self._serve(path_arg, is_head=False)
 
         def _serve(self, path_arg: str, is_head: bool = False) -> None:
-            clean_filename = urllib.parse.unquote(path_arg or "").strip("/")
-            if not clean_filename:
-                self.set_status(404)
-                return
-
-            # Search in gui/slick/images/network
-            logo_path = None
+            # Never access a caller-supplied path outside an approved PNG folder.
             search_dirs: list[Path] = [
                 Path(__file__).resolve().parent.parent / "gui" / "slick" / "images" / "network",
             ]
@@ -192,27 +238,7 @@ def register_tornado_bridge(
                     search_dirs.append(Path(sickshift.PROG_DIR) / "gui" / "slick" / "images" / "network")
             except Exception:
                 pass
-
-            for sdir in search_dirs:
-                if not sdir.is_dir():
-                    continue
-                cand = sdir / clean_filename
-                if cand.is_file():
-                    logo_path = cand
-                    break
-                # Try lower-cased filename
-                cand_lower = sdir / clean_filename.lower()
-                if cand_lower.is_file():
-                    logo_path = cand_lower
-                    break
-                # Case-insensitive directory scan
-                clean_stem_lower = Path(clean_filename).stem.lower()
-                for entry in sdir.glob("*.png"):
-                    if entry.stem.lower() == clean_stem_lower:
-                        logo_path = entry
-                        break
-                if logo_path:
-                    break
+            logo_path = resolve_network_logo(path_arg, search_dirs)
 
             if not logo_path:
                 self.set_status(404)
