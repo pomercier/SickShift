@@ -1,36 +1,85 @@
-# Integrating upstream without overwriting the fork
+# SickShift upstream synchronization and recovery
 
-## Keep development and live data separate
+This is the **current automatic synchronization procedure**, not the older
+manual branch-and-pull-request workflow. The public fork maintains only the
+remote **main** branch. GitHub Actions never merges in the live installation.
 
-Work in a clean development clone. Never use the live installation or its data directory as a merge workspace. The integration script refuses a checkout with uncommitted changes. The repository retains public upstream history so Git can merge against a common ancestor.
+## Automatic synchronization
 
-```sh
-git switch main
-git pull --ff-only origin main
-bash scripts/integrate_upstream.sh
-```
+The workflow [Sync SickGear](../.github/workflows/upstream-watch.yml)
+runs daily at **05:37 UTC** and can be started manually.
 
-The script creates an `upstream-sync/<revision>` branch, prepares the merge, and runs checks before creating a commit. It does not push or deploy anything. Conflicts remain on that branch: resolve them or run `git merge --abort`. If tests fail, the merge remains uncommitted for investigation.
+1. A read-only CI checkout of SickShift/main fetches the official
+   [SickGear main](https://github.com/SickGear/SickGear).
+2. If upstream is already an ancestor of main, no commit, issue or notification
+   is requested. Otherwise, Git prepares a merge in disposable CI without
+   creating any new branch or pull request.
+3. A conflict-free candidate is checked for private files, verified public
+   dependencies, syntax errors and regressions. An English merge commit is
+   bundled without exposing a publishing token.
+4. A separate publish job receives that exact validated bundle and the secret
+   SICKSHIFT_SYNC_TOKEN, verifies main has not changed and attempts a normal
+   non-force push to main. A changed main causes a safe stop.
 
-## Required review
+The GitHub sync **does not deploy** new code or database migrations into a
+running local SickShift service. Keep an independent database backup.
 
-1. Adapt new SickGear imports and files to the SickShift module layout.
-2. Review each SQL migration, its version, and its requirements. Test against synthetic data or a private local copy that will never be committed.
-3. Run privacy, syntax, import, and test checks. Start the application with a new data directory.
-4. Verify fork-specific behavior: dashboard, copying, section collapsing, previews, and actual file renaming.
-5. Push only the integration branch and open a pull request targeting `main`.
-6. Merge after review. Before deployment, stop the service and back up the data directory. If a SQL migration is involved, roll back code **and** database together.
+## Conflict-only arbitration
 
-The weekly workflow opens an issue for each new upstream revision that has not been integrated. It does not merge changes. GitHub Actions and repository issues must be enabled. Manually opened pull requests trigger the normal checks.
+Only a genuine Git merge conflict creates a GitHub issue assigned to
+@pomercier, deduplicated by upstream commit SHA. No conflicted merge is pushed.
 
-## GitHub repository protection
+The existing local conflict helper on CachyOS is used with the fish shell:
 
-Protect `main` with required pull requests, the three `SickShift release checks` Python jobs and the three `Cross-platform Python bootstrap` operating-system jobs, blocked force-pushes and branch deletion, and resolved conversations. These are GitHub settings: this document does not activate them by itself. They were configured and verified at initial publication. Administrators can change repository settings, so periodically check that the intended rules remain enabled.
+~~~fish
+~/.local/bin/sickshift-sync start
+# After reviewing and resolving the reported files:
+~/.local/bin/sickshift-sync resume
+~~~
 
-The inherited in-application code-replacement entry point is disabled in the fork. Show-data and dependency updates are not blocked by that safeguard. Dependency updates still require an isolated environment and backups because a new package version may introduce incompatibilities.
+The helper is local to the existing installation and is not created by a
+fresh GitHub clone. Unrelated CI, runner, credential or service errors also
+block publication but are not falsely reported as merge conflicts.
 
-Application startup does not install Git hooks or automatically repair source files. That prototype behavior was removed from the main entry point so changes remain visible during review.
+**GitHub's own Actions failure emails are independent** of the conflict-only
+issue policy and depend on the account's notification settings. An issue
+assignment does not guarantee an email will be delivered.
 
-## First-publication helper
+## Inspect upstream without modifying main
 
-`scripts/publish_github.sh` requires GitHub CLI authentication as `pomercier`. If needed, it creates a real GitHub fork of SickGear named SickShift. It refuses to force-push a divergent remote branch, publishes the source, then configures `main` protection. Rule availability depends on repository permissions and the GitHub plan. If configuration fails, address that failure before considering the repository protected. Running this script performs a real publication.
+From a clean development checkout:
+
+~~~fish
+git fetch https://github.com/SickGear/SickGear.git main
+git merge-base --is-ancestor FETCH_HEAD main
+git status --short
+~~~
+
+The merge-base check exits with 0 when the upstream revision is included,
+and 1 when it is not. It does not create branches or commit changes.
+
+The historical scripts/integrate_upstream.sh still creates a **local review
+branch**. It is not used by the automated workflow and should not be used
+for the preferred single-branch setup.
+
+## Safeguards and tests
+
+- Release CI checks Python 3.11, 3.12 and 3.13 with privacy scanning, module
+  compilation, import checks and targeted regression tests.
+- Bootstrap CI checks Linux, Windows and macOS Intel. Passing a bootstrap test
+  does **not** certify every feature on that operating system.
+- The merge prepare job runs without publishing credentials. The publish job
+  refuses to overwrite changes to main.
+- Never commit runtime data, credentials, downloads or real databases.
+- Branch protection is a separate GitHub setting; passing CI alone does not
+  prove it is enabled. Use an authorized GitHub account to inspect it.
+
+## Manual public releases
+
+The [release workflow](../.github/workflows/publish-release.yml) is manual
+only. It requires successful release CI and cross-platform bootstrap
+checks for the **exact current main commit**, and refuses existing tags.
+No release is created merely because the release workflow file changes.
+
+These checks do not replace testing a real running SickShift installation,
+a real database, or individual media providers.

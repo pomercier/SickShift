@@ -1,70 +1,76 @@
 name: Publish SickShift release
 
+# Manual only: publish exactly the tested current main revision.
 on:
-  push:
-    branches: [main]
-    paths:
-      - .github/workflows/publish-release.yml
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag, for example v1.0.2'
+        description: 'Version tag, e.g. v1.0.3'
         required: true
         type: string
 
 permissions:
   contents: write
+  actions: read
+
+concurrency:
+  group: sickshift-release
+  cancel-in-progress: false
 
 jobs:
   publish:
-    if: github.repository == 'pomercier/SickShift'
+    if: github.repository == 'pomercier/SickShift' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - name: Publish verified v1.0.1 patch release
-        if: github.event_name == 'push'
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Checkout exact source revision
+        uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Require passing release and cross-platform checks
         shell: bash
-        run: |
-          set -euo pipefail
-          if gh release view v1.0.1 --repo pomercier/SickShift >/dev/null 2>&1; then
-            echo 'Release v1.0.1 already exists; no changes made.'
-            exit 0
-          fi
-          cat > "$RUNNER_TEMP/release-notes.md" <<'EOF'
-          ## What's changed
-
-          - Refreshed the README to focus on SickShift's features, screenshots and installation steps, with internal maintenance guidance moved out of the main presentation.
-          - Improved the upstream integration automation and development checks.
-          - Added compatibility fixes and additional test coverage.
-
-          This is a patch release following v1.0.0. No new major feature set is claimed.
-
-          **Full changelog:** https://github.com/pomercier/SickShift/compare/v1.0.0...v1.0.1
-          EOF
-          gh release create v1.0.1 \
-            --repo pomercier/SickShift \
-            --target aafb4c7fd974517d1cbcc67b1b8eb31d48cec41d \
-            --title "SickShift v1.0.1" \
-            --notes-file "$RUNNER_TEMP/release-notes.md" \
-            --latest
-
-      - name: Publish a manually requested version
-        if: github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
           VERSION: ${{ inputs.version }}
-        shell: bash
         run: |
           set -euo pipefail
-          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Invalid version: $VERSION" >&2
+          if [[ ! "$VERSION" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            echo "::error::Version must be vMAJOR.MINOR.PATCH with no leading zeros."
             exit 1
           fi
+          sha="$(git rev-parse HEAD)"
+          current_main="$(gh api repos/pomercier/SickShift/git/ref/heads/main --jq '.object.sha')"
+          if [[ "$sha" != "$current_main" ]]; then
+            echo "::error::main moved; refusing to release a stale commit."
+            exit 1
+          fi
+          if [[ -n "$(git ls-remote --tags origin "refs/tags/$VERSION")" ]] ||
+             gh release view "$VERSION" --repo pomercier/SickShift >/dev/null 2>&1; then
+            echo "::error::Release or tag already exists: $VERSION"
+            exit 1
+          fi
+          for required_workflow in sickshift-ci.yml bootstrap-platforms.yml; do
+            successful_run="$(gh run list --repo pomercier/SickShift \
+              --workflow "$required_workflow" --commit "$sha" \
+              --status success --json databaseId \
+              --jq '.[0].databaseId // empty')"
+            if [[ -z "$successful_run" ]]; then
+              echo "::error::No successful $required_workflow run exists for commit $sha."
+              exit 1
+            fi
+            echo "Verified $required_workflow: $successful_run"
+          done
+          echo "RELEASE_SHA=$sha" >> "$GITHUB_ENV"
+      - name: Publish validated version
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
           gh release create "$VERSION" \
             --repo pomercier/SickShift \
-            --target "${{ github.sha }}" \
+            --target "$RELEASE_SHA" \
             --title "SickShift $VERSION" \
             --generate-notes \
             --latest
