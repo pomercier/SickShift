@@ -1,5 +1,6 @@
 """Read-only database health checks with disposable SQLite files."""
 import asyncio
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -55,8 +56,9 @@ class DashboardHealthTests(unittest.TestCase):
         self.assertFalse(result["db_header_ok"])
 
     def test_valid_sqlite_header_and_ready_app_are_healthy(self):
-        with sqlite3.connect(self.db) as conn:
+        with closing(sqlite3.connect(self.db)) as conn:
             conn.execute("CREATE TABLE health_probe (id INTEGER PRIMARY KEY)")
+            conn.commit()
         result = self.health()
         self.assertEqual("ok", result["status"])
         self.assertTrue(result["db_exists"])
@@ -64,8 +66,9 @@ class DashboardHealthTests(unittest.TestCase):
         self.assertGreaterEqual(result["db_size_bytes"], 100)
 
     def test_valid_database_with_uninitialized_app_is_degraded(self):
-        with sqlite3.connect(self.db) as conn:
+        with closing(sqlite3.connect(self.db)) as conn:
             conn.execute("CREATE TABLE health_probe (id INTEGER PRIMARY KEY)")
+            conn.commit()
         result = self.health(initialized=False)
         self.assertEqual("degraded", result["status"])
         self.assertTrue(result["db_header_ok"])
