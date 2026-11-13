@@ -15,6 +15,30 @@ from sickshift_dashboard.services import PILLOW_AVAILABLE
 from sickshift_dashboard.state import AppState, state
 
 
+
+SQLITE_HEADER = b"SQLite format 3\x00"
+
+
+def inspect_sqlite_file(path: Path) -> tuple[bool, int, bool]:
+    """Cheap read-only health signal, not a full SQLite integrity check.
+
+    A missing, empty or truncated file must never be reported as healthy.
+    Only the first sixteen bytes are read; expensive PRAGMA integrity_check
+    is intentionally left to offline diagnostics and backups.
+    """
+    try:
+        if not path.is_file():
+            return False, 0, False
+        size = path.stat().st_size
+        if size < 100:
+            return True, size, False
+        with path.open("rb") as handle:
+            header_ok = handle.read(len(SQLITE_HEADER)) == SQLITE_HEADER
+        return True, size, header_ok
+    except OSError:
+        return False, 0, False
+
+
 def http_date(dt: datetime) -> str:
     return dt.astimezone(timezone.utc).strftime("%a, %d %b %Y %H:%M:%S GMT")
 
@@ -149,10 +173,13 @@ def create_router(app_state: AppState = state) -> APIRouter:
     @router.get("/health")
     async def health() -> dict[str, Any]:
         db = Path(app_state.config.db_path)
+        db_exists, db_size_bytes, db_header_ok = inspect_sqlite_file(db)
         return {
-            "status": "ok" if db.exists() and app_state.initialized else "degraded",
+            "status": "ok" if db_header_ok and app_state.initialized else "degraded",
             "initialized": app_state.initialized,
-            "db_exists": db.exists(),
+            "db_exists": db_exists,
+            "db_size_bytes": db_size_bytes,
+            "db_header_ok": db_header_ok,
             "db_path": str(db),
             "redis": app_state.redis is not None,
             "pillow": PILLOW_AVAILABLE,
