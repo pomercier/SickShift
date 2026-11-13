@@ -38,6 +38,7 @@ class DashboardHealthTests(unittest.TestCase):
         result = self.health()
         self.assertEqual("degraded", result["status"])
         self.assertFalse(result["db_exists"])
+        self.assertNotIn("db_path", result)
         self.assertFalse(result["db_header_ok"])
 
     def test_zero_byte_database_is_degraded_even_when_initialized(self):

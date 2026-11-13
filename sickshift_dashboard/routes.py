@@ -180,7 +180,6 @@ def create_router(app_state: AppState = state) -> APIRouter:
             "db_exists": db_exists,
             "db_size_bytes": db_size_bytes,
             "db_header_ok": db_header_ok,
-            "db_path": str(db),
             "redis": app_state.redis is not None,
             "pillow": PILLOW_AVAILABLE,
             "webp": bool(app_state.config.webp_enabled and PILLOW_AVAILABLE),
