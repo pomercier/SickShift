@@ -41,9 +41,10 @@ The helper is local to the existing installation and is not created by a
 fresh GitHub clone. Unrelated CI, runner, credential or service errors also
 block publication but are not falsely reported as merge conflicts.
 
-**GitHub's own Actions failure emails are independent** of the conflict-only
-issue policy and depend on the account's notification settings. An issue
-assignment does not guarantee an email will be delivered.
+When a non-resolvable conflict occurs, the workflow creates an issue assigned
+to @pomercier AND deliberately fails the preparation step with an error annotation.
+This ensures GitHub Actions dispatches an immediate failure email notification
+to the repository owner.
 
 ## Inspect upstream without modifying main
 

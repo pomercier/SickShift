@@ -41,6 +41,14 @@ jobs:
           path: ${{ runner.temp }}/sickshift-merge/
           retention-days: 1
           if-no-files-found: error
+      - name: Signaler le conflit et declencher l'alerte email GitHub
+        if: steps.merge.outputs.conflict == 'true'
+        run: |
+          echo "::error title=Arbitrage requis::Conflit Git avec SickGear necessitant un arbitrage manuel. Voir l'issue ouverte sur le depot."
+          echo "# ⚠️ Arbitrage requis : Conflit avec SickGear" >> $GITHUB_STEP_SUMMARY
+          echo "Un conflit Git nécessite une résolution manuelle sur votre machine locale." >> $GITHUB_STEP_SUMMARY
+          echo "Consultez l'issue créée automatiquement sur GitHub pour les instructions." >> $GITHUB_STEP_SUMMARY
+          exit 1
 
   publish:
     name: Publication protegee de main

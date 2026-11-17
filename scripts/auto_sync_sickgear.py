@@ -202,7 +202,7 @@ def prepare():
         print("Déjà synchronisé avec toutes les modifications de SickGear.")
         output(ready="false", conflict="false")
         return
-    merged = git("-c", "merge.renameLimit=10000", "merge", "--no-commit", "--no-ff", upstream_sha, check=False)
+    merged = git("-c", "merge.renameLimit=99999", "-c", "diff.renameLimit=99999", "merge", "--no-commit", "--no-ff", upstream_sha, check=False)
     if merged.returncode:
         resolve_mechanical_conflicts()
         conflicted = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
