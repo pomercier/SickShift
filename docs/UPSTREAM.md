@@ -43,7 +43,7 @@ block publication but are not falsely reported as merge conflicts.
 
 When a non-resolvable conflict occurs, the workflow creates an issue assigned
 to @pomercier AND deliberately fails the preparation step with an error annotation.
-This ensures GitHub Actions dispatches an immediate failure email notification
+This ensures GitHub's own Actions failure emails are triggered and delivered
 to the repository owner.
 
 ## Inspect upstream without modifying main
