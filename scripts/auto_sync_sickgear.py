@@ -141,6 +141,50 @@ def update_public_hashes(upstream_sha: str):
         print("Empreintes publiques amont rafraîchies après vérification stricte.")
 
 
+def resolve_mechanical_conflicts():
+    """Auto-resolve mechanical conflicts between SickGear and SickShift.
+
+    1. Modify/Delete (status 'DU'): if a file deleted in SickShift was modified upstream,
+       keep it deleted (git rm -f).
+    2. Mechanical 'sickgear' -> 'sickshift' renames in test files and documentation:
+       if conflict markers only differ by the package rename / import adjustments,
+       resolve using the shifted upstream version.
+    """
+    status_lines = git("status", "--porcelain").stdout.splitlines()
+    for line in status_lines:
+        if line.startswith("DU "):
+            rel_path = line[3:].strip()
+            git("rm", "-f", "--", rel_path)
+            print(f"Auto-résolution (fichier supprimé dans SickShift conservé supprimé) : {rel_path}")
+
+    unmerged = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
+    for path_str in unmerged:
+        p = Path(path_str)
+        if not p.is_file():
+            continue
+        try:
+            content = p.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+
+        if "<<<<<<< " in content and (p.parts[0] == "tests" or p.suffix in (".py", ".yml", ".md")):
+            pattern = re.compile(r"<<<<<<< [^\n]+\n(.*?)\n=======\n(.*?)\n>>>>>>> [^\n]+\n", re.DOTALL)
+
+            def _shift(match):
+                ours = match.group(1)
+                theirs = match.group(2)
+                theirs_shifted = theirs.replace("sickgear", "sickshift").replace("SickGear", "SickShift")
+                if ("sickshift" in ours or "SickShift" in ours) and "sickgear" in theirs.lower():
+                    return theirs_shifted + ("\n" if not theirs_shifted.endswith("\n") else "")
+                return match.group(0)
+
+            new_content = pattern.sub(_shift, content)
+            if new_content != content and "<<<<<<< " not in new_content:
+                p.write_text(new_content, encoding="utf-8")
+                git("add", "--", str(p))
+                print(f"Auto-résolution mécanique de renommage appliquée sur {path_str}")
+
+
 def prepare():
     # Do not expose issue-writing credentials to unreviewed upstream tests.
     gh_token = os.environ.pop("GH_TOKEN", "")
@@ -160,6 +204,7 @@ def prepare():
         return
     merged = git("-c", "merge.renameLimit=10000", "merge", "--no-commit", "--no-ff", upstream_sha, check=False)
     if merged.returncode:
+        resolve_mechanical_conflicts()
         conflicted = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
         if conflicted:
             print("Conflits Git détectés, sans publication:", *conflicted, sep="\n - ")
