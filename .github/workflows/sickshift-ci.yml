@@ -26,10 +26,12 @@ jobs:
         run: |
           set -euo pipefail
           if ! command -v ffmpeg >/dev/null 2>&1; then
-            # Evite le miroir Azure qui peut bloquer apt sur les runners Ubuntu.
-            if [ -f /etc/apt/sources.list.d/ubuntu.sources ]; then
-              sudo sed -i 's|http://azure.archive.ubuntu.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' /etc/apt/sources.list.d/ubuntu.sources
-            fi
+            # Evite les miroirs cloud (Azure/EC2) qui peuvent brider apt sur les runners Ubuntu.
+            for src in /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt; do
+              if [ -f "$src" ]; then
+                sudo sed -i -E 's|https?://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$src"
+              fi
+            done
             sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true update
             sudo env DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true install -y --no-install-recommends ffmpeg
           fi
