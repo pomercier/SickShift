@@ -22,6 +22,7 @@ import os.path
 import shutil
 import sqlite3
 import sys
+import tempfile
 import unittest
 
 sys.path.insert(1, os.path.abspath('..'))
@@ -34,7 +35,8 @@ from sickshift.databases import cache_db, failed_db, mainDB
 # =================
 # test globals
 # =================
-TESTDIR = os.path.abspath('.')
+TESTDIR = os.path.join(tempfile.gettempdir(), 'sickshift_test_sandbox')
+os.makedirs(TESTDIR, exist_ok=True)
 TESTDBNAME = 'sickbeard.db'
 TESTCACHEDBNAME = 'cache.db'
 TESTFAILEDDBNAME = 'failed.db'
@@ -235,6 +237,10 @@ def teardown_test_db():
         gc.collect(2)
     except (BaseException, Exception):
         pass
+
+    # Safety check: NEVER delete database files in the repository root or project directory
+    if os.path.exists(os.path.join(TESTDIR, 'SickBeard.py')) or os.path.abspath(TESTDIR) == os.path.abspath('.'):
+        return
 
     for filename in glob.glob(f'{os.path.join(TESTDIR, TESTDBNAME)}*'):
         try:
