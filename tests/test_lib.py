@@ -241,7 +241,6 @@ def teardown_test_db():
 
     # Safety check: NEVER delete database files in the repository root or project directory
     if (os.path.exists(os.path.join(TESTDIR, 'sickshift.py'))
-            or os.path.exists(os.path.join(TESTDIR, 'SickBeard.py'))
             or os.path.abspath(TESTDIR) == os.path.abspath('.')):
         return
 
