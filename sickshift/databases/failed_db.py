@@ -81,7 +81,7 @@ class AddIndexerToTables(HistoryStatus):
     def execute(self):
         self.add_column('history', 'indexer', 'NUMERIC')
 
-        with db.DBConnection('sickbeard.db') as sg_db:
+        with db.DBConnection('sickshift.db') as sg_db:
             show_ids = {s['prod_id']: s['tv_id'] for s in
                         sg_db.select('SELECT indexer AS tv_id, indexer_id AS prod_id FROM tv_shows')}
         sql_l = []

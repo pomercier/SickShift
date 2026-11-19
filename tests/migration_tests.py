@@ -64,7 +64,7 @@ class MigrationBasicTests(test.SickbeardTestDBCase):
 # 0 -> 31
 class OldInitialSchema(db.SchemaUpgrade):
     def execute(self):
-        db.backup_database(self.connection, 'sickbeard.db', self.call_check_db_version())
+        db.backup_database(self.connection, 'sickshift.db', self.call_check_db_version())
 
         if not self.has_table('tv_shows') and not self.has_table('db_version'):
             queries = [

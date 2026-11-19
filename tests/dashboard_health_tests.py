@@ -13,7 +13,7 @@ from sickshift_dashboard.routes import create_router, inspect_sqlite_file
 class DashboardHealthTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="sickshift-health-")
-        self.db = Path(self.temp.name) / "sickbeard.db"
+        self.db = Path(self.temp.name) / "sickshift.db"
 
     def tearDown(self):
         self.temp.cleanup()

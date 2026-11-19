@@ -33,7 +33,7 @@ DESC=SickShift
 ##
 ## SG_USER=         #$RUN_AS, username to run sickshift under, the default is sickshift
 ## SG_HOME=         #$APP_PATH, the location of sickshift.py, the default is /opt/sickshift
-## SG_DATA=         #$DATA_DIR, the location of sickbeard.db, cache, logs, the default is /opt/sickshift
+## SG_DATA=         #$DATA_DIR, the location of sickshift.db, cache, logs, the default is /opt/sickshift
 ## SG_PIDFILE=      #$PID_FILE, the location of sickshift.pid, the default is /var/run/sickshift/sickshift.pid
 ## PYTHON_BIN=      #$DAEMON, the location of the python binary, the default is /usr/bin/python
 ## SG_OPTS=         #$EXTRA_DAEMON_OPTS, extra cli option for sickshift, i.e. " --config=/home/sickshift/config.ini"
@@ -50,7 +50,7 @@ RUN_AS=${SG_USER-sickshift}
 # Path to app SG_HOME=path_to_app_sickshift.py
 APP_PATH=${SG_HOME-/opt/sickshift}
 
-# Data directory where sickbeard.db, cache and logs are stored
+# Data directory where sickshift.db, cache and logs are stored
 DATA_DIR=${SG_DATA-/opt/sickshift}
 
 # Path to store PID file

@@ -426,7 +426,7 @@ class SickShift(object):
              sickshift.failed_db.TEST_BASE_VERSION, 'FailedDb'),
             ('cache.db', sickshift.cache_db.MIN_DB_VERSION, sickshift.cache_db.MAX_DB_VERSION,
              sickshift.cache_db.TEST_BASE_VERSION, 'CacheDb'),
-            ('sickbeard.db', sickshift.mainDB.MIN_DB_VERSION, sickshift.mainDB.MAX_DB_VERSION,
+            ('sickshift.db', sickshift.mainDB.MIN_DB_VERSION, sickshift.mainDB.MAX_DB_VERSION,
              sickshift.mainDB.TEST_BASE_VERSION, 'MainDb')
         ]:
             with db.DBConnection(d) as sg_db:

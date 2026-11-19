@@ -48,11 +48,11 @@ db_supports_setconfig_dqs = (hasattr(sqlite3.Connection, 'setconfig') and hasatt
                              and hasattr(sqlite3, 'SQLITE_DBCONFIG_DQS_DML'))  # type: bool
 
 
-def db_filename(filename='sickbeard.db', suffix=None):
+def db_filename(filename='sickshift.db', suffix=None):
     # type: (AnyStr, Optional[AnyStr]) -> AnyStr
     """
     @param filename: The sqlite database filename to use. If not specified,
-                     will be made to be sickbeard.db
+                     will be made to be sickshift.db
     @param suffix: The suffix to append to the filename. A '.' will be added
                    automatically, i.e. suffix='v0' will make dbfile.db.v0
     @return: the correct location of the database file.
@@ -118,7 +118,7 @@ def mass_upsert_sql(table_name, value_dict, key_dict, sanitise=True):
 
 
 class DBConnection(object):
-    def __init__(self, filename='sickbeard.db', row_type=None, **kwargs):
+    def __init__(self, filename='sickshift.db', row_type=None, **kwargs):
         # type: (AnyStr, Optional[AnyStr], Dict) -> None
 
         self.new_db = False
@@ -831,7 +831,7 @@ def delete_old_db_backups(target):
     :param target: backup folder to check
     """
     use_count = (1, sickshift.BACKUP_DB_MAX_COUNT)[not sickshift.BACKUP_DB_ONEDAY]
-    for include in ['sickbeard', 'cache', 'failed']:
+    for include in ['sickshift', 'cache', 'failed']:
         file_list = [f for f in scantree(target, include=include, filter_kind=False)]
         if use_count < len(file_list):
             file_list.sort(key=lambda _f: _f.stat(follow_symlinks=False).st_mtime, reverse=True)
@@ -867,7 +867,7 @@ def backup_all_dbs(target, compress=True, prefer_7z=True):
         d = sgdatetime.SGDatetime.sbfdate(now, d_preset='%Y-%m-%d')
         t = sgdatetime.SGDatetime.sbftime(now, t_preset='%H-%M')
         ds = f'{d}_{t}'
-        for cur_db in ['sickbeard', 'cache', 'failed']:
+        for cur_db in ['sickshift', 'cache', 'failed']:
             with DBConnection(f'{cur_db}.db') as db_conn:
                 name = f'{cur_db}_{ds}.db'
                 success, msg = db_conn.backup_db(target=target, backup_filename=name)

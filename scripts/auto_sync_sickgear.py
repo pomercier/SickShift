@@ -173,8 +173,14 @@ def resolve_mechanical_conflicts():
             def _shift(match):
                 ours = match.group(1)
                 theirs = match.group(2)
-                theirs_shifted = theirs.replace("sickgear", "sickshift").replace("SickGear", "SickShift")
-                if ("sickshift" in ours or "SickShift" in ours) and "sickgear" in theirs.lower():
+                theirs_shifted = (
+                    theirs.replace("sickgear", "sickshift")
+                    .replace("SickGear", "SickShift")
+                    .replace("sickbeard.db", "sickshift.db")
+                )
+                if (("sickshift" in ours or "SickShift" in ours) and "sickgear" in theirs.lower()) or (
+                    "sickshift.db" in ours and "sickbeard.db" in theirs
+                ):
                     return theirs_shifted + ("\n" if not theirs_shifted.endswith("\n") else "")
                 return match.group(0)
 

@@ -57,10 +57,10 @@ def get_default_db_path() -> Path:
     cfg = load_config()
     if cfg.db_path and Path(cfg.db_path).is_file():
         return Path(cfg.db_path)
-    parent_db = Path(__file__).resolve().parent.parent / "sickbeard.db"
+    parent_db = Path(__file__).resolve().parent.parent / "sickshift.db"
     if parent_db.is_file():
         return parent_db
-    return Path("sickbeard.db")
+    return Path("sickshift.db")
 
 
 def resolve_episode_file(

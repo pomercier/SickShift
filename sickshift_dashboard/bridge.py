@@ -105,8 +105,8 @@ def register_tornado_bridge(
     # Dynamically detect db_path from SickShift runtime if available
     try:
         import sickshift
-        if hasattr(sickshift, "db") and hasattr(sickshift.db, "dbFilename"):
-            db_fn = sickshift.db.dbFilename()
+        if hasattr(sickshift, "db") and hasattr(sickshift.db, "db_filename"):
+            db_fn = sickshift.db.db_filename()
             if db_fn:
                 cfg.db_path = str(Path(db_fn).resolve())
     except Exception:

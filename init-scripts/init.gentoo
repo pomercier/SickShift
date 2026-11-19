@@ -13,7 +13,7 @@
 # SICKSHIFT_GROUP=<group you want sickshift to run under>
 # SICKSHIFT_DIR=<path to sickshift.py>
 # PATH_TO_PYTHON=/usr/bin/python
-# SICKSHIFT_DATADIR=<directory that contains sickbeard.db file>
+# SICKSHIFT_DATADIR=<directory that contains sickshift.db file>
 # SICKSHIFT_CONFDIR=<directory that contains SickShift's config.ini file>
 #
 

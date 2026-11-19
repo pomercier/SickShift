@@ -37,7 +37,7 @@ from sickshift.databases import cache_db, failed_db, mainDB
 # =================
 TESTDIR = os.path.join(tempfile.gettempdir(), 'sickshift_test_sandbox')
 os.makedirs(TESTDIR, exist_ok=True)
-TESTDBNAME = 'sickbeard.db'
+TESTDBNAME = 'sickshift.db'
 TESTCACHEDBNAME = 'cache.db'
 TESTFAILEDDBNAME = 'failed.db'
 
@@ -239,7 +239,9 @@ def teardown_test_db():
         pass
 
     # Safety check: NEVER delete database files in the repository root or project directory
-    if os.path.exists(os.path.join(TESTDIR, 'SickBeard.py')) or os.path.abspath(TESTDIR) == os.path.abspath('.'):
+    if (os.path.exists(os.path.join(TESTDIR, 'sickshift.py'))
+            or os.path.exists(os.path.join(TESTDIR, 'SickBeard.py'))
+            or os.path.abspath(TESTDIR) == os.path.abspath('.')):
         return
 
     for filename in glob.glob(f'{os.path.join(TESTDIR, TESTDBNAME)}*'):

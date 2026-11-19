@@ -17,7 +17,7 @@ def get_default_config_path() -> str:
 
 
 def find_default_db_path() -> str:
-    """Dynamically locates sickbeard.db on any operating system (Linux, macOS, Windows)."""
+    """Dynamically locates sickshift.db on any operating system (Linux, macOS, Windows)."""
     # 1. Explicit environment variable
     env_db = os.environ.get("SICKSHIFT_DB")
     if env_db and Path(env_db).is_file():
@@ -31,11 +31,11 @@ def find_default_db_path() -> str:
             if fn and Path(fn).is_file():
                 return str(Path(fn).resolve())
         if hasattr(sickshift, "DATA_DIR") and sickshift.DATA_DIR:
-            candidate = Path(sickshift.DATA_DIR) / "sickbeard.db"
+            candidate = Path(sickshift.DATA_DIR) / "sickshift.db"
             if candidate.is_file():
                 return str(candidate.resolve())
         if hasattr(sickshift, "PROG_DIR") and sickshift.PROG_DIR:
-            candidate = Path(sickshift.PROG_DIR) / "sickbeard.db"
+            candidate = Path(sickshift.PROG_DIR) / "sickshift.db"
             if candidate.is_file():
                 return str(candidate.resolve())
     except Exception:
@@ -44,16 +44,16 @@ def find_default_db_path() -> str:
     # 3. Dynamic candidate relative to package location or current directory
     try:
         base_dir = Path(__file__).resolve().parent.parent
-        for candidate in [base_dir / "sickbeard.db", Path.cwd() / "sickbeard.db"]:
+        for candidate in [base_dir / "sickshift.db", Path.cwd() / "sickshift.db"]:
             if candidate.is_file():
                 return str(candidate.resolve())
     except Exception:
         pass
 
     try:
-        return str((Path(__file__).resolve().parent.parent / "sickbeard.db").resolve())
+        return str((Path(__file__).resolve().parent.parent / "sickshift.db").resolve())
     except Exception:
-        return "sickbeard.db"
+        return "sickshift.db"
 
 
 def find_default_port() -> int:
