@@ -18,14 +18,14 @@ from pathlib import Path
 
 
 NAV_ITEM_SNIPPET = '''\t\t\t\t\t<li id="NAVdashboard">
-\t\t\t\t\t\t<a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#" title="Dashboard - Upcoming & Missing Episodes">
+\t\t\t\t\t\t<a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#" title="Dashboard">
 \t\t\t\t\t\t\t<i class="sgicon-cal"></i>
 \t\t\t\t\t\t\t<span>Dashboard</span>
 \t\t\t\t\t\t</a>
 \t\t\t\t\t</li>
 '''
 
-DROPDOWN_SNIPPET = '''\t\t\t\t\t\t\t<li><a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#"><i class="sgicon-cal"></i>Dashboard (Upcoming / Missing)</a></li>
+DROPDOWN_SNIPPET = '''\t\t\t\t\t\t\t<li><a href="$sbRoot/dashboard" tabindex="$tab#set $tab += 1#"><i class="sgicon-cal"></i>Dashboard</a></li>
 \t\t\t\t\t\t\t<li class="divider"></li>
 '''
 
