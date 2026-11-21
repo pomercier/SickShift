@@ -730,14 +730,14 @@ body::after{
 .aura-diag-dot.degraded{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.75)}
 .diag-backdrop{position:fixed;inset:0;background:rgba(5,9,18,.74);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100000;padding:16px}
 .diag-backdrop.open{display:flex}
-.diag-modal{width:min(480px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow-y:auto;background:rgba(13,19,33,.97);border:1px solid rgba(61,217,235,.35);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.75);color:#e6edf3;padding:20px}
+.diag-modal{width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow-y:auto;background:rgba(13,19,33,.97);border:1px solid rgba(61,217,235,.35);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.75);color:#e6edf3;padding:20px}
 .diag-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
 .diag-header h3{margin:0;font-size:1.05rem;font-weight:700;color:#fff}
 .diag-close{background:transparent;border:1px solid rgba(255,255,255,.15);color:#cbd5e1;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1}
 .diag-close:hover{background:rgba(255,255,255,.1);color:#fff}
-.diag-grid{display:grid;grid-template-columns:1fr auto;gap:9px 14px;font-size:.88rem;margin-bottom:16px}
-.diag-label{color:#94a3b8}
-.diag-val{color:#f8fafc;font-weight:600;text-align:right}
+.diag-grid{display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:.86rem;margin-bottom:16px;align-items:center}
+.diag-label{color:#94a3b8;white-space:nowrap}
+.diag-val{color:#f8fafc;font-weight:600;text-align:right;white-space:nowrap}
 .diag-val.ok{color:#4ade80}
 .diag-val.warn{color:#fbbf24}
 .diag-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
