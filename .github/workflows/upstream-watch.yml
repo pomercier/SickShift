@@ -24,15 +24,32 @@ jobs:
       ready: ${{ steps.merge.outputs.ready }}
       conflict: ${{ steps.merge.outputs.conflict }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Installer dependances de validation (Dashboard + FFmpeg)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -r requirements-dashboard.txt
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            for src in /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt; do
+              if [ -f "$src" ]; then
+                sudo sed -i -E 's|https?://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$src"
+              fi
+            done
+            sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true update
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true install -y --no-install-recommends ffmpeg
+          fi
       - name: Recuperer et fusionner toutes les modifications SickGear
         id: merge
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python3 scripts/auto_sync_sickgear.py prepare
+        run: python scripts/auto_sync_sickgear.py prepare
       - name: Exporter le commit valide (sans code execute apres)
         if: steps.merge.outputs.ready == 'true'
         uses: actions/upload-artifact@v4

@@ -224,7 +224,16 @@ def prepare():
     print("Contrôle syntaxique...")
     run(sys.executable, "-m", "compileall", "-q", "sickshift", "sickshift_dashboard")
     print("Tests de non-régression...")
-    run(sys.executable, "-m", "unittest", "tests.preview_clip_tests", "tests.release_privacy_tests", "-v")
+    run(
+        sys.executable,
+        "-m",
+        "unittest",
+        "tests.preview_clip_tests",
+        "tests.release_privacy_tests",
+        "tests.frontend_sanity_tests",
+        "tests.db_backup_tests",
+        "-v",
+    )
     git("commit", "-m", f"Merge upstream SickGear {upstream_sha[:12]} into SickShift")
     target = revparse("HEAD")
     if not unchanged():
