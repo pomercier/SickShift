@@ -167,7 +167,7 @@ def resolve_mechanical_conflicts():
         except (UnicodeDecodeError, OSError):
             continue
 
-        if "<<<<<<< " in content and (p.parts[0] == "tests" or p.suffix in (".py", ".yml", ".md")):
+        if "<<<<<<< " in content and (p.parts[0] == "tests" or p.suffix in (".py", ".yml", ".md", ".js", ".tmpl")):
             pattern = re.compile(r"<<<<<<< [^\n]+\n(.*?)\n=======\n(.*?)\n>>>>>>> [^\n]+\n", re.DOTALL)
 
             def _shift(match):
@@ -210,6 +210,9 @@ def prepare():
         return
     merged = git("-c", "merge.renameLimit=99999", "-c", "diff.renameLimit=99999", "merge", "--no-commit", "--no-ff", upstream_sha, check=False)
     if merged.returncode:
+        initial_conflicted = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
+        if not initial_conflicted:
+            raise RuntimeError("Échec de fusion sans index en conflit : consulter le journal")
         resolve_mechanical_conflicts()
         conflicted = git("diff", "--name-only", "--diff-filter=U").stdout.splitlines()
         if conflicted:
@@ -217,7 +220,7 @@ def prepare():
             notify_conflict(upstream_sha, conflicted, gh_token)
             output(ready="false", conflict="true")
             return
-        raise RuntimeError("Échec de fusion sans index en conflit : consulter le journal")
+        print("Tous les conflits mécaniques ont été résolus automatiquement.")
     update_public_hashes(upstream_sha)
     print("Contrôle de confidentialité...")
     run(sys.executable, "scripts/check_release.py")
