@@ -21,6 +21,9 @@
 !/.codeclimate.yml
 !/.gitlab-ci.yml
 !/tox.ini
+!/Dockerfile
+!/.dockerignore
+!/docker-compose.yml
 
 ######################
 #  SG User Related   #

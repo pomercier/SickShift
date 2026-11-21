@@ -5,6 +5,13 @@ from typing import AsyncIterator, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import JSONResponse
+
+try:
+    import orjson  # noqa: F401
+    from fastapi.responses import ORJSONResponse as _DefaultJSONResponse
+except ImportError:
+    _DefaultJSONResponse = JSONResponse
 
 from sickshift_dashboard.config import Settings
 from sickshift_dashboard.routes import create_router
@@ -30,6 +37,7 @@ def create_app(
         title="SickShift - FastAPI Dashboard",
         version="4.0.0",
         lifespan=lifespan,
+        default_response_class=_DefaultJSONResponse,
     )
 
     cfg = config_override or app_state.config

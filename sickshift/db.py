@@ -18,6 +18,7 @@ import datetime
 import itertools
 import os.path
 import re
+import shutil
 import sqlite3
 import threading
 import time
@@ -48,6 +49,35 @@ db_supports_setconfig_dqs = (hasattr(sqlite3.Connection, 'setconfig') and hasatt
                              and hasattr(sqlite3, 'SQLITE_DBCONFIG_DQS_DML'))  # type: bool
 
 
+_migrated_db_dirs = set()
+
+
+def ensure_sickshift_db_migrated(data_dir):
+    # type: (AnyStr) -> bool
+    """Non-destructively copy legacy sickbeard.db to sickshift.db on first launch.
+
+    Never deletes or modifies sickbeard.db. Returns True if a copy was created.
+    """
+    if not data_dir or data_dir in _migrated_db_dirs or not os.path.isdir(data_dir):
+        return False
+    _migrated_db_dirs.add(data_dir)
+    target = os.path.join(data_dir, 'sickshift.db')
+    legacy = os.path.join(data_dir, 'sickbeard.db')
+    if os.path.exists(target) or not os.path.isfile(legacy):
+        return False
+    try:
+        if os.path.getsize(legacy) == 0:
+            return False
+        tmp_target = f'{target}.migrating'
+        shutil.copy2(legacy, tmp_target)
+        os.replace(tmp_target, target)
+        logger.log('Migrated legacy sickbeard.db to sickshift.db (original sickbeard.db preserved)')
+        return True
+    except (BaseException, Exception) as e:
+        logger.warning(f'Could not copy legacy sickbeard.db to sickshift.db: {ex(e)}')
+        return False
+
+
 def db_filename(filename='sickshift.db', suffix=None):
     # type: (AnyStr, Optional[AnyStr]) -> AnyStr
     """
@@ -57,6 +87,8 @@ def db_filename(filename='sickshift.db', suffix=None):
                    automatically, i.e. suffix='v0' will make dbfile.db.v0
     @return: the correct location of the database file.
     """
+    if not suffix and filename == 'sickshift.db' and getattr(sickshift, 'DATA_DIR', None):
+        ensure_sickshift_db_migrated(sickshift.DATA_DIR)
     if suffix:
         filename = f'{filename}.{suffix}'
     return os.path.join(sickshift.DATA_DIR, filename)

@@ -464,10 +464,23 @@
             },
             error: function (xhr) {
                 if (currentTarget !== row || requestId !== previewRequestId) return;
-                $spinner.find('.ep-preview-sp-text').text("Extrait indisponible");
+                const isFr = systemLang === 'fr';
+                let errMsg = isFr ? "Extrait indisponible" : "Preview unavailable";
+                if (xhr && xhr.status === 404) {
+                    errMsg = isFr ? "Fichier média hors ligne ou introuvable" : "Media file offline or missing";
+                } else if (xhr && xhr.status === 503) {
+                    errMsg = isFr ? "FFmpeg indisponible sur le serveur" : "FFmpeg unavailable on server";
+                } else if (xhr && xhr.status >= 500) {
+                    errMsg = isFr ? "Échec de l'extraction vidéo" : "Video extraction failed";
+                }
+                $spinner.find('.ep-preview-spinner-ring').hide();
+                $spinner.find('.ep-preview-sp-text').text(errMsg);
                 setTimeout(() => {
-                    if (currentTarget === row && requestId === previewRequestId) hidePopup();
-                }, 1500);
+                    if (currentTarget === row && requestId === previewRequestId) {
+                        $spinner.find('.ep-preview-spinner-ring').show();
+                        hidePopup();
+                    }
+                }, 2200);
             }
         });
     }
@@ -480,12 +493,26 @@
         videoEl.removeAttribute('src');
         videoEl.load();
         $popup.hide();
+        $spinner.find('.ep-preview-spinner-ring').show();
         currentTarget = null;
         $('tr.ep-preview-active-row, .show-row.ep-preview-active-row').removeClass('ep-preview-active-row');
         if (window.fadeGlobalSoundtrackIn) {
             window.fadeGlobalSoundtrackIn();
         }
     }
+
+    window.hideEpisodePreview = hidePopup;
+    window.toggleEpisodePreviewMute = function () {
+        if ($popup.is(':visible') && videoEl) {
+            userPrefMuted = !videoEl.muted;
+            videoEl.muted = userPrefMuted;
+            localStorage.setItem('sg_preview_muted', String(userPrefMuted));
+            if (typeof updateMuteButtonUI === 'function') updateMuteButtonUI();
+            if (!videoEl.muted) $unmuteOverlay.hide();
+            return true;
+        }
+        return false;
+    };
 
     // Video events
     function showPlaybackError() {

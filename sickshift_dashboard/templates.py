@@ -723,6 +723,33 @@ body::after{
   .show-row .grid-item.col-thumb .show-thumbnail{width:46px;height:68px}
   .show-row .grid-item.col-title{font-size:.9rem}
 }
+.aura-top-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aura-diag-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 13px;border-radius:10px;border:1px solid rgba(61,217,235,.32);background:rgba(15,23,42,.72);color:#e2e8f0;font-size:.84rem;font-weight:600;cursor:pointer;transition:background .16s ease,border-color .16s ease,transform .12s ease}
+.aura-diag-btn:hover{background:rgba(61,217,235,.16);border-color:#3dd9eb;color:#fff}
+.aura-diag-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.75);flex:0 0 auto}
+.aura-diag-dot.degraded{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.75)}
+.diag-backdrop{position:fixed;inset:0;background:rgba(5,9,18,.74);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100000;padding:16px}
+.diag-backdrop.open{display:flex}
+.diag-modal{width:min(480px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow-y:auto;background:rgba(13,19,33,.97);border:1px solid rgba(61,217,235,.35);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.75);color:#e6edf3;padding:20px}
+.diag-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.diag-header h3{margin:0;font-size:1.05rem;font-weight:700;color:#fff}
+.diag-close{background:transparent;border:1px solid rgba(255,255,255,.15);color:#cbd5e1;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1}
+.diag-close:hover{background:rgba(255,255,255,.1);color:#fff}
+.diag-grid{display:grid;grid-template-columns:1fr auto;gap:9px 14px;font-size:.88rem;margin-bottom:16px}
+.diag-label{color:#94a3b8}
+.diag-val{color:#f8fafc;font-weight:600;text-align:right}
+.diag-val.ok{color:#4ade80}
+.diag-val.warn{color:#fbbf24}
+.diag-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)}
+.diag-clear-btn{padding:8px 14px;border-radius:9px;border:1px solid rgba(248,113,113,.45);background:rgba(248,113,113,.14);color:#fecaca;font-size:.84rem;font-weight:600;cursor:pointer;transition:background .15s ease}
+.diag-clear-btn:hover{background:rgba(248,113,113,.26);color:#fff}
+.diag-clear-btn:disabled{opacity:.55;cursor:not-allowed}
+.diag-msg{font-size:.8rem;color:#94a3b8}
+@media (max-width:680px){
+  .aura-top-actions{width:100%;justify-content:stretch}
+  .aura-top-actions > button{flex:1 1 auto;justify-content:center;min-height:42px}
+  .diag-modal{padding:16px}
+}
 </style>
 </head>
 <body>
@@ -748,6 +775,10 @@ body::after{
     <a href="{{ web_root or '' }}/manage/" class="aura-nav-item">Gestion</a>
   </div>
   <div class="aura-top-actions">
+    <button type="button" class="aura-diag-btn" id="btn-diagnostics" onclick="openDiagnosticsModal()" title="Diagnostic système & cache">
+      <span class="aura-diag-dot" id="diag-status-dot"></span>
+      <span>Santé</span>
+    </button>
     <button type="button" class="aura-scan-btn" id="btn-scan-rename" onclick="triggerGlobalScanRename()" title="Scanner les dossiers et renommer automatiquement">
       <svg viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
       <span>Scan & Renommer</span>
@@ -969,10 +1000,97 @@ document.addEventListener('DOMContentLoaded',function(){
 <script src="{{ web_root or '' }}/js/lib/jquery-2.2.4.min.js"></script>
 <script>window.sbRoot = '{{ web_root or "" }}';</script>
 <script src="{{ web_root or '' }}/js/episodePreview.js?v=dash"></script>
+<div class="diag-backdrop" id="diag-modal" role="dialog" aria-modal="true" aria-labelledby="diag-modal-title" onclick="if(event.target===this) closeDiagnosticsModal()">
+  <div class="diag-modal">
+    <div class="diag-header">
+      <h3 id="diag-modal-title">Diagnostic SickShift</h3>
+      <button type="button" class="diag-close" onclick="closeDiagnosticsModal()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="diag-grid" id="diag-grid-body">
+      <div class="diag-label">Chargement...</div><div class="diag-val">...</div>
+    </div>
+    <div class="diag-actions">
+      <button type="button" class="diag-clear-btn" id="btn-clear-preview-cache" onclick="clearPreviewCacheFromModal()">Vider le cache d'aperçus</button>
+      <span class="diag-msg" id="diag-action-msg">Raccourcis : Échap (fermer), M (son), / (haut)</span>
+    </div>
+  </div>
+</div>
 <script>
 function triggerGlobalScanRename() {
   window.location.href = (window.sbRoot || '') + '/home/scan-and-rename';
 }
+function formatBytesMB(bytes) {
+  if (!bytes || bytes <= 0) return '0 Mo';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+}
+async function loadDiagnosticsData() {
+  var body = document.getElementById('diag-grid-body');
+  var dot = document.getElementById('diag-status-dot');
+  try {
+    var resp = await fetch('{{ mount_prefix }}/api/diagnostics', { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var d = await resp.json();
+    if (dot) dot.classList.toggle('degraded', d.status !== 'ok');
+    if (body) {
+      var hw = d.hw_encoder ? (' (' + d.hw_encoder + ')') : ' (CPU)';
+      var rows = [
+        ['Statut global', d.status === 'ok' ? 'Opérationnel' : 'Dégradé', d.status === 'ok' ? 'ok' : 'warn'],
+        ['Base de données', (d.db_name || 'sickshift.db') + ' · ' + formatBytesMB(d.db_size_bytes), d.db_header_ok ? 'ok' : 'warn'],
+        ['FFmpeg / Aperçus', d.ffmpeg_available ? ('Disponible' + hw) : 'Indisponible', d.ffmpeg_available ? 'ok' : 'warn'],
+        ['Cache aperçus', (d.preview_cache.files || 0) + ' clip(s) · ' + formatBytesMB(d.preview_cache.size_bytes) + ' / ' + formatBytesMB(d.preview_cache.max_bytes) + ' · auto-purge ' + Math.round((d.preview_cache.max_age_seconds || 3600) / 60) + ' min', ''],
+        ['Cache WebP', (d.webp_cache.files || 0) + ' poster(s) · ' + formatBytesMB(d.webp_cache.size_bytes), d.webp_enabled ? 'ok' : ''],
+        ['Redis', d.redis_connected ? 'Connecté' : 'Désactivé (cache mémoire)', '']
+      ];
+      body.innerHTML = rows.map(function(r) {
+        return '<div class="diag-label">' + r[0] + '</div><div class="diag-val ' + r[2] + '">' + r[1] + '</div>';
+      }).join('');
+    }
+  } catch (err) {
+    if (body) body.innerHTML = '<div class="diag-label">Erreur</div><div class="diag-val warn">Impossible de charger le diagnostic</div>';
+  }
+}
+function openDiagnosticsModal() {
+  var modal = document.getElementById('diag-modal');
+  if (modal) modal.classList.add('open');
+  loadDiagnosticsData();
+}
+function closeDiagnosticsModal() {
+  var modal = document.getElementById('diag-modal');
+  if (modal) modal.classList.remove('open');
+}
+async function clearPreviewCacheFromModal() {
+  var btn = document.getElementById('btn-clear-preview-cache');
+  var msg = document.getElementById('diag-action-msg');
+  if (btn) btn.disabled = true;
+  if (msg) msg.textContent = 'Nettoyage en cours...';
+  try {
+    var resp = await fetch('{{ mount_prefix }}/api/cache/previews/clear', { method: 'POST' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var res = await resp.json();
+    if (msg) msg.textContent = (res.removed_files || 0) + ' clip(s) supprimé(s) (' + formatBytesMB(res.freed_bytes) + ' libérés)';
+    await loadDiagnosticsData();
+  } catch (err) {
+    if (msg) msg.textContent = 'Erreur lors du nettoyage';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+document.addEventListener('keydown', function(e) {
+  var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+  var isTyping = tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable);
+  if (e.key === 'Escape') {
+    closeDiagnosticsModal();
+    if (window.hideEpisodePreview) window.hideEpisodePreview();
+    return;
+  }
+  if (isTyping || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'm' || e.key === 'M') {
+    if (window.toggleEpisodePreviewMute) window.toggleEpisodePreviewMute();
+  } else if (e.key === '/') {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
 $(function() {
   var $heroBtn = $('#hero-preview-btn');
   if ($heroBtn.length) {
@@ -1218,10 +1336,97 @@ function copyMissingEp(e, el){
 <script src="{{ web_root or '' }}/js/lib/jquery-2.2.4.min.js"></script>
 <script>window.sbRoot = '{{ web_root or "" }}';</script>
 <script src="{{ web_root or '' }}/js/episodePreview.js?v=dash"></script>
+<div class="diag-backdrop" id="diag-modal" role="dialog" aria-modal="true" aria-labelledby="diag-modal-title" onclick="if(event.target===this) closeDiagnosticsModal()">
+  <div class="diag-modal">
+    <div class="diag-header">
+      <h3 id="diag-modal-title">Diagnostic SickShift</h3>
+      <button type="button" class="diag-close" onclick="closeDiagnosticsModal()" aria-label="Fermer">✕</button>
+    </div>
+    <div class="diag-grid" id="diag-grid-body">
+      <div class="diag-label">Chargement...</div><div class="diag-val">...</div>
+    </div>
+    <div class="diag-actions">
+      <button type="button" class="diag-clear-btn" id="btn-clear-preview-cache" onclick="clearPreviewCacheFromModal()">Vider le cache d'aperçus</button>
+      <span class="diag-msg" id="diag-action-msg">Raccourcis : Échap (fermer), M (son), / (haut)</span>
+    </div>
+  </div>
+</div>
 <script>
 function triggerGlobalScanRename() {
   window.location.href = (window.sbRoot || '') + '/home/scan-and-rename';
 }
+function formatBytesMB(bytes) {
+  if (!bytes || bytes <= 0) return '0 Mo';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' Mo';
+}
+async function loadDiagnosticsData() {
+  var body = document.getElementById('diag-grid-body');
+  var dot = document.getElementById('diag-status-dot');
+  try {
+    var resp = await fetch('{{ mount_prefix }}/api/diagnostics', { cache: 'no-store' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var d = await resp.json();
+    if (dot) dot.classList.toggle('degraded', d.status !== 'ok');
+    if (body) {
+      var hw = d.hw_encoder ? (' (' + d.hw_encoder + ')') : ' (CPU)';
+      var rows = [
+        ['Statut global', d.status === 'ok' ? 'Opérationnel' : 'Dégradé', d.status === 'ok' ? 'ok' : 'warn'],
+        ['Base de données', (d.db_name || 'sickshift.db') + ' · ' + formatBytesMB(d.db_size_bytes), d.db_header_ok ? 'ok' : 'warn'],
+        ['FFmpeg / Aperçus', d.ffmpeg_available ? ('Disponible' + hw) : 'Indisponible', d.ffmpeg_available ? 'ok' : 'warn'],
+        ['Cache aperçus', (d.preview_cache.files || 0) + ' clip(s) · ' + formatBytesMB(d.preview_cache.size_bytes) + ' / ' + formatBytesMB(d.preview_cache.max_bytes) + ' · auto-purge ' + Math.round((d.preview_cache.max_age_seconds || 3600) / 60) + ' min', ''],
+        ['Cache WebP', (d.webp_cache.files || 0) + ' poster(s) · ' + formatBytesMB(d.webp_cache.size_bytes), d.webp_enabled ? 'ok' : ''],
+        ['Redis', d.redis_connected ? 'Connecté' : 'Désactivé (cache mémoire)', '']
+      ];
+      body.innerHTML = rows.map(function(r) {
+        return '<div class="diag-label">' + r[0] + '</div><div class="diag-val ' + r[2] + '">' + r[1] + '</div>';
+      }).join('');
+    }
+  } catch (err) {
+    if (body) body.innerHTML = '<div class="diag-label">Erreur</div><div class="diag-val warn">Impossible de charger le diagnostic</div>';
+  }
+}
+function openDiagnosticsModal() {
+  var modal = document.getElementById('diag-modal');
+  if (modal) modal.classList.add('open');
+  loadDiagnosticsData();
+}
+function closeDiagnosticsModal() {
+  var modal = document.getElementById('diag-modal');
+  if (modal) modal.classList.remove('open');
+}
+async function clearPreviewCacheFromModal() {
+  var btn = document.getElementById('btn-clear-preview-cache');
+  var msg = document.getElementById('diag-action-msg');
+  if (btn) btn.disabled = true;
+  if (msg) msg.textContent = 'Nettoyage en cours...';
+  try {
+    var resp = await fetch('{{ mount_prefix }}/api/cache/previews/clear', { method: 'POST' });
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var res = await resp.json();
+    if (msg) msg.textContent = (res.removed_files || 0) + ' clip(s) supprimé(s) (' + formatBytesMB(res.freed_bytes) + ' libérés)';
+    await loadDiagnosticsData();
+  } catch (err) {
+    if (msg) msg.textContent = 'Erreur lors du nettoyage';
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+document.addEventListener('keydown', function(e) {
+  var tag = (e.target && e.target.tagName) ? e.target.tagName.toLowerCase() : '';
+  var isTyping = tag === 'input' || tag === 'textarea' || tag === 'select' || (e.target && e.target.isContentEditable);
+  if (e.key === 'Escape') {
+    closeDiagnosticsModal();
+    if (window.hideEpisodePreview) window.hideEpisodePreview();
+    return;
+  }
+  if (isTyping || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === 'm' || e.key === 'M') {
+    if (window.toggleEpisodePreviewMute) window.toggleEpisodePreviewMute();
+  } else if (e.key === '/') {
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+});
 $(function() {
   var $heroBtn = $('#hero-preview-btn');
   if ($heroBtn.length) {

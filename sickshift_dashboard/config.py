@@ -44,9 +44,10 @@ def find_default_db_path() -> str:
     # 3. Dynamic candidate relative to package location or current directory
     try:
         base_dir = Path(__file__).resolve().parent.parent
-        for candidate in [base_dir / "sickshift.db", Path.cwd() / "sickshift.db"]:
-            if candidate.is_file():
-                return str(candidate.resolve())
+        for db_name in ("sickshift.db", "sickbeard.db"):
+            for candidate in [base_dir / db_name, Path.cwd() / db_name]:
+                if candidate.is_file():
+                    return str(candidate.resolve())
     except Exception:
         pass
 
@@ -97,8 +98,8 @@ class Settings(BaseModel):
     gzip_min_size: int = 1000
     gzip_compress_level: int = 5
 
-    redis_url: str = "redis://localhost:6379"
-    redis_enabled: bool = True
+    redis_url: str = Field(default_factory=lambda: os.environ.get("SICKSHIFT_REDIS_URL", "redis://localhost:6379"))
+    redis_enabled: bool = Field(default_factory=lambda: bool(os.environ.get("SICKSHIFT_REDIS_URL", "").strip()))
 
     config_file: str = Field(default_factory=get_default_config_path)
 

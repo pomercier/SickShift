@@ -187,6 +187,66 @@ def create_router(app_state: AppState = state) -> APIRouter:
             "mount_prefix": app_state.config.mount_prefix,
         }
 
+    @router.get("/api/diagnostics")
+    async def api_diagnostics() -> JSONResponse:
+        import asyncio
+        from sickshift_dashboard.preview_clip import (
+            detect_hw_encoder,
+            get_preview_cache_stats,
+            preview_tools_available,
+        )
+
+        db = Path(app_state.config.db_path)
+        db_exists, db_size_bytes, db_header_ok = inspect_sqlite_file(db)
+        ffmpeg_ok = await asyncio.to_thread(preview_tools_available)
+        hw_encoder = await asyncio.to_thread(detect_hw_encoder) if ffmpeg_ok else None
+        preview_stats = await asyncio.to_thread(get_preview_cache_stats)
+
+        webp_dir = (
+            Path(app_state.config.webp_cache_dir)
+            if app_state.config.webp_cache_dir
+            else db.parent / "cache" / "dashboard_webp"
+        )
+        webp_files = 0
+        webp_bytes = 0
+        if webp_dir.is_dir():
+            for item in webp_dir.glob("*.webp"):
+                try:
+                    if item.is_file():
+                        webp_bytes += item.stat().st_size
+                        webp_files += 1
+                except OSError:
+                    continue
+
+        return JSONResponse(
+            {
+                "status": "ok" if db_header_ok and app_state.initialized else "degraded",
+                "db_name": db.name,
+                "db_exists": db_exists,
+                "db_size_bytes": db_size_bytes,
+                "db_header_ok": db_header_ok,
+                "ffmpeg_available": ffmpeg_ok,
+                "hw_encoder": hw_encoder,
+                "redis_connected": app_state.redis is not None,
+                "pillow_available": PILLOW_AVAILABLE,
+                "webp_enabled": bool(app_state.config.webp_enabled and PILLOW_AVAILABLE),
+                "preview_cache": preview_stats,
+                "webp_cache": {"files": webp_files, "size_bytes": webp_bytes},
+            },
+            headers={"Cache-Control": "no-store"},
+        )
+
+    @router.post("/api/cache/previews/clear")
+    async def api_clear_preview_cache() -> JSONResponse:
+        import asyncio
+        from sickshift_dashboard.preview_clip import clear_preview_cache
+
+        cleared = await asyncio.to_thread(clear_preview_cache)
+        return JSONResponse(
+            {"status": "ok", **cleared},
+            headers={"Cache-Control": "no-store"},
+        )
+
     @router.get("/media/thumb/{indexer}/{show_id}")
     async def media_thumb(indexer: int, show_id: int, request: Request) -> Response:
         if not app_state.thumbnail_service:
@@ -232,7 +292,7 @@ def create_router(app_state: AppState = state) -> APIRouter:
                 "ETag": etag,
                 "Last-Modified": http_date(modified),
                 "Accept-Ranges": "bytes",
-                "Cache-Control": "public, max-age=86400",
+                "Cache-Control": "public, max-age=604800",
                 "X-Content-Type-Options": "nosniff",
             }
             if not_modified(request, etag, modified):
@@ -339,11 +399,17 @@ def create_router(app_state: AppState = state) -> APIRouter:
         stat = file_path.stat()
         etag = f'"pv-{stat.st_mtime_ns:x}-{stat.st_size:x}"'
         modified = datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc)
+        cache_ctrl = (
+            "private, max-age=86400, immutable"
+            if request.query_params.get("v") and not fresh
+            else "private, max-age=3600"
+        )
         headers = {
             "ETag": etag,
             "Last-Modified": http_date(modified),
             "Accept-Ranges": "bytes",
-            "Cache-Control": "private, max-age=3600",
+            "Cache-Control": cache_ctrl,
+            "X-Content-Type-Options": "nosniff",
             "X-Clip-Language": clip_data.get("audio_lang", ""),
             "X-Clip-Start": str(clip_data.get("start_sec", 0)),
         }

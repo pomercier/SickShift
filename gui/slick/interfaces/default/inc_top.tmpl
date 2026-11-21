@@ -91,6 +91,7 @@
 		var sbRoot = '$sbRoot', anonURL = '$sg_str('ANON_REDIRECT')', themeSpinner = '#echo ('', '-dark')['dark' == $sg_str('THEME_NAME', 'dark')]#',
 			top_image_html = '<img src="$sbRoot/images/top.gif" width="31" height="11" alt="Jump to top">';
 		\$.SickShift = {Root: '${sbRoot}', PID: '${sbPID}', anonURL: '$sg_str('ANON_REDIRECT')'};
+		\$.SickGear = \$.SickShift;
 	//-->
 	</script>
 	<script src="$sbRoot/js/inc_top.js?v=$sbPID"></script>
@@ -102,6 +103,7 @@
 #set $sys_lang = os.environ.get('LANG', os.environ.get('LC_ALL', locale.getdefaultlocale()[0] or 'en')).split('.')[0].split('_')[0].lower()
 	<script>window.SG_SYS_LANG = "$sys_lang";</script>
 	<script src="$sbRoot/js/i18n.js?v=$sbPID"></script>
+	<link rel="stylesheet" type="text/css" href="$sbRoot/css/sickshift-override.css?v=$sbPID">
 	<style>
 		#NAVsoundtrack {
 			float: left !important;

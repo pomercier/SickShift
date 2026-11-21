@@ -1,0 +1,60 @@
+/* SickShift dedicated visual overrides — isolated from upstream SickGear CSS */
+
+:root {
+    --sickshift-accent: #3dd9eb;
+    --sickshift-surface: #0f1623;
+    --sickshift-border: rgba(61, 217, 235, 0.28);
+}
+
+#NAVdashboard > a:focus-visible,
+#NAVscanrename > a:focus-visible,
+#NAVsoundtrack button.soundtrack-nav-btn:focus-visible {
+    outline: 2px solid var(--sickshift-accent);
+    outline-offset: 2px;
+}
+
+/* Prevent poster card episode counts ("766 / 808", "8 / 12") from wrapping and clipping */
+#show-list .show-card .show-card-top > table {
+    table-layout: auto;
+    width: 100%;
+}
+
+#show-list .show-card td.show-table {
+    width: auto !important;
+    padding: 0 2px;
+    white-space: nowrap;
+}
+
+#show-list .show-card .show-dlstats {
+    white-space: nowrap !important;
+    font-size: 10.5px;
+    letter-spacing: -0.2px;
+    margin-left: 4px;
+}
+
+#show-list .show-card .show-network-image {
+    width: auto !important;
+    max-width: 56px !important;
+    height: 20px !important;
+    max-height: 20px !important;
+}
+
+#show-list .show-card .show-quality {
+    white-space: nowrap !important;
+    font-size: 10.5px;
+    margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+    .navbar-collapse.in,
+    .navbar-collapse.collapsing {
+        overflow-y: auto;
+        max-height: 75vh;
+    }
+
+    #NAVdashboard,
+    #NAVscanrename {
+        padding: 4px 8px !important;
+        height: auto !important;
+    }
+}

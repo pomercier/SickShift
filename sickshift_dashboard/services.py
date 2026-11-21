@@ -143,7 +143,7 @@ class DataService:
 
                 stmt = (
                     select(
-                        distinct(missing_expr).label("missing"),
+                        missing_expr.label("missing"),
                         TVShow.show_name.label("show_name"),
                         TVEpisode.season.label("season"),
                         TVEpisode.episode.label("episode"),
@@ -152,6 +152,7 @@ class DataService:
                         TVShow.indexer.label("indexer_id"),
                         TVEpisode.airdate,
                     )
+                    .distinct()
                     .select_from(TVEpisode)
                     .join(
                         TVShow,

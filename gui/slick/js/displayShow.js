@@ -422,7 +422,7 @@ $(document).ready(function() {
 	}
 	qTips($('.addQTip'));
 	// used by ajaxEpSearch.js
-	$.SickGear.qTips = qTips;
+	$.SickShift.qTips = qTips;
 
 	function tableInit(table$) {
 		const sbroot$ = $('#sbRoot');
@@ -521,6 +521,34 @@ $(document).ready(function() {
 
 	$.SickShift.season = [];
 	$.SickShift.run = !1;
+	function fetchSeason() {
+		if (0 === $.SickShift.season.length) {
+			$.SickShift.run = !1;
+			return;
+		}
+
+		var season = $.SickShift.season.shift(),
+			curBtn$ = $('#' + season),
+			curTable$ = curBtn$.parents('.sickbeardTable');
+		$.getJSON($.SickShift.Root + '/home/season-render', {'tvid_prodid': $('#tvid-prodid').val(), 'season': season})
+			.done(function(data) {
+				if (!data.success) {
+					alert('Season listing failed.');
+				} else {
+					curTable$.find('tbody').html(data.success);
+					tableInit(curTable$);
+				}
+				curTable$.toggleClass('open');
+				curBtn$.toggleClass('hide');
+				curTable$.find('span.images').toggleClass('hide');
+				fetchSeason();
+			})
+			.fail(function() {
+				curBtn$.toggleClass('hide');
+				curTable$.find('span.images').toggleClass('hide');
+				fetchSeason();
+			});
+	}
 	$('button[id*="showseason-"]').on('click', function() {
 		const this$ = $('#' + this.id),
 			table$ = this$.parents('.sickbeardTable');
@@ -530,34 +558,13 @@ $(document).ready(function() {
 		} else {
 			table$.find('span.images').toggleClass('hide');
 			this$.toggleClass('hide');
-			function fetchSeason() {
-				if (0 === $.SickShift.season.length)
-					return;
-
-				var season = $.SickShift.season[0];
-				$.SickShift.season.shift();
-				$.getJSON($.SickShift.Root + '/home/season-render', {'tvid_prodid': $('#tvid-prodid').val(), 'season': season},
-					function(data) {
-						if (!data.success) {
-							alert('Season listing failed.');
-						} else {
-							table$.find('tbody').html(data.success);
-							tableInit(table$);
-						}
-						table$.toggleClass('open');
-						this$.toggleClass('hide');
-						table$.find('span.images').toggleClass('hide');
-						fetchSeason()
-					}
-				);
+			if (-1 === $.inArray(this.id, $.SickShift.season)) {
+				$.SickShift.season.push(this.id);
 			}
-			$.SickShift.season.push(this.id);
-			var result = [];
-			$.each($.SickShift.season, function(i, e) {
-				if (-1 === $.inArray(e, result)) result.push(e);
-			});
-			$.SickShift.season = result;
-			if (!$.SickShift.run && 1 === $.SickShift.season.length) $.SickShift.run = !0 && fetchSeason();
+			if (!$.SickShift.run) {
+				$.SickShift.run = !0;
+				fetchSeason();
+			}
 		}
 		return !1;
 	});

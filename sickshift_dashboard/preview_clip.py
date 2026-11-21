@@ -8,6 +8,8 @@ import re
 import shutil
 import sqlite3
 import subprocess
+import sys
+import threading
 import time
 import uuid
 from pathlib import Path
@@ -19,6 +21,163 @@ CACHE_DIR = Path(__file__).resolve().parent.parent / "cache" / "preview_clips"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 _PROBE_CACHE: dict[str, Tuple[float, dict]] = {}
+_EPISODE_LOCKS: dict[str, threading.Lock] = {}
+_EPISODE_LOCKS_GUARD = threading.Lock()
+_HW_ENCODER_CACHE: Optional[Tuple[bool, Optional[str]]] = None
+
+DEFAULT_PREVIEW_CACHE_MAX_MB = 500
+DEFAULT_PREVIEW_CACHE_MAX_AGE_SECONDS = 3600  # 1 hour
+
+
+def _preview_cache_max_age_seconds() -> int:
+    raw = os.environ.get(
+        "SICKSHIFT_PREVIEW_CACHE_MAX_AGE_SECONDS",
+        str(DEFAULT_PREVIEW_CACHE_MAX_AGE_SECONDS),
+    )
+    try:
+        return max(60, int(raw))
+    except ValueError:
+        return DEFAULT_PREVIEW_CACHE_MAX_AGE_SECONDS
+
+
+def _get_episode_lock(key: str) -> threading.Lock:
+    with _EPISODE_LOCKS_GUARD:
+        lock = _EPISODE_LOCKS.get(key)
+        if lock is None:
+            if len(_EPISODE_LOCKS) > 512:
+                _EPISODE_LOCKS.clear()
+            lock = threading.Lock()
+            _EPISODE_LOCKS[key] = lock
+        return lock
+
+
+def _preview_cache_max_bytes() -> int:
+    raw = os.environ.get("SICKSHIFT_PREVIEW_CACHE_MAX_MB", str(DEFAULT_PREVIEW_CACHE_MAX_MB))
+    try:
+        mb = max(50, int(raw))
+    except ValueError:
+        mb = DEFAULT_PREVIEW_CACHE_MAX_MB
+    return mb * 1024 * 1024
+
+
+def get_preview_cache_stats() -> dict[str, int]:
+    """Return file count, total size in bytes, configured byte limit, and TTL for preview clips."""
+    prune_preview_cache()
+    total_bytes = 0
+    file_count = 0
+    if CACHE_DIR.is_dir():
+        for entry in CACHE_DIR.glob("clip_*.mp4"):
+            try:
+                if entry.is_file():
+                    total_bytes += entry.stat().st_size
+                    file_count += 1
+            except OSError:
+                continue
+    return {
+        "files": file_count,
+        "size_bytes": total_bytes,
+        "max_bytes": _preview_cache_max_bytes(),
+        "max_age_seconds": _preview_cache_max_age_seconds(),
+    }
+
+
+def clear_preview_cache() -> dict[str, int]:
+    """Delete all cached preview clips and stray temp files; return count and freed bytes."""
+    removed_files = 0
+    freed_bytes = 0
+    if CACHE_DIR.is_dir():
+        for entry in CACHE_DIR.glob("*.mp4"):
+            try:
+                if entry.is_file():
+                    size = entry.stat().st_size
+                    entry.unlink()
+                    removed_files += 1
+                    freed_bytes += size
+            except OSError:
+                continue
+    return {"removed_files": removed_files, "freed_bytes": freed_bytes}
+
+
+def prune_preview_cache(
+    max_bytes: Optional[int] = None,
+    max_age_seconds: Optional[int] = None,
+) -> int:
+    """Evict stale temp files, expired clips (>1h by default), and oldest clips (LRU) to stay within quota."""
+    if not CACHE_DIR.is_dir():
+        return 0
+    now = time.time()
+    removed = 0
+    # 1. Clean abandoned temp files older than 10 minutes
+    for tmp in CACHE_DIR.glob("tmp_*.mp4"):
+        try:
+            if tmp.is_file() and (now - tmp.stat().st_mtime) > 600:
+                tmp.unlink()
+                removed += 1
+        except OSError:
+            continue
+
+    # 2. Collect clips and remove expired ones
+    limit_bytes = _preview_cache_max_bytes() if max_bytes is None else max_bytes
+    max_age_sec = _preview_cache_max_age_seconds() if max_age_seconds is None else max(1, int(max_age_seconds))
+    clips: list[Tuple[float, int, Path]] = []
+    total_bytes = 0
+    for clip in CACHE_DIR.glob("clip_*.mp4"):
+        try:
+            if not clip.is_file():
+                continue
+            st = clip.stat()
+            if (now - st.st_mtime) > max_age_sec:
+                clip.unlink()
+                removed += 1
+                continue
+            clips.append((st.st_mtime, st.st_size, clip))
+            total_bytes += st.st_size
+        except OSError:
+            continue
+
+    # 3. Evict oldest clips until within size quota
+    if total_bytes > limit_bytes:
+        clips.sort(key=lambda item: item[0])  # oldest first
+        for _mtime, size, clip in clips:
+            if total_bytes <= limit_bytes:
+                break
+            try:
+                clip.unlink()
+                total_bytes -= size
+                removed += 1
+            except OSError:
+                continue
+    return removed
+
+
+def detect_hw_encoder() -> Optional[str]:
+    """Detect optional hardware H.264 encoder once per process (disabled via SICKSHIFT_PREVIEW_HWACCEL=0)."""
+    global _HW_ENCODER_CACHE
+    setting = os.environ.get("SICKSHIFT_PREVIEW_HWACCEL", "auto").strip().lower()
+    if setting in {"0", "false", "off", "no"}:
+        return None
+    if _HW_ENCODER_CACHE is not None:
+        return _HW_ENCODER_CACHE[1]
+    encoder: Optional[str] = None
+    ffmpeg_bin = shutil.which("ffmpeg")
+    if ffmpeg_bin:
+        try:
+            res = subprocess.run(
+                [ffmpeg_bin, "-hide_banner", "-encoders"],
+                capture_output=True,
+                text=True,
+                timeout=3,
+            )
+            if res.returncode == 0:
+                out = res.stdout or ""
+                if sys.platform == "darwin" and "h264_videotoolbox" in out:
+                    encoder = "h264_videotoolbox"
+                elif Path("/dev/nvidia0").exists() and "h264_nvenc" in out:
+                    encoder = "h264_nvenc"
+        except (OSError, subprocess.TimeoutExpired):
+            encoder = None
+    _HW_ENCODER_CACHE = (True, encoder)
+    return encoder
 
 
 _TOOLS_STATUS = None
@@ -182,45 +341,66 @@ def select_audio_stream(
         re.I,
     )
 
-    def check_dual_mono(title_str: str) -> Optional[str]:
+    lang = (sys_lang or "fr").split("-")[0].split("_")[0].lower().strip()
+
+    def check_dual_mono(title_str: str, prefer_en: bool = False) -> Optional[str]:
         if RE_DUAL_EN_FR.search(title_str):
-            # Left channel is English, Right channel is French -> map Right channel to both
-            return "pan=stereo|c0=c1|c1=c1"
+            # Left channel is English, Right channel is French
+            return "pan=stereo|c0=c0|c1=c0" if prefer_en else "pan=stereo|c0=c1|c1=c1"
         if RE_DUAL_FR_EN.search(title_str):
-            # Left channel is French, Right channel is English -> map Left channel to both
-            return "pan=stereo|c0=c0|c1=c0"
+            # Left channel is French, Right channel is English
+            return "pan=stereo|c0=c1|c1=c1" if prefer_en else "pan=stereo|c0=c0|c1=c0"
         return None
 
-    # 1. Tier 1: Français Québécois / Canadien
-    for stream in audio_streams:
-        tags = stream.get("tags") or {}
-        lang_code = (tags.get("language") or "").lower().strip()
-        title = (tags.get("title") or "").strip()
+    def find_vq():
+        for stream in audio_streams:
+            tags = stream.get("tags") or {}
+            lang_code = (tags.get("language") or "").lower().strip()
+            title = (tags.get("title") or "").strip()
+            if lang_code in {"qbc", "fr-ca", "fra-ca"} or RE_VQ.search(title) or RE_VQ.search(lang_code):
+                return stream, "fr_qc", "Français (Québec)", check_dual_mono(title, prefer_en=False)
+        return None
 
-        if lang_code in {"qbc", "fr-ca", "fra-ca"} or RE_VQ.search(title) or RE_VQ.search(lang_code):
-            af = check_dual_mono(title)
-            return stream, "fr_qc", "Français (Québec)", af
+    def find_fr():
+        for stream in audio_streams:
+            tags = stream.get("tags") or {}
+            lang_code = (tags.get("language") or "").lower().strip()
+            title = (tags.get("title") or "").strip()
+            if lang_code in {"fr", "fre", "fra"} or RE_FR.search(title):
+                return stream, "fr_std", "Français", check_dual_mono(title, prefer_en=False)
+        return None
 
-    # 2. Tier 2: Français standard / de France
-    for stream in audio_streams:
-        tags = stream.get("tags") or {}
-        lang_code = (tags.get("language") or "").lower().strip()
-        title = (tags.get("title") or "").strip()
+    def find_en(reason_tag: str = "fallback_english"):
+        for stream in audio_streams:
+            tags = stream.get("tags") or {}
+            lang_code = (tags.get("language") or "").lower().strip()
+            title = (tags.get("title") or "").strip()
+            if lang_code in {"en", "eng"} or RE_EN.search(title):
+                return stream, reason_tag, "English", check_dual_mono(title, prefer_en=True)
+        return None
 
-        if lang_code in {"fr", "fre", "fra"} or RE_FR.search(title):
-            af = check_dual_mono(title)
-            return stream, "fr_std", "Français", af
+    def find_exact_lang(target_lang: str):
+        for stream in audio_streams:
+            tags = stream.get("tags") or {}
+            lang_code = (tags.get("language") or "").lower().strip()
+            if lang_code and (lang_code == target_lang or lang_code.startswith(target_lang)):
+                return stream, f"lang_{target_lang}", lang_code.upper(), None
+        return None
 
-    # 3. Tier 3: English fallback
-    for stream in audio_streams:
-        tags = stream.get("tags") or {}
-        lang_code = (tags.get("language") or "").lower().strip()
-        title = (tags.get("title") or "").strip()
+    if lang == "fr":
+        for match in (find_vq(), find_fr(), find_en("fallback_english")):
+            if match:
+                return match
+    elif lang == "en":
+        for match in (find_en("en_std"), find_vq(), find_fr()):
+            if match:
+                return match
+    else:
+        for match in (find_exact_lang(lang), find_en("fallback_english"), find_vq(), find_fr()):
+            if match:
+                return match
 
-        if lang_code in {"en", "eng"} or RE_EN.search(title):
-            return stream, "fallback_english", "English", None
-
-    # 4. Tier 4: First encoded audio stream
+    # Final fallback: First encoded audio stream
     first_stream = audio_streams[0]
     tags = first_stream.get("tags") or {}
     lang_tag = tags.get("language") or tags.get("title") or "Piste 1"
@@ -325,105 +505,122 @@ def get_or_create_preview_clip(
         f"_m{mtime_int}_b{source_stat.st_size}_d{clip_len}"
     )
 
-    # Check for existing cached clips for this episode/audio
-    existing_clips = sorted(CACHE_DIR.glob(f"{base_prefix}_*.mp4"))
+    def _build_cmd(temp_out: Path, start: int, hw_encoder: Optional[str] = None) -> list[str]:
+        built = [
+            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+            "-ss", str(start),
+            "-i", str(filepath),
+            "-t", str(clip_len),
+            "-map", f"0:{video_stream['index']}",
+        ]
+        if chosen_audio:
+            built.extend(["-map", audio_map])
+        if hw_encoder == "h264_nvenc":
+            video_args = ["-c:v", "h264_nvenc", "-preset", "p1", "-cq", "26"]
+        elif hw_encoder == "h264_videotoolbox":
+            video_args = ["-c:v", "h264_videotoolbox", "-q:v", "65"]
+        else:
+            video_args = ["-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency", "-crf", "24"]
+        built.extend(video_args + [
+            "-vf", preview_video_filters(video_stream),
+            "-pix_fmt", "yuv420p",
+            "-profile:v", "main",
+            "-c:a", "aac",
+            "-b:a", "128k",
+        ])
+        if audio_filter:
+            built.extend(["-af", audio_filter])
+        else:
+            built.extend(["-ac", "2"])
+        built.extend(["-movflags", "+faststart", str(temp_out)])
+        return built
 
-    if existing_clips and not force_new:
-        target_clip = existing_clips[0]
-        parts = target_clip.stem.split("_")
+    with _get_episode_lock(base_prefix):
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        existing_clips = sorted(CACHE_DIR.glob(f"{base_prefix}_*.mp4"))
+        max_age_sec = _preview_cache_max_age_seconds()
+        now = time.time()
+        valid_clips: list[Path] = []
+        for clip in existing_clips:
+            try:
+                if (now - clip.stat().st_mtime) > max_age_sec:
+                    clip.unlink(missing_ok=True)
+                else:
+                    valid_clips.append(clip)
+            except OSError:
+                continue
+
+        if valid_clips and not force_new:
+            target_clip = valid_clips[0]
+            parts = target_clip.stem.split("_")
+            try:
+                start_sec = int(parts[-2])
+            except (ValueError, IndexError):
+                start_sec = 0
+
+            return {
+                "clip_path": target_clip,
+                "filename": filepath.name,
+                "duration": duration,
+                "start_sec": start_sec,
+                "start_formatted": format_timestamp(start_sec),
+                "clip_len": clip_len,
+                "audio_reason": reason,
+                "audio_lang": lang_display,
+            }
+
+        # Generate new random clip
+        start_sec = choose_random_timestamp(duration, clip_len=clip_len)
+        output_filename = f"{base_prefix}_{start_sec}_{mtime_int}.mp4"
+        output_path = CACHE_DIR / output_filename
+        # Keep in-progress files outside the cache lookup pattern.
+        temp_path = CACHE_DIR / f"tmp_{uuid.uuid4().hex}.mp4"
+
+        hw_encoder = detect_hw_encoder()
+        cmd = _build_cmd(temp_path, start_sec, hw_encoder=hw_encoder)
+
         try:
-            start_sec = int(parts[-2])
-        except (ValueError, IndexError):
-            start_sec = 0
+            t0 = time.time()
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=60)
+            if res.returncode != 0 and hw_encoder is not None:
+                logger.warning(f"HW encoder {hw_encoder} failed for {filepath}, falling back to libx264")
+                if temp_path.exists():
+                    temp_path.unlink()
+                cmd = _build_cmd(temp_path, start_sec, hw_encoder=None)
+                res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=60)
+            if res.returncode != 0:
+                logger.error(f"FFmpeg clip extraction failed for {filepath}: {res.stderr.decode('utf-8', 'ignore')}")
+                if temp_path.exists():
+                    temp_path.unlink()
+                return None
 
-        return {
-            "clip_path": target_clip,
-            "filename": filepath.name,
-            "duration": duration,
-            "start_sec": start_sec,
-            "start_formatted": format_timestamp(start_sec),
-            "clip_len": clip_len,
-            "audio_reason": reason,
-            "audio_lang": lang_display,
-        }
+            temp_path.replace(output_path)
+            logger.info(f"Generated preview clip in {time.time() - t0:.2f}s: {output_path.name}")
 
-    # Generate new random clip
-    start_sec = choose_random_timestamp(duration, clip_len=clip_len)
-    output_filename = f"{base_prefix}_{start_sec}_{mtime_int}.mp4"
-    output_path = CACHE_DIR / output_filename
-    # Keep in-progress files outside the cache lookup pattern.
-    temp_path = CACHE_DIR / f"tmp_{uuid.uuid4().hex}.mp4"
+            # Keep cache trimmed: remove older clips for this specific episode/audio
+            for old in existing_clips:
+                try:
+                    if old.is_file() and old != output_path:
+                        old.unlink()
+                except Exception:
+                    pass
+            prune_preview_cache()
 
-    cmd = [
-        "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-        "-ss", str(start_sec),
-        "-i", str(filepath),
-        "-t", str(clip_len),
-        "-map", f"0:{video_stream['index']}",
-    ]
-
-    if chosen_audio:
-        cmd.extend(["-map", audio_map])
-
-    # Video filters & encoding
-    cmd.extend([
-        "-c:v", "libx264",
-        "-preset", "ultrafast",
-        "-tune", "zerolatency",
-        "-crf", "24",
-        "-vf", preview_video_filters(video_stream),
-        "-pix_fmt", "yuv420p",
-        "-profile:v", "main",
-        "-c:a", "aac",
-        "-b:a", "128k",
-    ])
-
-    # Audio channel filter or stereo downmix
-    if audio_filter:
-        cmd.extend(["-af", audio_filter])
-    else:
-        cmd.extend(["-ac", "2"])
-
-    cmd.extend([
-        "-movflags", "+faststart",
-        str(temp_path),
-    ])
-
-    try:
-        t0 = time.time()
-        res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, timeout=60)
-        if res.returncode != 0:
-            logger.error(f"FFmpeg clip extraction failed for {filepath}: {res.stderr.decode('utf-8', 'ignore')}")
+            return {
+                "clip_path": output_path,
+                "filename": filepath.name,
+                "duration": duration,
+                "start_sec": start_sec,
+                "start_formatted": format_timestamp(start_sec),
+                "clip_len": clip_len,
+                "audio_reason": reason,
+                "audio_lang": lang_display,
+            }
+        except Exception as exc:
+            logger.error(f"Exception during clip generation for {filepath}: {exc}")
             if temp_path.exists():
-                temp_path.unlink()
+                try:
+                    temp_path.unlink()
+                except Exception:
+                    pass
             return None
-
-        temp_path.replace(output_path)
-        logger.info(f"Generated preview clip in {time.time() - t0:.2f}s: {output_path.name}")
-
-        # Keep cache trimmed: remove older clips for this specific episode/audio
-        for old in existing_clips:
-            try:
-                if old.is_file() and old != output_path:
-                    old.unlink()
-            except Exception:
-                pass
-
-        return {
-            "clip_path": output_path,
-            "filename": filepath.name,
-            "duration": duration,
-            "start_sec": start_sec,
-            "start_formatted": format_timestamp(start_sec),
-            "clip_len": clip_len,
-            "audio_reason": reason,
-            "audio_lang": lang_display,
-        }
-    except Exception as exc:
-        logger.error(f"Exception during clip generation for {filepath}: {exc}")
-        if temp_path.exists():
-            try:
-                temp_path.unlink()
-            except Exception:
-                pass
-        return None

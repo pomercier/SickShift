@@ -145,11 +145,11 @@ function uiUpdateComplete(data) {
 			// update the status area
 			var status$ = link$.closest('.col-search').siblings('.col-status').html(htmlContent);
 			// keep the tips that display show has on its quality label and on its subtitled icon
-			if ('finished' === ep.searchstate && $.SickGear.qTips) {
+			if ('finished' === ep.searchstate && $.SickShift.qTips) {
 				if (ep.fileinfo) {
 					status$.find('.quality').addClass('addQTip').attr('title', ep.fileinfo);
 				}
-				$.SickGear.qTips(status$.find('.addQTip'));
+				$.SickShift.qTips(status$.find('.addQTip'));
 			}
 		}
 	});

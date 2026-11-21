@@ -33,6 +33,7 @@ I18N_SCRIPT_SNIPPET = '''#import locale, os
 #set $sys_lang = os.environ.get('LANG', os.environ.get('LC_ALL', locale.getdefaultlocale()[0] or 'en')).split('.')[0].split('_')[0].lower()
 \t<script>window.SG_SYS_LANG = "$sys_lang";</script>
 \t<script src="$sbRoot/js/i18n.js?v=$sbPID"></script>
+\t<link rel="stylesheet" type="text/css" href="$sbRoot/css/sickshift-override.css?v=$sbPID">
 \t<style>
 \t\t#NAVdashboard {
 \t\t\tfloat: left !important;

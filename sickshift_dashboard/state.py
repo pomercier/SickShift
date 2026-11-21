@@ -139,12 +139,21 @@ class AppState:
             self.background_task = asyncio.create_task(self._run_workers())
             self.initialized = True
 
+    async def _run_preview_cache_pruner(self) -> None:
+        from sickshift_dashboard.preview_clip import prune_preview_cache
+
+        while True:
+            with suppress(Exception):
+                await asyncio.to_thread(prune_preview_cache)
+            await asyncio.sleep(600)
+
     async def _run_workers(self) -> None:
         assert self.snapshot_manager is not None
         assert self.background_cache is not None
         tasks = [
             asyncio.create_task(self.snapshot_manager.run()),
             asyncio.create_task(self.background_cache.run()),
+            asyncio.create_task(self._run_preview_cache_pruner()),
         ]
         try:
             await asyncio.gather(*tasks)

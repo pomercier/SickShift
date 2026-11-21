@@ -27,3 +27,14 @@ The bootstrap does not request administrator rights, change system Python, insta
 Keep one main checkout on the `main` branch and use separate development branches for changes. Fetch reviewed updates with `git pull --ff-only origin main`; do not force-reset over local work. A code checkout and runtime data may share a parent directory, but only source files belong in Git.
 
 Before updating a running service, stop it and back up configuration and databases. Database migrations may require restoring both code and data during rollback. Follow [the upstream integration procedure](UPSTREAM.md) for SickGear merges rather than running an upstream reset inside the live installation.
+
+## Docker (multi-arch `linux/amd64` & `linux/arm64`)
+
+Pre-built images including Python 3.12 and FFmpeg are published automatically on every push to `main` and every release tag at `ghcr.io/pomercier/sickshift:latest`:
+
+```bash
+docker compose pull
+docker compose up -d
+```
+
+Persistent configuration, `sickshift.db`, caches, and backups are stored in `/data` (`./data` in the provided `docker-compose.yml`). Updating to the latest SickShift and upstream SickGear changes only requires re-pulling the image and recreating the container.
