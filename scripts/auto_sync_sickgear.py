@@ -251,7 +251,9 @@ def prepare():
 
 
 def publish():
-    secret = os.environ.get("SICKSHIFT_PUSH_TOKEN", "")
+    import base64
+
+    secret = os.environ.get("SICKSHIFT_PUSH_TOKEN", "").strip()
     if not secret:
         raise RuntimeError("Secret GitHub SICKSHIFT_SYNC_TOKEN absent")
     temp = Path(os.environ.get("RUNNER_TEMP", "/tmp")) / "sickshift-merge"
@@ -272,16 +274,26 @@ def publish():
         raise RuntimeError("Le commit préparé n'est pas descendant de main")
     if git("merge-base", "--is-ancestor", info["upstream"], info["target"], check=False).returncode:
         raise RuntimeError("Le commit préparé n'inclut pas SickGear")
-    with tempfile.TemporaryDirectory(prefix="sickshift-push-") as directory:
-        askpass = Path(directory) / "askpass.sh"
-        askpass.write_text('#!/bin/sh\nprintf "%s\\n" "$SICKSHIFT_PUSH_TOKEN"\n', encoding="utf-8")
-        askpass.chmod(0o700)
-        env = os.environ.copy()
-        env["GIT_ASKPASS"] = str(askpass)
-        env["GIT_TERMINAL_PROMPT"] = "0"
-        run("git", "-c", "credential.helper=", "push",
-            f"https://x-access-token@github.com/{REPO}.git",
-            f"{info['target']}:refs/heads/main", env=env)
+    basic = base64.b64encode(f"x-access-token:{secret}".encode("utf-8")).decode("ascii")
+    env = os.environ.copy()
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    env["GIT_CONFIG_COUNT"] = "2"
+    env["GIT_CONFIG_KEY_0"] = "credential.helper"
+    env["GIT_CONFIG_VALUE_0"] = ""
+    env["GIT_CONFIG_KEY_1"] = "http.https://github.com/.extraheader"
+    env["GIT_CONFIG_VALUE_1"] = f"AUTHORIZATION: basic {basic}"
+    pushed = run(
+        "git",
+        "push",
+        f"https://github.com/{REPO}.git",
+        f"{info['target']}:refs/heads/main",
+        check=False,
+        env=env,
+    )
+    if pushed.returncode:
+        raise RuntimeError(
+            "Échec du push sur main : vérifiez que le secret GitHub SICKSHIFT_SYNC_TOKEN est valide, non expiré et dispose des droits de push sur main."
+        )
     print(f"SUCCÈS : main publié à {info['target']}; aucune branche créée.")
 
 
