@@ -730,7 +730,7 @@ body::after{
 .aura-diag-dot.degraded{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.75)}
 .diag-backdrop{position:fixed;inset:0;background:rgba(5,9,18,.74);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:100000;padding:16px}
 .diag-backdrop.open{display:flex}
-.diag-modal{width:min(560px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow-y:auto;background:rgba(13,19,33,.97);border:1px solid rgba(61,217,235,.35);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.75);color:#e6edf3;padding:20px}
+.diag-modal{width:min(640px,calc(100vw - 24px));max-height:calc(100vh - 32px);overflow-x:hidden;overflow-y:auto;box-sizing:border-box;background:rgba(13,19,33,.97);border:1px solid rgba(61,217,235,.35);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.75);color:#e6edf3;padding:22px 24px}
 .diag-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.08)}
 .diag-header h3{margin:0;font-size:1.05rem;font-weight:700;color:#fff}
 .diag-close{background:transparent;border:1px solid rgba(255,255,255,.15);color:#cbd5e1;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem;line-height:1}
