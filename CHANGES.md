@@ -1,4 +1,19 @@
-﻿### 3.36.13 (2026-11-19 09:59:00 UTC)
+﻿### 3.36.16 (2026-11-21 15:10:00 UTC)
+
+* Fix restart returns the browser to the port that SickGear listens on, not the one it used, e.g. a docker mapped port
+
+
+### 3.36.15 (2026-11-21 08:20:00 UTC)
+
+* Update certifi 2026.10.23 to 2026.11.20
+
+
+### 3.36.14 (2026-11-20 16:05:00 UTC)
+
+* Fix arrow keys do not scroll a page of show cards until its Filters dialog has been opened and closed
+
+
+### 3.36.13 (2026-11-19 09:59:00 UTC)
 
 * Fix a show update writes every episode to the DB even when no episode data has changed
 * Fix an episode with a metadata file or thumbnail is written to the DB again at its first file check after a load

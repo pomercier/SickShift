@@ -20,9 +20,9 @@ def original_public_file(name, content):
     return result.returncode == 0 and result.stdout == content
 
 # sickshift-sync: PUBLIC-UPSTREAM-SHA256-BEGIN
-# Empreintes des fichiers publics exactement identiques au dernier upstream fusionne.
+# Empreintes vérifiées octet par octet sur SickGear/main.
 PUBLIC_UPSTREAM_SHA256 = {
-    'lib/certifi/cacert.pem': '2ef52ad56b4803e264045c915e55c236cbfa045b84b81efefc218a19eb44bd2b',
+    'lib/certifi/cacert.pem': 'bb92c6ac31c92f4f553bffd6bf093db02c858c23e111b0b4df9bafa3fdbe00d1',
     'lib/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz': '729a51d18bac966961465d7591c9aaba3c471ee8d66da60a84144a83ebbd0e53',
 }
 def trusted_public_upstream_blob(name, content):

@@ -1,14 +1,19 @@
 /** @namespace $.SickShift.Root */
 /** @namespace $.SickShift.Host */
 /** @namespace $.SickShift.Port */
+/** @namespace $.SickShift.ListenPort */
 /** @namespace $.SickShift.UseHttps */
 /** @namespace $.SickShift.PID */
 /** @namespace data.msg */
 
 var sgRoot = $.SickShift.Root,
 	browserUrl = window.location.protocol + '//' + window.location.host + sgRoot,
-	baseUrl = 'http' + ($.SickShift.UseHttps ? 's' : '') + '://' + $.SickShift.Host + ':'
-		+ (('' == sgRoot) ? $.SickShift.Port : location.port) + sgRoot,
+	browserPort = window.location.port || ('https:' == window.location.protocol ? '443' : '80'),
+	// a browser at the port that SickShift listens on follows a change of its port or https in the settings, a browser
+	// that came in at another port (docker port mapping, a proxy), or with no port known, goes back to its address
+	baseUrl = ('' != $.SickShift.ListenPort && $.SickShift.ListenPort == browserPort)
+		? 'http' + ($.SickShift.UseHttps ? 's' : '') + '://' + $.SickShift.Host + ':' + $.SickShift.Port + sgRoot
+		: browserUrl,
 	isAliveUrl = sgRoot + '/home/is-alive/',
 	timeoutId;
 $.SickShift.numRestartWaits = 0;
