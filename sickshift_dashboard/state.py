@@ -147,6 +147,16 @@ class AppState:
                 await asyncio.to_thread(prune_preview_cache)
             await asyncio.sleep(600)
 
+    async def _run_db_backup_loop(self) -> None:
+        from sickshift_dashboard.db_backup import backup_database
+
+        await asyncio.sleep(30)
+        while True:
+            if self.config.db_path:
+                with suppress(Exception):
+                    await asyncio.to_thread(backup_database, self.config.db_path)
+            await asyncio.sleep(21600)
+
     async def _run_workers(self) -> None:
         assert self.snapshot_manager is not None
         assert self.background_cache is not None
@@ -154,6 +164,7 @@ class AppState:
             asyncio.create_task(self.snapshot_manager.run()),
             asyncio.create_task(self.background_cache.run()),
             asyncio.create_task(self._run_preview_cache_pruner()),
+            asyncio.create_task(self._run_db_backup_loop()),
         ]
         try:
             await asyncio.gather(*tasks)
