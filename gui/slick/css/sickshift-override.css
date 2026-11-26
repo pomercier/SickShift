@@ -45,6 +45,14 @@
     margin-right: 4px;
 }
 
+/* Full bar in distinct soft indigo-violet for 0 / 0 shows (all skipped/ignored/unaired) */
+.ui-progressbar .progress-empty,
+#show-list .show-card .progress-empty {
+    background: linear-gradient(90deg, #6366f1, #818cf8) !important;
+    border: none !important;
+    height: 100% !important;
+}
+
 @media (max-width: 768px) {
     .navbar-collapse.in,
     .navbar-collapse.collapsing {

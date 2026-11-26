@@ -1785,7 +1785,7 @@ class Home(MainHandler):
         today = dt_date.today().toordinal()
         status_quality = ','.join([str(x) for x in Quality.SNATCHED_ANY])
         status_download = ','.join([str(x) for x in Quality.DOWNLOADED + Quality.ARCHIVED])
-        status_total = '%s, %s, %s' % (SKIPPED, WANTED, FAILED)
+        status_total = '%s, %s' % (WANTED, FAILED)
 
         with db.DBConnection() as sg_db:
             sql_result = sg_db.select(

@@ -494,18 +494,16 @@
                 #end if
                 #set $download_stat = download_stat + ' / ' + str($cur_total)
                 #set $download_stat_tip = download_stat_tip + '&#013;' + 'Total: ' + str($cur_total)
+                #set $progressbar_percent = $cur_downloaded * 100 / $cur_total
+            #elif $cur_show_obj.tvid_prodid in $show_stat
+                #set $download_stat = '0 / 0'
+                #set $download_stat_tip = 'Downloaded: 0&#013;Total: 0'
+                #set $progressbar_percent = -2
             #else
                 #set $download_stat = '?'
                 #set $download_stat_tip = 'no data'
+                #set $progressbar_percent = -1
             #end if
-            ##
-            #set $nom = $cur_downloaded
-            #set $den = $cur_total
-            #if $den == 0
-                #set $den = 1
-            #end if
-            ##
-            #set $progressbar_percent = $nom * 100 / $den
             ##
             #set $data_date = '600000000000'
             #if $cur_airs_next
@@ -702,18 +700,16 @@
                 #end if
                 #set $download_stat = download_stat + ' / ' + str($cur_total)
                 #set $download_stat_tip = download_stat_tip + '&#013;' + 'Total: ' + str($cur_total)
+                #set $progressbar_percent = $cur_downloaded * 100 / $cur_total
+            #elif $cur_show_obj.tvid_prodid in $show_stat
+                #set $download_stat = '0 / 0'
+                #set $download_stat_tip = 'Downloaded: 0&#013;Total: 0'
+                #set $progressbar_percent = -2
             #else
                 #set $download_stat = '?'
                 #set $download_stat_tip = 'no data'
+                #set $progressbar_percent = -1
             #end if
-            ##
-            #set $nom = $cur_downloaded
-            #set $den = $cur_total
-            #if $den == 0
-                #set $den = 1
-            #end if
-            ##
-            #set $progressbar_percent = $nom * 100 / $den
             #if not $progressbar_percent
                 #set $progressbar_percent = (0, -1)['?' == $download_stat]
             #end if
