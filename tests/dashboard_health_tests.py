@@ -165,6 +165,53 @@ class DashboardHealthTests(unittest.TestCase):
             os.environ.pop("SICKSHIFT_REDIS_URL", None)
             self.assertFalse(Settings().redis_enabled)
 
+    def test_upcoming_shows_excludes_already_downloaded_episodes(self):
+        from datetime import date as _date
+        from sickshift_dashboard.config import Settings
+        from sickshift_dashboard.state import AppState
+
+        today_ord = _date.today().toordinal()
+        with closing(sqlite3.connect(self.db)) as conn:
+            conn.execute(
+                "CREATE TABLE tv_shows (indexer INTEGER, indexer_id INTEGER, show_name TEXT, status TEXT, paused INTEGER, network TEXT)"
+            )
+            conn.execute(
+                "CREATE TABLE tv_episodes (indexer INTEGER, showid INTEGER, season INTEGER, episode INTEGER, name TEXT, airdate INTEGER, status INTEGER, location TEXT, file_size INTEGER)"
+            )
+            conn.execute(
+                "INSERT INTO tv_shows VALUES (1, 100, 'Rings of Power', 'Continuing', 0, 'Prime Video')"
+            )
+            conn.execute(
+                "INSERT INTO tv_shows VALUES (1, 200, 'Infoman', 'Continuing', 0, 'ICI')"
+            )
+            # Already downloaded today -> must be excluded
+            conn.execute(
+                "INSERT INTO tv_episodes VALUES (1, 100, 3, 7, 'Ep 7', ?, 102404, '/media/rop_s03e07.mkv', 1500000000)",
+                (today_ord,),
+            )
+            # Unaired tomorrow -> must be included
+            conn.execute(
+                "INSERT INTO tv_episodes VALUES (1, 200, 27, 10, 'Ep 10', ?, 1, '', 0)",
+                (today_ord + 1,),
+            )
+            conn.commit()
+
+        async def _run():
+            cfg = Settings(db_path=str(self.db), redis_enabled=False, webp_enabled=False)
+            app_state = AppState(cfg)
+            await app_state._create_engine()
+            try:
+                from sickshift_dashboard.services import DataService
+                ds = DataService(app_state)
+                return await ds.get_upcoming_shows()
+            finally:
+                await app_state.shutdown()
+
+        upcoming = asyncio.run(_run())
+        names = [item["show_name"] for item in upcoming]
+        self.assertNotIn("Rings of Power", names)
+        self.assertIn("Infoman", names)
+
 
 if __name__ == "__main__":
     unittest.main()

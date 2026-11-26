@@ -262,6 +262,9 @@ class DataService:
                     .where(
                         TVEpisode.airdate >= today_ordinal,
                         TVEpisode.season > 0,
+                        (TVEpisode.status % 100).not_in([4, 6]),
+                        func.coalesce(TVEpisode.file_size, 0) == 0,
+                        func.coalesce(TVEpisode.location, "") == "",
                         func.coalesce(TVShow.paused, 0) == 0,
                     )
                     .group_by(TVShow.show_name, TVShow.indexer, TVShow.indexer_id)
