@@ -1,0 +1,129 @@
+name: SickShift Arbitration Handler
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: sickshift-upstream-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  parse:
+    name: Parse and authorize arbitration command
+    if: >-
+      github.repository == 'pomercier/SickShift' &&
+      !github.event.issue.pull_request &&
+      github.event.issue.state == 'open' &&
+      (contains(github.event.issue.labels.*.name, 'arbitration-required') ||
+       startsWith(github.event.issue.title, '[ACTION REQUIRED] SickShift synchronization'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      action: ${{ steps.cmd.outputs.action }}
+      option: ${{ steps.cmd.outputs.option }}
+      expected_upstream_sha: ${{ steps.cmd.outputs.expected_upstream_sha }}
+      issue_number: ${{ steps.cmd.outputs.issue_number }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: Validate actor and parse command
+        id: cmd
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMENT_AUTHOR: ${{ github.event.comment.user.login }}
+          COMMENT_AUTHOR_ASSOCIATION: ${{ github.event.comment.author_association }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: python3 scripts/auto_sync_sickgear.py handle-comment
+
+  prepare:
+    name: Apply approved arbitration and validate
+    needs: parse
+    if: needs.parse.outputs.action == 'apply' || needs.parse.outputs.action == 'retry'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      issues: write
+    outputs:
+      ready: ${{ steps.merge.outputs.ready }}
+      conflict: ${{ steps.merge.outputs.conflict }}
+      stale: ${{ steps.merge.outputs.stale }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: '3.12'
+      - name: Install validation dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check -r requirements.txt -r requirements-dashboard.txt
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            for src in /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt; do
+              if [ -f "$src" ]; then
+                sudo sed -i -E 's|https?://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu|https://archive.ubuntu.com/ubuntu|g' "$src"
+              fi
+            done
+            sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true update
+            sudo env DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true install -y --no-install-recommends ffmpeg
+          fi
+      - name: Apply decision and run full validation
+        id: merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARBITRATION_OPTION: ${{ needs.parse.outputs.option }}
+          EXPECTED_UPSTREAM_SHA: ${{ needs.parse.outputs.expected_upstream_sha }}
+          ISSUE_NUMBER: ${{ needs.parse.outputs.issue_number }}
+        run: python scripts/auto_sync_sickgear.py prepare-arbitration
+      - name: Notify if approval was stale due to newer upstream commits
+        if: steps.merge.outputs.stale == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ needs.parse.outputs.issue_number }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" -R pomercier/SickShift --body "Upstream SickGear advanced after this arbitration was generated, so the previous approval could not be applied safely. Running a fresh sync analysis now."
+          python scripts/auto_sync_sickgear.py prepare
+      - name: Export validated arbitration bundle
+        if: steps.merge.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: sickshift-integration-bundle
+          path: ${{ runner.temp }}/sickshift-merge/
+          retention-days: 1
+          if-no-files-found: error
+
+  publish:
+    name: Publish arbitrated merge to main
+    needs: prepare
+    if: needs.prepare.outputs.ready == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: sickshift-integration-bundle
+          path: ${{ runner.temp }}/sickshift-merge/
+      - name: Push arbitrated commit to main and close issue
+        env:
+          SICKSHIFT_PUSH_TOKEN: ${{ secrets.SICKSHIFT_SYNC_TOKEN }}
+        run: python3 scripts/auto_sync_sickgear.py publish

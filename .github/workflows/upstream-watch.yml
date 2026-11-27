@@ -1,8 +1,8 @@
-name: SickShift - Sync SickGear (alerte conflits seulement)
+name: SickShift Upstream Sync
 
 on:
   schedule:
-    - cron: '37 5 * * *'  # Tous les jours, 05:37 UTC
+    - cron: '*/15 * * * *'  # Lightweight upstream check every 15 minutes
   workflow_dispatch:
 
 concurrency:
@@ -13,8 +13,28 @@ permissions:
   contents: read
 
 jobs:
+  detect:
+    name: Detect upstream SickGear changes
+    if: github.repository == 'pomercier/SickShift'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      needs_sync: ${{ steps.check.outputs.needs_sync }}
+      behind: ${{ steps.check.outputs.behind }}
+      upstream_sha: ${{ steps.check.outputs.upstream_sha }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Compare SickShift/main with SickGear/main
+        id: check
+        run: python3 scripts/auto_sync_sickgear.py detect
+
   prepare:
-    name: Fusion + controles (sans jeton de publication)
+    name: Merge and validate upstream (no publishing credentials)
+    needs: detect
+    if: needs.detect.outputs.needs_sync == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     permissions:
@@ -23,6 +43,7 @@ jobs:
     outputs:
       ready: ${{ steps.merge.outputs.ready }}
       conflict: ${{ steps.merge.outputs.conflict }}
+      release_impact: ${{ steps.merge.outputs.release_impact }}
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -31,11 +52,11 @@ jobs:
       - uses: actions/setup-python@v7.1.0
         with:
           python-version: '3.12'
-      - name: Installer dependances de validation (Dashboard + FFmpeg)
+      - name: Install validation dependencies (Dashboard + FFmpeg)
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check -r requirements-dashboard.txt
+          python -m pip install --disable-pip-version-check -r requirements.txt -r requirements-dashboard.txt
           if ! command -v ffmpeg >/dev/null 2>&1; then
             for src in /etc/apt/sources.list.d/ubuntu.sources /etc/apt/apt-mirrors.txt; do
               if [ -f "$src" ]; then
@@ -45,12 +66,12 @@ jobs:
             sudo apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true update
             sudo env DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 -o Acquire::ForceIPv4=true install -y --no-install-recommends ffmpeg
           fi
-      - name: Recuperer et fusionner toutes les modifications SickGear
+      - name: Merge, auto-resolve deterministic conflicts, and validate
         id: merge
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/auto_sync_sickgear.py prepare
-      - name: Exporter le commit valide (sans code execute apres)
+      - name: Export validated merge bundle
         if: steps.merge.outputs.ready == 'true'
         uses: actions/upload-artifact@v4
         with:
@@ -58,17 +79,17 @@ jobs:
           path: ${{ runner.temp }}/sickshift-merge/
           retention-days: 1
           if-no-files-found: error
-      - name: Signaler le conflit et declencher l'alerte email GitHub
+      - name: Trigger GitHub failure email on human arbitration conflict
         if: steps.merge.outputs.conflict == 'true'
         run: |
-          echo "::error title=Arbitrage requis::Conflit Git avec SickGear necessitant un arbitrage manuel. Voir l'issue ouverte sur le depot."
-          echo "# ⚠️ Arbitrage requis : Conflit avec SickGear" >> $GITHUB_STEP_SUMMARY
-          echo "Un conflit Git nécessite une résolution manuelle sur votre machine locale." >> $GITHUB_STEP_SUMMARY
-          echo "Consultez l'issue créée automatiquement sur GitHub pour les instructions." >> $GITHUB_STEP_SUMMARY
+          echo "::error title=Arbitration Required::Human decision required to merge upstream SickGear changes. Reply /approve on the open GitHub issue."
+          echo "# Arbitration Required" >> "$GITHUB_STEP_SUMMARY"
+          echo "A semantic merge conflict with upstream SickGear requires your decision." >> "$GITHUB_STEP_SUMMARY"
+          echo "Open the issue titled \`[ACTION REQUIRED] SickShift synchronization — decision needed\` and reply \`/approve\` (or \`/choose A|B|C\`)." >> "$GITHUB_STEP_SUMMARY"
           exit 1
 
   publish:
-    name: Publication protegee de main
+    name: Publish validated merge to main
     needs: prepare
     if: needs.prepare.outputs.ready == 'true'
     runs-on: ubuntu-24.04
@@ -84,7 +105,7 @@ jobs:
         with:
           name: sickshift-integration-bundle
           path: ${{ runner.temp }}/sickshift-merge/
-      - name: Publier exactement le commit teste, sans force-push
+      - name: Push exact validated commit to main and verify 0 behind
         env:
           SICKSHIFT_PUSH_TOKEN: ${{ secrets.SICKSHIFT_SYNC_TOKEN }}
         run: python3 scripts/auto_sync_sickgear.py publish

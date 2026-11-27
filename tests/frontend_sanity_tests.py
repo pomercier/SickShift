@@ -51,6 +51,18 @@ class FrontendSanityTests(unittest.TestCase):
         self.assertEqual(css.count("{"), css.count("}"), "Unbalanced braces in sickshift-override.css")
         self.assertIn(".show-dlstats", css)
         self.assertIn("white-space: nowrap", css)
+        self.assertIn(".progress-empty", css)
+
+    def test_no_stray_sickgear_python_imports_in_sickshift_package(self):
+        import re
+        offenders = []
+        url_re = re.compile(r"https?://[^\s'\"<>]+", re.I)
+        imp_re = re.compile(r"\b(?:import|from)\s+sickgear\b|\bsickgear\.")
+        for py_file in sorted((REPO_ROOT / "sickshift").rglob("*.py")):
+            cleaned = url_re.sub("", py_file.read_text(encoding="utf-8", errors="ignore"))
+            if imp_re.search(cleaned):
+                offenders.append(str(py_file.relative_to(REPO_ROOT)))
+        self.assertEqual([], offenders, f"Found stray sickgear imports/refs in sickshift/: {offenders}")
 
 
 if __name__ == "__main__":

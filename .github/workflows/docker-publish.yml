@@ -4,24 +4,143 @@ on:
   push:
     branches: [main]
     tags: ['v*']
+    paths-ignore:
+      - 'docs/**'
+      - '**.md'
+      - '**.MD'
   workflow_dispatch:
+    inputs:
+      promote_latest:
+        description: 'Promote validated image to :latest tag (true for stable releases)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      version_tag:
+        description: 'Optional semver release tag without leading v (e.g. 1.3.0)'
+        required: false
+        default: ''
+        type: string
 
 concurrency:
   group: sickshift-docker-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  docker:
+  validate:
+    name: Build and validate container (boot, DB migration, volumes, health)
+    if: github.repository == 'pomercier/SickShift'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build local linux/amd64 candidate image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: sickshift-candidate:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Validate real container startup, legacy DB migration, volumes, and HTTP health
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATA_DIR="$(mktemp -d)"
+          SHOWS_DIR="$(mktemp -d)"
+          trap 'docker rm -f sickshift-ci-test >/dev/null 2>&1 || true; rm -rf "$DATA_DIR" "$SHOWS_DIR"' EXIT
+
+          # Seed legacy sickbeard.db to test automatic soft migration -> sickshift.db
+          python3 - <<PY
+          import sqlite3
+          conn = sqlite3.connect("${DATA_DIR}/sickbeard.db")
+          conn.execute("CREATE TABLE IF NOT EXISTS info (last_backlog INTEGER, last_indexer INTEGER, last_proper_search INTEGER)")
+          conn.commit()
+          conn.close()
+          PY
+
+          docker run -d --name sickshift-ci-test \
+            -p 18081:8081 \
+            -v "${DATA_DIR}:/data" \
+            -v "${SHOWS_DIR}:/shows" \
+            -e TZ=UTC \
+            sickshift-candidate:test
+
+          # Wait up to 90s for full startup (DB init + dashboard mount)
+          healthy="false"
+          for i in $(seq 1 45); do
+            if body="$(curl -fsS http://127.0.0.1:18081/dashboard/health 2>/dev/null)"; then
+              echo "Health response: $body"
+              if echo "$body" | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('status')=='ok' and d.get('db_header_ok') else 1)"; then
+                healthy="true"
+                break
+              fi
+            fi
+            sleep 2
+          done
+
+          if [[ "$healthy" != "true" ]]; then
+            echo "::error::Container failed to reach healthy /dashboard/health state"
+            docker logs sickshift-ci-test || true
+            exit 1
+          fi
+
+          # Verify diagnostics, UI routes, and soft migration persistence
+          curl -fsS http://127.0.0.1:18081/dashboard/api/diagnostics | python3 -c "import sys,json; d=json.load(sys.stdin); assert d['status']=='ok'; assert d['ffmpeg_available'] is True; assert 'db_path' not in d; print('Diagnostics OK:', d['version'])"
+          curl -fsS -o /dev/null http://127.0.0.1:18081/dashboard
+          curl -fsS -o /dev/null http://127.0.0.1:18081/view-shows/
+          test -f "${DATA_DIR}/sickshift.db"
+          echo "Verified legacy sickbeard.db -> sickshift.db migration inside persistent /data volume."
+
+          # Restart container against same persistent /data volume to verify survival
+          docker restart sickshift-ci-test
+          restarted="false"
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:18081/dashboard/health | grep -q '"status":"ok"'; then
+              restarted="true"
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$restarted" != "true" ]]; then
+            echo "::error::Container failed restart persistence check"
+            docker logs sickshift-ci-test || true
+            exit 1
+          fi
+          echo "Container restart & persistent volume verification passed."
+
+      - name: Run Trivy vulnerability scan (informational summary)
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          image-ref: 'sickshift-candidate:test'
+          format: 'table'
+          exit-code: '0'
+          severity: 'CRITICAL,HIGH'
+          ignore-unfixed: true
+
+  publish:
+    name: Publish official multi-arch image and verify remote pull
+    needs: validate
     if: github.repository == 'pomercier/SickShift'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    outputs:
+      digest: ${{ steps.build_push.outputs.digest }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -36,25 +155,76 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract Docker metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/pomercier/sickshift
-          tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix=sha-
+      - name: Compute official single-image tags
+        id: tags
+        shell: bash
+        env:
+          INPUT_VERSION: ${{ inputs.version_tag }}
+          INPUT_PROMOTE_LATEST: ${{ inputs.promote_latest }}
+          REF_NAME: ${{ github.ref_name }}
+          REF_TYPE: ${{ github.ref_type }}
+          SHORT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          IMAGE="ghcr.io/pomercier/sickshift"
+          SHA_TAG="sha-${SHORT_SHA:0:7}"
+          TAGS=("${IMAGE}:${SHA_TAG}")
+          PRIMARY_TAG="${SHA_TAG}"
 
-      - name: Build and push multi-arch image
+          VERSION=""
+          PROMOTE_LATEST="false"
+          if [[ "$REF_TYPE" == "tag" && "$REF_NAME" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            VERSION="${REF_NAME#v}"
+            PROMOTE_LATEST="true"
+          elif [[ -n "$INPUT_VERSION" && "$INPUT_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            VERSION="$INPUT_VERSION"
+            if [[ "$INPUT_PROMOTE_LATEST" == "true" ]]; then
+              PROMOTE_LATEST="true"
+            fi
+          fi
+
+          if [[ -n "$VERSION" ]]; then
+            MINOR="${VERSION%.*}"
+            TAGS+=("${IMAGE}:${VERSION}" "${IMAGE}:${MINOR}")
+            PRIMARY_TAG="${VERSION}"
+          fi
+          if [[ "$PROMOTE_LATEST" == "true" ]]; then
+            TAGS+=("${IMAGE}:latest")
+          fi
+
+          TAG_CSV="$(IFS=,; echo "${TAGS[*]}")"
+          echo "tags=${TAG_CSV}" >> "$GITHUB_OUTPUT"
+          echo "primary_tag=${PRIMARY_TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION:-${SHA_TAG}}" >> "$GITHUB_OUTPUT"
+          echo "Published tags: ${TAG_CSV}"
+
+      - name: Build and push multi-arch official image
+        id: build_push
         uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ steps.tags.outputs.tags }}
+          labels: |
+            org.opencontainers.image.title=SickShift
+            org.opencontainers.image.description=SickShift official multi-architecture Docker image
+            org.opencontainers.image.url=https://github.com/pomercier/SickShift
+            org.opencontainers.image.source=https://github.com/pomercier/SickShift
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ steps.tags.outputs.version }}
+            org.opencontainers.image.licenses=GPL-3.0-or-later
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Verify remote image availability and multi-arch manifest
+        shell: bash
+        env:
+          PRIMARY_TAG: ${{ steps.tags.outputs.primary_tag }}
+          DIGEST: ${{ steps.build_push.outputs.digest }}
+        run: |
+          set -euo pipefail
+          IMAGE="ghcr.io/pomercier/sickshift:${PRIMARY_TAG}"
+          docker buildx imagetools inspect "$IMAGE"
+          docker pull "$IMAGE"
+          echo "Verified remote pull of ${IMAGE} (${DIGEST})"

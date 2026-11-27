@@ -172,10 +172,13 @@ def create_router(app_state: AppState = state) -> APIRouter:
 
     @router.get("/health")
     async def health() -> dict[str, Any]:
+        from sickshift_dashboard.version import __version__
+
         db = Path(app_state.config.db_path)
         db_exists, db_size_bytes, db_header_ok = inspect_sqlite_file(db)
         return {
             "status": "ok" if db_header_ok and app_state.initialized else "degraded",
+            "version": __version__,
             "initialized": app_state.initialized,
             "db_exists": db_exists,
             "db_size_bytes": db_size_bytes,
@@ -190,6 +193,7 @@ def create_router(app_state: AppState = state) -> APIRouter:
     @router.get("/api/diagnostics")
     async def api_diagnostics() -> JSONResponse:
         import asyncio
+        from sickshift_dashboard.version import __version__
         from sickshift_dashboard.preview_clip import (
             detect_hw_encoder,
             get_preview_cache_stats,
@@ -221,6 +225,7 @@ def create_router(app_state: AppState = state) -> APIRouter:
         return JSONResponse(
             {
                 "status": "ok" if db_header_ok and app_state.initialized else "degraded",
+                "version": __version__,
                 "db_name": db.name,
                 "db_exists": db_exists,
                 "db_size_bytes": db_size_bytes,

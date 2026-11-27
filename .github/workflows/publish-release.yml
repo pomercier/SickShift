@@ -1,39 +1,59 @@
 name: Publish SickShift release
 
-# Manual only: publish exactly the tested current main revision.
+# Triggered manually or programmatically by auto_sync_sickgear.py on validated main commits.
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag, e.g. v1.0.3'
-        required: true
+        description: 'Explicit version tag (e.g. v1.3.0). Leave empty to auto-compute from bump.'
+        required: false
+        default: ''
         type: string
+      bump:
+        description: 'Auto-bump level when version is empty (patch or minor)'
+        required: false
+        default: 'patch'
+        type: choice
+        options: ['patch', 'minor']
 
 permissions:
   contents: write
   actions: read
+  packages: write
 
 concurrency:
   group: sickshift-release
   cancel-in-progress: false
 
 jobs:
-  publish:
+  prepare-release:
+    name: Verify checks and determine immutable version
     if: github.repository == 'pomercier/SickShift' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 15
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+      semver: ${{ steps.ver.outputs.semver }}
+      release_sha: ${{ steps.ver.outputs.release_sha }}
     steps:
       - name: Checkout exact source revision
         uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
       - name: Require passing release and cross-platform checks
+        id: ver
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
+          INPUT_VERSION: ${{ inputs.version }}
+          INPUT_BUMP: ${{ inputs.bump }}
         run: |
           set -euo pipefail
+          if [[ -n "$INPUT_VERSION" ]]; then
+            VERSION="$INPUT_VERSION"
+          else
+            VERSION="$(python3 scripts/auto_sync_sickgear.py next-version "${INPUT_BUMP:-patch}")"
+          fi
           if [[ ! "$VERSION" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
             echo "::error::Version must be vMAJOR.MINOR.PATCH with no leading zeros."
             exit 1
@@ -49,28 +69,191 @@ jobs:
             echo "::error::Release or tag already exists: $VERSION"
             exit 1
           fi
+          # Wait up to 8 minutes for in-flight CI checks on HEAD before enforcing pass
           for required_workflow in sickshift-ci.yml bootstrap-platforms.yml; do
-            successful_run="$(gh run list --repo pomercier/SickShift \
-              --workflow "$required_workflow" --commit "$sha" \
-              --status success --json databaseId \
-              --jq '.[0].databaseId // empty')"
+            successful_run=""
+            for attempt in $(seq 1 24); do
+              successful_run="$(gh run list --repo pomercier/SickShift \
+                --workflow "$required_workflow" --commit "$sha" \
+                --status success --json databaseId \
+                --jq '.[0].databaseId // empty')"
+              if [[ -n "$successful_run" ]]; then
+                break
+              fi
+              in_flight="$(gh run list --repo pomercier/SickShift \
+                --workflow "$required_workflow" --commit "$sha" \
+                --json status --jq '[.[] | select(.status=="queued" or .status=="in_progress")] | length')"
+              if [[ "$in_flight" == "0" ]]; then
+                break
+              fi
+              sleep 20
+            done
             if [[ -z "$successful_run" ]]; then
               echo "::error::No successful $required_workflow run exists for commit $sha."
               exit 1
             fi
             echo "Verified $required_workflow: $successful_run"
           done
-          echo "RELEASE_SHA=$sha" >> "$GITHUB_ENV"
-      - name: Publish validated version
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "semver=${VERSION#v}" >> "$GITHUB_OUTPUT"
+          echo "release_sha=$sha" >> "$GITHUB_OUTPUT"
+
+  validate-and-push-docker:
+    name: Validate and publish versioned official Docker image
+    needs: prepare-release
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    outputs:
+      digest: ${{ steps.push_ver.outputs.digest }}
+    steps:
+      - name: Checkout exact release revision
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ needs.prepare-release.outputs.release_sha }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build local linux/amd64 image for runtime verification
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: sickshift-release-check:test
+          cache-from: type=gha
+
+      - name: Verify real container boot, migration, persistence, and HTTP endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+          DATA_DIR="$(mktemp -d)"
+          SHOWS_DIR="$(mktemp -d)"
+          trap 'docker rm -f sickshift-rel-test >/dev/null 2>&1 || true; rm -rf "$DATA_DIR" "$SHOWS_DIR"' EXIT
+          python3 -c "import sqlite3; c=sqlite3.connect('${DATA_DIR}/sickbeard.db'); c.execute('CREATE TABLE IF NOT EXISTS info (last_backlog INTEGER)'); c.commit(); c.close()"
+          docker run -d --name sickshift-rel-test -p 18082:8081 -v "${DATA_DIR}:/data" -v "${SHOWS_DIR}:/shows" -e TZ=UTC sickshift-release-check:test
+          ok="false"
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:18082/dashboard/health 2>/dev/null | grep -q '"status":"ok"'; then
+              ok="true"
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ok" != "true" ]]; then
+            docker logs sickshift-rel-test || true
+            exit 1
+          fi
+          curl -fsS http://127.0.0.1:18082/dashboard/api/diagnostics | grep -q '"status":"ok"'
+          curl -fsS -o /dev/null http://127.0.0.1:18082/view-shows/
+          test -f "${DATA_DIR}/sickshift.db"
+          echo "Container validation passed prior to public release."
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push immutable versioned multi-arch image
+        id: push_ver
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/pomercier/sickshift:${{ needs.prepare-release.outputs.semver }}
+            ghcr.io/pomercier/sickshift:${{ needs.prepare-release.outputs.release_sha }}
+          labels: |
+            org.opencontainers.image.title=SickShift
+            org.opencontainers.image.url=https://github.com/pomercier/SickShift
+            org.opencontainers.image.source=https://github.com/pomercier/SickShift
+            org.opencontainers.image.revision=${{ needs.prepare-release.outputs.release_sha }}
+            org.opencontainers.image.version=${{ needs.prepare-release.outputs.semver }}
+            org.opencontainers.image.licenses=GPL-3.0-or-later
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify remote pull of versioned image before creating release
+        shell: bash
+        env:
+          SEMVER: ${{ needs.prepare-release.outputs.semver }}
+        run: |
+          set -euo pipefail
+          docker buildx imagetools inspect "ghcr.io/pomercier/sickshift:${SEMVER}"
+          docker pull "ghcr.io/pomercier/sickshift:${SEMVER}"
+
+  publish:
+    name: Create GitHub release and promote :latest tag
+    needs: [prepare-release, validate-and-push-docker]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact release revision
+        uses: actions/checkout@v7.0.1
+        with:
+          ref: ${{ needs.prepare-release.outputs.release_sha }}
+
+      - name: Publish validated GitHub release
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          VERSION: ${{ inputs.version }}
+          VERSION: ${{ needs.prepare-release.outputs.version }}
+          SEMVER: ${{ needs.prepare-release.outputs.semver }}
+          RELEASE_SHA: ${{ needs.prepare-release.outputs.release_sha }}
+          DIGEST: ${{ needs.validate-and-push-docker.outputs.digest }}
         run: |
           set -euo pipefail
+          NOTES_FILE="$(mktemp)"
+          cat > "$NOTES_FILE" <<EOF
+          ## Official Docker Image
+
+          \`\`\`sh
+          docker pull ghcr.io/pomercier/sickshift:${SEMVER}
+          # or track the latest validated stable release:
+          docker pull ghcr.io/pomercier/sickshift:latest
+          \`\`\`
+
+          - **Source commit:** \`${RELEASE_SHA}\`
+          - **Image digest:** \`${DIGEST}\`
+          - **Architectures:** \`linux/amd64\`, \`linux/arm64\`
+          - **Changelog:** [CHANGELOG.md](https://github.com/pomercier/SickShift/blob/main/CHANGELOG.md)
+          EOF
           gh release create "$VERSION" \
             --repo pomercier/SickShift \
             --target "$RELEASE_SHA" \
             --title "SickShift $VERSION" \
+            --notes-file "$NOTES_FILE" \
             --generate-notes \
             --latest
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Promote validated versioned image to :latest and minor tag
+        shell: bash
+        env:
+          SEMVER: ${{ needs.prepare-release.outputs.semver }}
+          DIGEST: ${{ needs.validate-and-push-docker.outputs.digest }}
+        run: |
+          set -euo pipefail
+          MINOR="${SEMVER%.*}"
+          docker buildx imagetools create \
+            -t "ghcr.io/pomercier/sickshift:latest" \
+            -t "ghcr.io/pomercier/sickshift:${MINOR}" \
+            "ghcr.io/pomercier/sickshift@${DIGEST}"
+          docker buildx imagetools inspect "ghcr.io/pomercier/sickshift:latest"
+          docker pull "ghcr.io/pomercier/sickshift:latest"
+          echo "Promoted and verified ghcr.io/pomercier/sickshift:latest -> ${DIGEST}"

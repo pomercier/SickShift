@@ -1,0 +1,32 @@
+name: SickShift Independent Watchdog
+
+on:
+  schedule:
+    - cron: '17 */2 * * *'  # Independent audit every 2 hours
+  workflow_dispatch:
+
+concurrency:
+  group: sickshift-watchdog
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  watchdog:
+    name: Verify sync, workflows, releases, and Docker consistency
+    if: github.repository == 'pomercier/SickShift'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Run independent watchdog checks and safe recovery
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SICKSHIFT_SYNC_TOKEN: ${{ secrets.SICKSHIFT_SYNC_TOKEN }}
+        run: python3 scripts/watchdog.py
