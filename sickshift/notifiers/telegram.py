@@ -18,11 +18,10 @@
 import os
 import re
 
+import sickshift
 from ..common import USER_AGENT
 from .generic import Notifier
-
 from exceptions_helper import ex
-import sickshift
 from sickshift.image_cache import ImageCache
 from sg_helpers import get_url
 

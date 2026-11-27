@@ -14,13 +14,16 @@
 # You should have received a copy of the GNU General Public License
 # along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
+import re
+import time
 # from collections import OrderedDict
 from io import BytesIO
 from math import ceil
 
-import datetime
-import re
-import time
+from dateutil import parser
+from lxml_etree import etree
+from six import string_types
 
 import sickshift
 from . import generic
@@ -35,13 +38,8 @@ from ..search import get_aired_in_season, get_wanted_qualities
 from ..show_name_helpers import get_show_names
 from ..scene_exceptions import ReleaseMap
 from ..tv import TVEpisode, TVShow
-
-from lib.dateutil import parser
-from lib.sg_helpers import md5_for_text, try_int
+from sg_helpers import md5_for_text, try_int
 from exceptions_helper import AuthException, ex, MultipleShowObjectsException
-from lxml_etree import etree
-
-from six import string_types
 from _23 import urlencode
 
 # noinspection PyUnreachableCode
@@ -160,6 +158,7 @@ class NewznabProvider(generic.NZBProvider):
         self._caps_cats = {}
         self._caps_all_cats = []
         self._caps_need_apikey = {'need': False, 'date': datetime.date.fromordinal(1)}
+        self._no_maxage = False  # True once the provider gives an error about the maxage parameter
         self._limits = 100
         self._last_recent_search = None
         self._caps_last_updated = datetime.datetime.fromordinal(1)
@@ -408,6 +407,12 @@ class NewznabProvider(generic.NZBProvider):
             description = data.get('description') or ''
             msg = ('', f': {description}')[bool(description)]
 
+            if 'maxage' in description.lower() and not self._no_maxage:
+                # e.g. "invalid parameter: maxage", searches go without it from now on
+                self._no_maxage = True
+                logger.log(f'{self.name} does not take the maxage parameter, searching without it{msg}')
+                return False
+
             if code not in (100, 101, 102, 401, 429, 500, 910):
                 logger.warning(f'Unknown error given from {self.name}{msg}')
             else:
@@ -622,7 +627,7 @@ class NewznabProvider(generic.NZBProvider):
         size = -1
         uid = None
         if 'name_space' in kwargs and 'newznab' in kwargs['name_space']:
-            size, uid = self._parse_size_uid(item, kwargs['name_space'])
+            size, uid = self.parse_size_uid(item, kwargs['name_space'])
         return size, uid
 
     def get_show(self,
@@ -674,13 +679,10 @@ class NewznabProvider(generic.NZBProvider):
                     s.wanted_quality = get_wanted_qualities(ep_obj, ep_status, ep_quality, unaired=True)
                 needed.check_needed_qualities(s.wanted_quality)
 
-        if not hasattr(ep_obj, 'eps_aired_in_season'):
+        if not ep_obj.show_obj.aired_in_season:
             # this should not happen, the creation is missing for the search in this case
-            logger.warning('eps_aired_in_season property was missing for search, creating it')
-            ep_count, ep_count_scene = get_aired_in_season(ep_obj.show_obj)
-            ep_obj.eps_aired_in_season = ep_count.get(ep_obj.season, 0)
-            ep_obj.eps_aired_in_scene_season = ep_count_scene.get(ep_obj.scene_season, 0) if ep_obj.show_obj.is_scene \
-                else ep_obj.eps_aired_in_season
+            logger.warning('aired_in_season is not set, setting it')
+            get_aired_in_season(ep_obj.show_obj)
 
         per_ep, limit_per_ep = 0, 0
         if needed.need_sd and not needed.need_hd:
@@ -831,7 +833,7 @@ class NewznabProvider(generic.NZBProvider):
         return parsed_date
 
     @staticmethod
-    def _parse_size_uid(item,  # type: etree.Element
+    def parse_size_uid(item,  # type: etree.Element
                         ns,  # type: Dict
                         default=-1  # type: int
                         ):  # type: (...) -> Tuple[int, Union[AnyStr, None]]
@@ -887,8 +889,8 @@ class NewznabProvider(generic.NZBProvider):
         if self._noname in self.url.lower():
             base_params['extended'] = '1'
         else:
-            base_params['attrs'] =  ','.join([k for k, v in NewznabConstants.providerToIndexerMapping.items()
-                                              if v in self.caps])
+            base_params['attrs'] = ','.join([k for k, v in NewznabConstants.providerToIndexerMapping.items()
+                                             if v in self.caps] + ['guid'])
 
         base_params_rss = {'num': self.limits, 'dl': '1'}
         rss_fallback = False
@@ -974,6 +976,8 @@ class NewznabProvider(generic.NZBProvider):
                 # workaround a strange glitch
                 if sum([ord(i) for i in self.get_id()]) in [383] and 5 == 14 - request_params['maxage']:
                     request_params['maxage'] += 1
+                if self._no_maxage:
+                    request_params.pop('maxage', None)
 
                 offset = 0
                 batch_count = not 0
@@ -1006,6 +1010,8 @@ class NewznabProvider(generic.NZBProvider):
                         break
 
                     if not self._check_auth_from_data(parsed_xml, search_url):
+                        if self._no_maxage and None is not request_params.pop('maxage', None):
+                            continue  # the provider does not take maxage, search again without it
                         break
 
                     if 'rss' != parsed_xml.tag:
@@ -1093,9 +1099,7 @@ class NewznabProvider(generic.NZBProvider):
         :param kwargs:
         :return:
         """
-        cache_results = self.cache.list_propers(search_date)
-        results = [classes.Proper(x['name'], x['url'],
-                                  datetime.datetime.fromtimestamp(x['time']), self.show_obj) for x in cache_results]
+        results = self._get_cached_propers(search_date)
 
         check = self._check_auth()
         if isinstance(check, bool) and not check:
@@ -1152,7 +1156,7 @@ class NewznabProvider(generic.NZBProvider):
                     logger.log(f'Unable to figure out the date for entry {title}, skipping it')
                     continue
 
-                result_size, result_uid = self._parse_size_uid(item, ns=n_space)
+                result_size, result_uid = self.parse_size_uid(item, ns=n_space)
                 if not search_date or search_date < result_date:
                     show_obj = self.get_show(item, name_space=n_space)
                     search_result = classes.Proper(title, url, result_date, self.show_obj, parsed_show_obj=show_obj,
@@ -1282,8 +1286,9 @@ class NewznabCache(tvcache.TVCache):
         title, url = self._title_and_url(item)
 
         ids = self.parse_ids(item, ns)
+        parsed_size, uid = NewznabProvider.parse_size_uid(item, ns)
 
         if title and url:
-            return self.add_cache_entry(title, url, tvid_prodid=ids)
+            return self.add_cache_entry(title, url, tvid_prodid=ids, size=parsed_size, uid=uid)
 
         logger.debug(f'Data returned from the {self.provider.name} feed is incomplete, this result is unusable')

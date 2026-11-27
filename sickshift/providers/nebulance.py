@@ -21,10 +21,8 @@ import traceback
 from . import generic
 from .. import common, logger
 from ..helpers import try_int
-
 from bs4_parser import BS4Parser
 from json_helper import json_dumps
-
 from _23 import unquote_plus
 
 
@@ -60,9 +58,10 @@ class NebulanceProvider(generic.TorrentProvider):
             response = self.get_url(self.urls['user'], skip_auth=True, parse_json=True)
             if self.should_skip():
                 return False
-            if 'response' in response:
+            if isinstance(response, dict) and isinstance(response.get('response'), dict):
                 self.user_authkey, self.user_passkey, self.uid = [response['response'].get(v)
                                                                   for v in ('authkey', 'passkey', 'id')]
+                logger.RedactingFilter.reset()  # mask the new keys from the next log line
         return self.user_authkey
 
     def _search_provider(self, search_params, **kwargs):
@@ -215,12 +214,10 @@ class NebulanceProvider(generic.TorrentProvider):
 
     def ui_string(self, key):
         profile_page = 'profile page'
-        try:
-            if self._check_auth(True) and self._authorised():
-                api_url = self.urls['api_key'] % self.uid
-                profile_page = f'<a href="{api_url}">{profile_page}</a>'
-        except (BaseException, Exception):
-            pass
+        # a page view does not log in to the site, the uid is saved from a login of a search
+        api_url = self.uid and self.urls.get('api_key')
+        if api_url:
+            profile_page = f'<a href="{api_url % self.uid}">{profile_page}</a>'
 
         return (f'{self.get_id()}_api_key') == key and 'API key' or \
             f'{self.get_id()}_api_key_tip' == key and \

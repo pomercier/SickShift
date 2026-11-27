@@ -17,11 +17,11 @@
 import socket
 from ssl import SSLError
 
-from .generic import Notifier
-import sickshift
+from six import moves
 
+import sickshift
+from .generic import Notifier
 from _23 import urlencode
-from lib.six import moves
 
 
 class PushalotNotifier(Notifier):

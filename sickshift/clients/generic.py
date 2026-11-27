@@ -1,16 +1,16 @@
-from hashlib import sha1
 import re
 import time
+from hashlib import sha1
 
+import requests
+from bencode import bencode, bdecode
+from six import string_types
+
+import sickshift
 from . import http_error_code
 from .. import logger
-import sickshift
 from exceptions_helper import ex
-from lib.bencode import bencode, bdecode
-from lib import requests
-
 from _23 import make_btih
-from six import string_types
 
 
 class GenericClient(object):

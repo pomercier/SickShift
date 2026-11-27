@@ -8,27 +8,33 @@ root = Path(__file__).resolve().parents[1]
 files = subprocess.check_output(['git', 'ls-files', '-z'], cwd=root).decode().split('\0')
 errors = []
 public_base = '60b9dec46e9ffae97a87cad0905a654acc726167'
-def public_example(name, value):
-    # Public upstream documentation contains dummy /home/user paths and URL examples.
-    upstream_name = re.sub('sickshift', lambda m: 'sickgear' if m.group().islower() else 'SickGear', name, flags=re.I)
-    result = subprocess.run(['git', 'show', public_base + ':' + upstream_name], cwd=root, capture_output=True)
-    original_value = re.sub('sickshift', 'sickgear', value, flags=re.I)
-    return result.returncode == 0 and original_value.encode() in result.stdout
-
-def original_public_file(name, content):
-    result = subprocess.run(['git', 'show', public_base + ':' + name], cwd=root, capture_output=True)
-    return result.returncode == 0 and result.stdout == content
-
 # sickshift-sync: PUBLIC-UPSTREAM-SHA256-BEGIN
-# Empreintes vérifiées octet par octet sur SickGear/main.
+# Verified byte-for-byte against SickGear/main.
+PUBLIC_UPSTREAM_COMMIT = '68d2f864e93011f7b9675ffd07905f1a1a1661c6'
 PUBLIC_UPSTREAM_SHA256 = {
     'lib/certifi/cacert.pem': 'bb92c6ac31c92f4f553bffd6bf093db02c858c23e111b0b4df9bafa3fdbe00d1',
-    'lib/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz': '729a51d18bac966961465d7591c9aaba3c471ee8d66da60a84144a83ebbd0e53',
+    'sickshift/dateutil-zoneinfo.tar.gz': '729a51d18bac966961465d7591c9aaba3c471ee8d66da60a84144a83ebbd0e53',
 }
 def trusted_public_upstream_blob(name, content):
     expected = PUBLIC_UPSTREAM_SHA256.get(name)
     return expected is not None and hashlib.sha256(content).hexdigest() == expected
 # sickshift-sync: PUBLIC-UPSTREAM-SHA256-END
+def public_example(name, value):
+    # Public upstream documentation/tests contain dummy /home/user paths and URL examples.
+    upstream_name = re.sub('sickshift', lambda m: 'sickgear' if m.group().islower() else 'SickGear', name, flags=re.I)
+    original_value = re.sub('sickshift', 'sickgear', value, flags=re.I)
+    for base_ref in (PUBLIC_UPSTREAM_COMMIT, public_base):
+        result = subprocess.run(['git', 'show', base_ref + ':' + upstream_name], cwd=root, capture_output=True)
+        if result.returncode == 0 and original_value.encode() in result.stdout:
+            return True
+    return False
+
+def original_public_file(name, content):
+    for base_ref in (PUBLIC_UPSTREAM_COMMIT, public_base):
+        result = subprocess.run(['git', 'show', base_ref + ':' + name], cwd=root, capture_output=True)
+        if result.returncode == 0 and result.stdout == content:
+            return True
+    return False
 for name in filter(None, files):
     p = root / name
     if not p.is_file():

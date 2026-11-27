@@ -17,10 +17,9 @@
 
 import re
 
+import sickshift
 from .generic import GenericClient
 from .. import logger
-import sickshift
-
 from _23 import b64encodestring
 
 

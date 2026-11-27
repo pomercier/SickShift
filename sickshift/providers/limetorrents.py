@@ -21,10 +21,8 @@ import traceback
 from . import generic
 from .. import logger
 from ..helpers import try_int
-
 from bs4_parser import BS4Parser
-
-from _23 import b64decodestring, quote_plus
+from _23 import quote_plus
 
 
 class LimeTorrentsProvider(generic.TorrentProvider):
@@ -32,13 +30,7 @@ class LimeTorrentsProvider(generic.TorrentProvider):
     def __init__(self):
         generic.TorrentProvider.__init__(self, 'LimeTorrents')
 
-        self.url_home = ['https://www.limetorrents.cc/'] + \
-                        [f'https://{b64decodestring(x)}/' for x in [''.join(x) for x in [
-                            [re.sub(r'[F\sp]+', '', x[::-1]) for x in [
-                                'XZFtlpGb', 'lJn pcvR', 'nFLpzRnb', 'v xpmYuV', 'CZlt F2Y', '=F QXYs5']],
-                            [re.sub(r'[K\sP]+', '', x[::-1]) for x in [
-                                'XZKtPlGb', 'lJncPPvR', 'nKLzRnKb', 'vxm Y uV', 'CZlPt2PY', '==wYK2P5']],
-                        ]]]
+        self.url_home = ['https://www.limetorrents.cc/']
 
         self.url_vars = {'search': 'search/tv/%s/', 'browse': 'browse-torrents/TV-shows/'}
         self.url_tmpl = {'config_provider_home_uri': '%(home)s', 'search': '%(home)s%(vars)s',
@@ -64,7 +56,7 @@ class LimeTorrentsProvider(generic.TorrentProvider):
                 search_url = self.urls['browse'] if 'Cache' == mode \
                     else self.urls['search'] % (quote_plus(search_string))
 
-                html = self.get_url(search_url, provider=self)
+                html = self.get_url(search_url, provider=self, proxy_browser=True)
                 if self.should_skip():
                     return results
 
@@ -124,7 +116,7 @@ class LimeTorrentsProvider(generic.TorrentProvider):
 
     def get_data(self, url):
         result = None
-        html = self.get_url(url)
+        html = self.get_url(url, proxy_browser=True)
         if self.should_skip():
             return result
 

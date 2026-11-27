@@ -15,10 +15,10 @@
 # along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-# import cgi
 
-from .generic import Notifier
 import sickshift
+# import cgi
+from .generic import Notifier
 
 
 def diagnose():

@@ -24,7 +24,6 @@ from . import generic
 from .. import logger
 from ..helpers import try_int
 from json_helper import json_loads
-
 from _23 import b64encodestring, quote
 
 # noinspection PyUnreachableCode
@@ -133,7 +132,9 @@ class SnowflProvider(generic.TorrentProvider):
 
             rc = dict([(k, re.compile(f'(?i){v}')) for (k, v) in {
                 'js': r'<script[^>]+?src="([^"]+?js\?v=[\w]{8,})"',
-                'token': r'\w\s*=\s*"(\w{30,40})"', 'seed': r'n random[^"]+"([^"]+)'}.items()])
+                'token': r'\w\s*=\s*"(\w{30,40})"',
+                # the characters of the random string, in "function random..." or, since 2026, "randomString:function"
+                'seed': r'(?:function\s+random\w*|random\w*\s*:\s*function)[^"]+"([^"]+)"'}.items()])
 
             js_src = rc['js'].findall(html)
             for src in js_src:

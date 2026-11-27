@@ -1,7 +1,8 @@
 #import sickshift
 #import datetime
+#import re
 #from sickshift import network_timezones, WEB_ROOT, THEME_NAME
-#from sickshift.common import *
+#from sickshift.common import qualityPresets, qualityPresetStrings
 #from sickshift.sgdatetime import SGDatetime
 <% def sg_var(varname, default=False): return getattr(sickshift, varname, default) %>#slurp#
 <% def sg_str(varname, default=''): return getattr(sickshift, varname, default) %>#slurp#

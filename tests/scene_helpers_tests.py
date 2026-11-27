@@ -7,13 +7,12 @@ import unittest
 import test_lib as test
 
 import sys
-import os.path
-sys.path.insert(1, os.path.abspath('..'))
-
-from sickshift import show_name_helpers, scene_exceptions, common, name_cache
-from sickshift.indexers.indexer_config import TVINFO_TVDB
+from os.path import abspath, dirname, join
+sys.path.insert(1, abspath(join(dirname(__file__), '..')))
 
 import sickshift
+from sickshift import show_name_helpers, scene_exceptions, common, name_cache
+from sickshift.indexers.indexer_config import TVINFO_TVDB
 from sickshift import db
 from sickshift.tv import TVShow
 

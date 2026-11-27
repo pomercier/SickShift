@@ -51,12 +51,15 @@ class MilkieProvider(generic.TorrentProvider):
 
     def logged_in(self, resp=None):
 
-        self._token = resp and resp.get('token')
+        if None is resp:  # a check before a fetch, the token of the last login is kept until a search fails
+            return bool(self._token) and bool(self._dkey)
+        self._token = isinstance(resp, dict) and resp.get('token')
         if self._token:
             resp = self.get_url(self.urls['auth'], skip_auth=True,
                                 headers=dict(Authorization=f'Bearer {self._token}'), parse_json=True)
             user = isinstance(resp, dict) and resp.get('user')
-            self._dkey = user and user.get('apiKey') or user.get('downloadKey')
+            self._dkey = isinstance(user, dict) and (user.get('apiKey') or user.get('downloadKey'))
+            logger.RedactingFilter.reset()  # mask the new keys from the next log line
         return bool(self._token) and bool(self._dkey)
 
     def _search_provider(self, search_params, **kwargs):
@@ -100,6 +103,7 @@ class MilkieProvider(generic.TorrentProvider):
                                 items[mode].append((title, download_url, seeders, self._bytesizer(size)))
                 elif 200 != getattr(sess, 'response', {}).get('status_code', 0):
                     logger.log('The site search is not working, skipping')
+                    self._token = None  # e.g. the token has expired, the next search logs in again
                     break
 
                 self._log_search(mode, len(items[mode]) - cnt, search_url)

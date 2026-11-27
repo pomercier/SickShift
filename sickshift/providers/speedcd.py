@@ -18,15 +18,15 @@
 import re
 import time
 
+from requests.cookies import cookiejar_from_dict
+from six import string_types
+
 import sickshift
 from . import generic
 from .. import logger
 from ..helpers import try_int
 from bs4_parser import BS4Parser
-from requests.cookies import cookiejar_from_dict
-
 from _23 import quote, unquote
-from six import string_types
 
 class SpeedCDProvider(generic.TorrentProvider):
 
@@ -62,7 +62,7 @@ class SpeedCDProvider(generic.TorrentProvider):
             self.session.cookies.clear()
             json = self.get_url(self.urls['login_1'], skip_auth=True,
                                 post_data={'username': self.username}, parse_json=True)
-            resp = list(filter(lambda l: isinstance(l, list), json.get('Fs', [])))
+            resp = list(filter(lambda l: isinstance(l, list), isinstance(json, dict) and json.get('Fs') or []))
 
             def get_html(_resp):
                 for cur_item in _resp:

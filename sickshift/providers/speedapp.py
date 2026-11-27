@@ -17,10 +17,10 @@
 # You should have received a copy of the GNU General Public License
 # along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
+from six import string_types
+
 from . import generic
 from ..helpers import try_int
-
-from six import string_types
 
 
 class SpeedAppProvider(generic.TorrentProvider):
@@ -50,6 +50,8 @@ class SpeedAppProvider(generic.TorrentProvider):
 
     def logged_in(self, resp=None):
 
+        if None is resp:  # a check before a fetch, the token tested last is kept
+            return bool(self._authd) and not any(self.perms_needed)
         self._authd = None
         self.perms_needed = self.perms
         if isinstance(resp, dict) and isinstance(resp.get('scopes'), list):
@@ -61,7 +63,8 @@ class SpeedAppProvider(generic.TorrentProvider):
                 resp = self.get_url(self.urls['cats'], skip_auth=True, parse_json=True, headers=self.auth_header())
                 if isinstance(resp, list):
                     categories = [category['id'] for category in list(filter(
-                        lambda c: isinstance(c.get('id'), int) and isinstance(c.get('name'), string_types)
+                        lambda c: isinstance(c, dict) and isinstance(c.get('id'), int)
+                        and isinstance(c.get('name'), string_types)
                         and c.get('name').upper() in ('TV PACKS', 'TV HD', 'TV SD'), resp))]
                     self.categories = {'Cache': categories, 'Episode': categories, 'Season': categories}
 
@@ -102,14 +105,13 @@ class SpeedAppProvider(generic.TorrentProvider):
         return results
 
     def ui_string(self, key):
-        try:
-            not_authd = not self._authd and self._check_auth(True) and self._authorised()
-        except (BaseException, Exception):
-            not_authd = True
+        # a page view does not test the token at the site, a search does
+        tested = bool(self._authd)
 
         return (f'{self.get_id()}_api_key') == key and 'API Token' or \
                f'{self.get_id()}_api_key_tip' == key and \
-               ((not_authd or self.perms_needed)
+               (self.api_key and not tested and 'the token is tested at the next search' or
+                (not self.api_key or self.perms_needed)
                 and ('create token at <a href="%sprofile/api-tokens">%s site</a><br>'
                      'with perms %s' % (self.url_base, self.name, list(map(
                            lambda p: 't.read' in p and 'Read torrents'

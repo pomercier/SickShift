@@ -2,6 +2,7 @@
 	--link:#00bfff;
 	--link-hover:#add8e6;
 	--text:#ddd;
+	--green-text:#393;
 }
 /* =======================================================================
 inc_top.tmpl
@@ -24,6 +25,118 @@ pre .prelight2{
 #config .adv-hide .component-title,
 pre .prelight-num{
 	color:#ffba57
+}
+
+pre .log-start,
+pre .log-run{
+	color:#f6ff41
+}
+
+pre .log-stop{
+	background-color:rgba(246, 255, 65, 0.09)
+}
+
+.yes-no.is-yes{
+	color:#7ac143
+}
+
+/* bulk change, the slanted label of a sorted column sits on the fill colour, the cell fill covers only part of it */
+.tablesorter.rotate thead th.tablesorter-headerAsc .rotate-body,
+.tablesorter.rotate thead th.tablesorter-headerDesc .rotate-body,
+.tablesorter.rotate thead th.tablesorter-headerAsc .rotate-body2,
+.tablesorter.rotate thead th.tablesorter-headerDesc .rotate-body2,
+.tablesorter.rotate thead th.sort-action.tablesorter-headerAsc .rotate-body span,
+.tablesorter.rotate thead th.sort-action.tablesorter-headerDesc .rotate-body span{
+	background-color:#297ab8
+}
+
+/* bulk change, a sorted column keeps the header colour, its label tag, arrow and bar mark it, so the mark does not
+   grow with the width of the column, Show Name has a tag as the slanted labels do */
+#bulk-change-table thead th.tablesorter-headerAsc,
+#bulk-change-table thead th.tablesorter-headerDesc,
+#bulk-change-table-sticky thead th.tablesorter-headerAsc,
+#bulk-change-table-sticky thead th.tablesorter-headerDesc,
+#bulk-change-table:not(.hasFilters) thead th.sort-icon-left{
+	background-color:#15528f
+}
+
+#bulk-change-table thead th.col-checkbox.tablesorter-headerAsc .tablesorter-header-inner > div,
+#bulk-change-table thead th.col-checkbox.tablesorter-headerDesc .tablesorter-header-inner > div,
+#bulk-change-table-sticky thead th.col-checkbox.tablesorter-headerAsc .tablesorter-header-inner > div,
+#bulk-change-table-sticky thead th.col-checkbox.tablesorter-headerDesc .tablesorter-header-inner > div,
+#bulk-change-table thead th.sort-icon-left.tablesorter-headerAsc .tablesorter-header-inner,
+#bulk-change-table thead th.sort-icon-left.tablesorter-headerDesc .tablesorter-header-inner,
+#bulk-change-table-sticky thead th.sort-icon-left.tablesorter-headerAsc .tablesorter-header-inner,
+#bulk-change-table-sticky thead th.sort-icon-left.tablesorter-headerDesc .tablesorter-header-inner{
+	display:inline-block;
+	margin:0 -4px;
+	padding:0 4px;
+	border-radius:2px;
+	background-color:#297ab8
+}
+
+.tablesorter.rotate thead th.col-destructive span{
+	color:#ffc2b8
+}
+
+/* a filter box or menu of the bulk change header, an edge of 3:1 or more on the row and a hint of 4.5:1 on the box,
+   a filter in use has a wider edge in the colour of the action line */
+#bulk-change-table .tablesorter-filter-row input[type="search"],
+#bulk-change-table-sticky .tablesorter-filter-row input[type="search"],
+#bulk-change-table .tablesorter-filter-row select.tablesorter-filter,
+#bulk-change-table-sticky .tablesorter-filter-row select.tablesorter-filter{
+	box-shadow:inset 0 0 0 1px #8c8c8c
+}
+
+#bulk-change-table .tablesorter-filter-row select.tablesorter-filter,
+#bulk-change-table-sticky .tablesorter-filter-row select.tablesorter-filter{
+	background-color:rgba(255, 255, 255, 0.2);
+	color:#ddd
+}
+
+#bulk-change-table .tablesorter-filter-row select.tablesorter-filter option{
+	background-color:#282828
+}
+
+#bulk-change-table .tablesorter-filter-row .tablesorter-filter.filter-in-use,
+#bulk-change-table-sticky .tablesorter-filter-row .tablesorter-filter.filter-in-use{
+	box-shadow:inset 0 0 0 2px #78a6d8
+}
+
+#bulk-change-table .tablesorter-filter-row input[type="search"]:focus-visible,
+#bulk-change-table-sticky .tablesorter-filter-row input[type="search"]:focus-visible,
+#bulk-change-table .tablesorter-filter-row select.tablesorter-filter:focus-visible{
+	box-shadow:inset 0 0 0 1px #8c8c8c, 0 0 0 2px #fff
+}
+
+#bulk-change-table .tablesorter-filter-row input[type="search"]::placeholder,
+#bulk-change-table-sticky .tablesorter-filter-row input[type="search"]::placeholder{
+	color:rgba(255, 255, 255, 0.75)
+}
+
+/* a sortable column of the bulk change header under the pointer, and a destructive label on the sorted fill */
+.tablesorter.rotate thead th.tablesorter-header:not(.sorter-false):not(.tablesorter-headerAsc):not(.tablesorter-headerDesc):hover{
+	background-color:#2a6fb0;
+	color:#fff
+}
+
+/* a sorted Remove label keeps its soft red, on a dark red tag, 4.8:1 */
+.tablesorter.rotate thead th.col-destructive.tablesorter-headerAsc .rotate-body span,
+.tablesorter.rotate thead th.col-destructive.tablesorter-headerDesc .rotate-body span{
+	color:#ffc2b8;
+	background-color:#9b2f2f
+}
+
+#bulk-change-table.hover-highlight tbody > tr:hover > td{
+	background-color:#282828
+}
+
+#bulk-change-table.hover-highlight tbody td:hover::after{
+	background-color:rgba(0, 0, 0, 0.2)
+}
+
+.yes-no.is-no{
+	color:#858585
 }
 
 .shows-not-found.nnnn .snf .sgicon-warning,
@@ -235,8 +348,28 @@ pre .prelight-num{
 	border-top-right-radius:5px
 }
 
+#provider-tunnel-use .tunnel-risk{
+	color:#ebbf6a
+}
+
+#provider-tunnel-use .tunnel-provider:hover{
+	background-color:rgba(255, 255, 255, .06)
+}
+
+#provider-tunnel-use .tunnel-blocked-tag{
+	border-color:rgba(235, 191, 106, .5);
+	background-color:rgba(235, 191, 106, .14);
+	color:#ebbf6a
+}
+
+#provider-tunnel-use .tunnel-private-tag{
+	border-color:rgba(255, 255, 255, .25);
+	color:#bbb
+}
+
 .topbar-notification{
 	width:600px;
+	max-width:calc(100% - 32px);
 	text-align:center;
 	margin-left:auto;
 	margin-right:auto;
@@ -376,14 +509,15 @@ home_newShow.tmpl
 	background-color:rgb(40, 40, 40)
 }
 
+/* the dimmed article of a show name, 4.5:1 or more on the rows */
 .article{
-	color:#707070
+	color:#9e9e9e
 }
 
 .cast .person span, .cast .person a,
 .btn-inverse.dark-bg,
 #addRootDirTable td label .filepath,
-.grey-text{color:#999}
+.grey-text{color:#a3a3a3}
 .highlight-text{color:#fff}
 #display-show.back-art.pro.ii .tablesorter tr .grey-text{color:#555}
 
@@ -413,6 +547,15 @@ home_browseShows.tmpl
 #browse-list .show-card{
 	background-color:#333;
 	border:1px solid #111
+}
+
+#browse-list .card-detail .role{
+	color:#5cb85c
+}
+
+#browse-list .card-detail [style*="color:#888"],
+#browse-list .card-detail .genre{
+	color:#aaa !important
 }
 
 .browse-image{
@@ -1116,6 +1259,19 @@ fieldset[disabled] .navbar-default .btn-link:focus{
 	border: 1px solid rgba(255, 255, 255, 0.1) !important;
 	border-radius: 8px;
 }
+
+/* a field the browser autofilled, e.g. from a picked earlier search, is painted light by the browser */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill{
+	-webkit-box-shadow:0 0 0 1000px #181818 inset;
+	-webkit-text-fill-color:var(--text);
+	caret-color:var(--text);
+	/* a long delay to the browser background, so that it does not flash light before the rule above paints */
+	transition:background-color 600000s 0s
+}
 #fileBrowserDialog .form-control:active,
 #fileBrowserDialog .form-control:hover {
 	border-color: rgba(61, 217, 235, 0.5) !important;
@@ -1129,7 +1285,7 @@ fieldset[disabled] .form-control{
 }
 
 .btn{
-	color: #e2e8f0 !important;
+	color: #fff !important;
 	text-shadow: none !important;
 	background: rgba(255, 255, 255, 0.07) !important;
 	border: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -1360,6 +1516,13 @@ tablesorter.css
 	background:rgba(30, 42, 68, 0.95) url("data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjB+gC+jP2ptn0WskLQA7") no-repeat center right !important;
 }
 
+/* white text on a sorted header, the light grey text was 3.4:1 on its blue */
+.tablesorter thead .tablesorter-headerDesc,
+.tablesorter thead .tablesorter-headerAsc,
+#bulk-change-table:not(.hasFilters) thead th.sort-icon-left{
+	color:#fff
+}
+
 .tablesorter thead .tablesorter-headerAsc{
 	background:rgba(30, 42, 68, 0.95) url("data:image/gif;base64,R0lGODlhFQAEAIAAAP///////yH5BAEAAAEALAAAAAAVAAQAAAINjI8Bya2wnINUMopZAQA7") no-repeat center right !important;
 }
@@ -1395,7 +1558,6 @@ thead.tablesorter-stickyHeader{
 .sort-size-type.tablesorter-headerSorted{
 	background-color:rgba(61, 217, 235, 0.25) !important;
 }
-
 .tablesorter tr.tablesorter-filter-row,
 .tablesorter tr.tablesorter-filter-row td{
 	text-align:center;
@@ -1429,6 +1591,39 @@ thead.tablesorter-stickyHeader{
 #tfoot{
 	background:#282828;
 	border-bottom:0
+}
+
+/* a line of 3:1 on the header sets the action columns, Update to Remove, apart from the columns before them */
+#bulk-change-table thead th.col-actions-start,
+#bulk-change-table-sticky thead th.col-actions-start{
+	border-left:1px solid #78a6d8
+}
+
+/* the action columns, Update to Remove, are one block of controls, a darker header and a tint on their cells */
+.tablesorter.rotate thead th.sort-action,
+#bulk-change-table thead th.sort-action.tablesorter-headerAsc,
+#bulk-change-table thead th.sort-action.tablesorter-headerDesc,
+#bulk-change-table-sticky thead th.sort-action.tablesorter-headerAsc,
+#bulk-change-table-sticky thead th.sort-action.tablesorter-headerDesc,
+#bulk-change-table thead th.col-spacer,
+#bulk-change-table-sticky thead th.col-spacer{
+	background-color:#0f3b66
+}
+
+#bulk-change-table tbody td.col-action{
+	background-color:rgba(120, 166, 216, 0.08)
+}
+
+/* the keyboard focus, a ring in the text colour of the theme, the outline of the browser hardly shows on it */
+/* important, as the focus rules of the page library are more specific */
+html *:focus-visible{
+	outline:2px solid #fff !important;
+	outline-offset:1px !important
+}
+
+/* the space kept for the filter row before the table script adds it, in the colour of the row */
+#bulk-change-table:not(.hasFilters) thead th{
+	border-bottom:29px solid #282828
 }
 
 #showListTable tbody{
@@ -1469,9 +1664,13 @@ jquery.confirm.css
 	text-shadow:0 1px 1px rgba(0,0,0,0.75)
 }
 
-.modal-body,
-.modal-footer .btn{
+.modal-body{
 	color:#ddd
+}
+
+/* white on the blue, green and red dialog buttons is 4.5:1 or more */
+.modal-footer .btn{
+	color:#fff
 }
 
 /*

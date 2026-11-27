@@ -15,6 +15,7 @@
 # along with SickShift.  If not, see <http://www.gnu.org/licenses/>.
 
 import datetime
+
 import sickshift
 
 MESSAGE = 'notice'

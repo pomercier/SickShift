@@ -19,10 +19,9 @@ import time
 import threading
 import traceback
 
+import sickshift
 from . import logger
 from exceptions_helper import ex
-
-import sickshift
 
 
 class Scheduler(threading.Thread):

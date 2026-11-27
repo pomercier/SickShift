@@ -4,13 +4,15 @@ import os.path
 import glob
 import unittest
 import test_lib as test
-import sickshift
+from os.path import abspath, dirname, join
 from time import sleep
+
+import sickshift
 from sickshift import db, logger
 from sickshift.databases.mainDB import MIN_DB_VERSION, MAX_DB_VERSION
 
-sys.path.insert(1, os.path.abspath('..'))
-sys.path.insert(1, os.path.abspath('../lib'))
+sys.path.insert(1, abspath(join(dirname(__file__), '..')))
+sys.path.insert(1, abspath(join(dirname(__file__), '..', 'lib')))
 
 sickshift.SYS_ENCODING = 'UTF-8'
 

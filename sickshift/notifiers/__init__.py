@@ -17,13 +17,12 @@
 import os
 import re
 
+import sickshift
 # import pushalot
-# from lib import api_trakt
+# import api_trakt
 from . import emby, kodi, plex, xbmc, \
     nmj, nmjv2, pushbullet, pushover, pytivo, synoindex, synologynotifier, \
     discord, emailnotify, libnotify, growl, prowl, slack, telegram
-
-import sickshift
 
 
 class NotifierFactory(object):

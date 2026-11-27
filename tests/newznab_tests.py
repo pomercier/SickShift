@@ -5,22 +5,22 @@ warnings.filterwarnings('ignore', module=r'.*dateutil.*', message='.*Unicode.*')
 warnings.filterwarnings('ignore', module=r'.*', message=r'.*Python 2\.6.*')
 
 import datetime
-import os.path
 import random
 import sys
 import test_lib as test
 import unittest
+from os.path import abspath, dirname, isfile, join
 
-sys.path.insert(1, os.path.abspath('..'))
-sys.path.insert(1, os.path.abspath('../lib'))
+sys.path.insert(1, abspath(join(dirname(__file__), '..')))
+sys.path.insert(1, abspath(join(dirname(__file__), '..', 'lib')))
 
 from lxml_etree import etree
-from lib.dateutil import parser
+from dateutil import parser
+
+import sickshift
 from sickshift.indexers.indexer_config import *
 from sickshift.network_timezones import SG_TIMEZONE
 from sickshift.providers import newznab
-
-import sickshift
 
 sickshift.SYS_ENCODING = 'UTF-8'
 
@@ -185,7 +185,7 @@ caps_test_cases = [
 class FakeNewznabProvider(newznab.NewznabProvider):
 
     def __init__(self, *args, **kwargs):
-        self.FILEDIR = os.path.join(test.TESTDIR, 'newznab_data')
+        self.FILEDIR = join(test.TESTDIR, 'newznab_data')
         self._data_files_dict = ({}, kwargs['data_files_dict'])[isinstance(kwargs.get('data_files_dict'), dict)]
         if 'data_files_dict' in kwargs:
             del kwargs['data_files_dict']
@@ -193,8 +193,8 @@ class FakeNewznabProvider(newznab.NewznabProvider):
 
     def _read_data(self, filename):
         try:
-            f = os.path.join(self.FILEDIR, filename)
-            if os.path.isfile(f):
+            f = join(self.FILEDIR, filename)
+            if isfile(f):
                 with open(f, 'rb') as d:
                     return d.read()
         except (BaseException, Exception):
@@ -332,6 +332,31 @@ class FakeProviderTests(test.SickbeardTestDBCase):
             self.assertEqual(cur_test['cats'], newznab_provider.cats, msg=msg)
             self.assertEqual(cur_test['all_cats'], newznab_provider.all_cats, msg=msg)
 
+    def test_search_without_maxage_after_provider_rejects_it(self):
+        urls = []
+
+        class NoMaxage(FakeNewznabProvider):
+            def get_url(self, url, *args, **kwargs):
+                urls.append(url)
+                if 'maxage=' in url:
+                    return ('<?xml version="1.0" encoding="UTF-8"?>'
+                            '<error code="200" description="Invalid parameter: maxage"/>')
+                return ('<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" '
+                        'xmlns:newznab="http://www.newznab.com/DTD/2010/feeds/attributes/"><channel>'
+                        '<newznab:response offset="0" total="0"/></channel></rss>')
+
+        provider = NoMaxage('test', 'https://fake.fake/', data_files_dict={})
+        base_params = {'t': 'tvsearch', 'maxage': 99999, 'limit': 100, 'offset': 0}
+        needed = sickshift.common.NeededQualities(need_all=True)
+        provider._search_core({'Cache': [{}]}, needed=needed, base_params=base_params, base_params_rss={})
+        self.assertEqual(2, len(urls))
+        self.assertIn('maxage=99999', urls[0])
+        self.assertNotIn('maxage', urls[1])
+        # later searches go without maxage at once
+        provider._search_core({'Cache': [{}]}, needed=needed, base_params=base_params, base_params_rss={})
+        self.assertEqual(3, len(urls))
+        self.assertNotIn('maxage', urls[2])
+
 
 if '__main__' == __name__:
     if 1 < len(sys.argv):
@@ -341,4 +366,4 @@ if '__main__' == __name__:
     unittest.TextTestRunner(verbosity=2).run(suite)
 
     suite = unittest.TestLoader().loadTestsFromTestCase(FakeProviderTests)
-    unittest.TextTestRunner(verbosity=2).run(FakeNewznabProvider)
+    unittest.TextTestRunner(verbosity=2).run(suite)

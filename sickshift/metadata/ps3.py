@@ -16,8 +16,8 @@
 
 import os
 
-from . import generic
 import sickshift
+from . import generic
 
 # noinspection PyUnreachableCode
 if False:

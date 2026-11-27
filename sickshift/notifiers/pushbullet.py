@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with SickShift. If not, see <http://www.gnu.org/licenses/>.
 
-from .generic import Notifier
-from json_helper import json_dumps
-import sickshift
 import requests
 
+import sickshift
+from .generic import Notifier
+from json_helper import json_dumps
 from _23 import b64encodestring, decode_str
 
 
