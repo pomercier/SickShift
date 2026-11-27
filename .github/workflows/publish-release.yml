@@ -132,8 +132,7 @@ jobs:
           set -euo pipefail
           DATA_DIR="$(mktemp -d)"
           SHOWS_DIR="$(mktemp -d)"
-          trap 'docker rm -f sickshift-rel-test >/dev/null 2>&1 || true; rm -rf "$DATA_DIR" "$SHOWS_DIR"' EXIT
-          python3 -c "import sqlite3; c=sqlite3.connect('${DATA_DIR}/sickbeard.db'); c.execute('CREATE TABLE IF NOT EXISTS info (last_backlog INTEGER)'); c.commit(); c.close()"
+          trap 'docker rm -f sickshift-rel-test >/dev/null 2>&1 || true; sudo rm -rf "$DATA_DIR" "$SHOWS_DIR" || true' EXIT
           docker run -d --name sickshift-rel-test -p 18082:8081 -v "${DATA_DIR}:/data" -v "${SHOWS_DIR}:/shows" -e TZ=UTC sickshift-release-check:test
           ok="false"
           for i in $(seq 1 45); do
@@ -149,6 +148,22 @@ jobs:
           fi
           curl -fsS http://127.0.0.1:18082/dashboard/api/diagnostics | grep -q '"status":"ok"'
           curl -fsS -o /dev/null http://127.0.0.1:18082/view-shows/
+          test -f "${DATA_DIR}/sickshift.db"
+          docker stop sickshift-rel-test
+          sudo mv "${DATA_DIR}/sickshift.db" "${DATA_DIR}/sickbeard.db"
+          docker start sickshift-rel-test
+          migrated="false"
+          for i in $(seq 1 45); do
+            if curl -fsS http://127.0.0.1:18082/dashboard/health 2>/dev/null | grep -q '"status":"ok"'; then
+              migrated="true"
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$migrated" != "true" ]]; then
+            docker logs sickshift-rel-test || true
+            exit 1
+          fi
           test -f "${DATA_DIR}/sickshift.db"
           echo "Container validation passed prior to public release."
 
