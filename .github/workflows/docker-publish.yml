@@ -122,13 +122,12 @@ jobs:
 
       - name: Run Trivy vulnerability scan (informational summary)
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.30.0
-        with:
-          image-ref: 'sickshift-candidate:test'
-          format: 'table'
-          exit-code: '0'
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
+        shell: bash
+        run: |
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:latest image \
+            --severity CRITICAL,HIGH --ignore-unfixed --exit-code 0 \
+            sickshift-candidate:test
 
   publish:
     name: Publish official multi-arch image and verify remote pull
